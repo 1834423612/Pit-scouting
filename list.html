@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>File List</title>
+    <style>
+        .file-container {
+            margin-bottom: 20px;
+        }
+
+        .file-image {
+            width: 150px;
+            height: 150px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Uploaded Files</h1>
+    <div id="file-list"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/list-files')
+                .then(response => response.json())
+                .then(files => {
+                    const fileList = document.getElementById('file-list');
+                    files.forEach(file => {
+                        const fileContainer = document.createElement('div');
+                        fileContainer.className = 'file-container';
+
+                        const img = document.createElement('img');
+                        img.src = file.webViewLink;
+                        img.className = 'file-image';
+                        fileContainer.appendChild(img);
+
+                        const link = document.createElement('a');
+                        link.href = file.webViewLink;
+                        link.textContent = file.name;
+                        link.target = '_blank';
+                        fileContainer.appendChild(link);
+
+                        fileList.appendChild(fileContainer);
+                    });
+                })
+                .catch(error => console.error('错误:', error));
+        });
+    </script>
+</body>
+
+</html>
