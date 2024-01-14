@@ -69,22 +69,22 @@ async function findOrCreateFolder(FolderName) {
 }
 
 // 检查并设置文件夹权限
-// async function setFolderPermissions(folderId) {
-//     for (const email of userEmails) {
-//         try {
-//             await drive.permissions.create({
-//                 fileId: folderId,
-//                 requestBody: {
-//                     role: 'writer',
-//                     type: 'user',
-//                     emailAddress: email,
-//                 },
-//             });
-//         } catch (error) {
-//             console.error(`为邮箱 ${email} 设置权限时出错:`, error);
-//         }
-//     }
-// }
+async function setFolderPermissions(folderId) {
+    for (const email of userEmails) {
+        try {
+            await drive.permissions.create({
+                fileId: folderId,
+                requestBody: {
+                    role: 'writer',
+                    type: 'user',
+                    emailAddress: email,
+                },
+            });
+        } catch (error) {
+            console.error(`为邮箱 ${email} 设置权限时出错:`, error);
+        }
+    }
+}
 
 // 查找文件夹, 不存在则创建, 并返回文件夹ID
 async function findOrCreateFolder(folderName) {
