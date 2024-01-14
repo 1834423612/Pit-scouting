@@ -25,7 +25,7 @@ const drive = google.drive({
 
 // const FOLDER_ID = '文件夹ID'; // 文件夹ID
 const FolderName = 'scoutify'; // 文件夹名称
-const userEmails = ['admin@kjchmc.cn']; // 需要添加编辑权限的用户邮箱, 可以是多个, 用逗号分隔, 例如：['user1@xxx.com', 'user2@xxx.com']
+const userEmails = ['admin@kjchmc.cn', 'akahn@beachwoodstudents.org']; // 需要添加编辑权限的用户邮箱, 可以是多个, 用逗号分隔, 例如：['user1@xxx.com', 'user2@xxx.com']
 
 
 // 识别上传文件的MIME类型
