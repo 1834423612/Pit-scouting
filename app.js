@@ -185,6 +185,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// new file Form
+app.get('/form.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'form.html'));
+});
+
+// new upload
+app.get('/upload-img.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'upload-img.html'));
+});
+
 // 列出文件的路由
 app.get('/list-files', async (req, res) => {
     try {
