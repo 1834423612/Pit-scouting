@@ -1,116 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Pit Scouting</title>
-  <style>
-    /* Add your styles here */
-  </style>
-</head>
-<body>
-<div id="app">
-  <form action="" id="dynamicForm"></form>
-</div>
-<script>
-  const form = document.getElementById('dynamicForm');
-
-  const inputs = [
-    { question: 'Event', type: 'text' },
-    { question: 'Team number', type: 'number' },
-    { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
-    { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
-    { question: 'Intake Use:', type: 'radio', options: ["Ground","Station","Other: "] },
-    { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Balance"] },
-    { question: 'Robot Weight', type: 'number' },
-    { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number' },
-    { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number' },
-    { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number' },
-    { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","Other: "] },
-    { question: 'Hours/Weeks of Practice', type: 'text' },
-    { question: 'Picture - Full Robot', type: 'file' },
-    { question: 'Picture - Drive Train', type: 'file' },
-    { question: 'Additional Comments', type: 'textarea' },
-  ];
-
-  inputs.forEach(x => {
-    const label = document.createElement('label');
-    label.textContent = x.question;
-
-    const br = document.createElement('br');
-
-    let inputElement;
-
-    switch (x.type) {
-      case 'textarea':
-        inputElement = document.createElement('textarea');
-        break;
-      case 'select':
-        inputElement = document.createElement('select');
-        x.options.forEach((option, index) => {
-          const optionElement = document.createElement('option');
-          optionElement.textContent = option;
-          inputElement.appendChild(optionElement);
-        });
-        break;
-      case 'file':
-        inputElement = document.createElement('input');
-        inputElement.type = 'file';
-        inputElement.name = 'image';
-        inputElement.accept = 'image/*';
-        break;
-      case 'text':
-      case 'number':
-        inputElement = document.createElement('input');
-        inputElement.type = "text";
-        if (x.type === 'number') {
-          //<input type="text" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required>
-
-          inputElement.pattern = '^[0-9]+(\\s[0-9]+\\/[0-9]+)?(\\.[0-9]+)?$|^[0-9]+\\/[0-9]+$';
-inputElement.title = 'Valid forms: _ , _._ , n/d , _ n/d';
-        }
-        inputElement.required = true;
-        break;
-      case 'radio':
-      case 'checkbox':
-        inputElement = document.createElement('div');
-        x.options.forEach((option, index) => {
-          const optionInput = document.createElement('input');
-          optionInput.type = x.type;
-          optionInput.name = x.question;
-          optionInput.required = x.type === 'radio';
-          const optionLabel = document.createTextNode(option);
-          const textInput = document.createElement('input');
-          textInput.type = 'text';
-          textInput.style.display = 'none'; // Hide the text input initially
-          if (option === 'Other: ') {
-            textInput.style.display = 'inline-block'; // Show text input for 'Other' option
-          }
-          optionInput.addEventListener('change', function () {
-            textInput.style.display = optionInput.checked && option === 'Other: ' ? 'inline-block' : 'none';
-          });
-          inputElement.appendChild(optionInput);
-          inputElement.appendChild(optionLabel);
-          inputElement.appendChild(textInput);
-          inputElement.appendChild(document.createElement('br'));
-        });
-        break;
-    }
-
-    form.appendChild(label);
-    form.appendChild(br);
-    form.appendChild(inputElement);
-    form.appendChild(document.createElement('br'));
-  });
-
-  const submitButton = document.createElement('input');
-  submitButton.type = 'submit';
-  submitButton.value = 'Submit';
-
-  const resetButton = document.createElement('input');
-  resetButton.type = 'reset';
-  resetButton.value = 'Reset';
-
-  form.appendChild(submitButton);
-  form.appendChild(resetButton);
-</script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Vue</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
