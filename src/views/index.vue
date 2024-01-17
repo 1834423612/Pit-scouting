@@ -7,55 +7,16 @@
       <el-radio-group v-else-if="x.type==='radio'" v-model="x.value" required>
         <el-radio v-for="option of x.options" :key="option" label="option"></el-radio>
       </el-radio-group>
-      <el-input v-else-if="x.type==='checkbox'" v-model="x.value" required></el-input>
-      <el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>
-      <el-input v-else-if="x.type==='textarea'" v-model="x.value" required></el-input>
-      <el-input v-else-if="x.type==='file'" v-model="x.value" required></el-input>
-    </el-form-item>
-
-    <el-form-item label="Scoring Locations">
-      <el-checkbox-group v-model="form.scoringLocations">
-        <el-checkbox label="Amp"></el-checkbox>
-        <el-checkbox label="Speaker"></el-checkbox>
-        <el-checkbox label="Trap"></el-checkbox>
-        <el-checkbox label="Balance"></el-checkbox>
+      <el-checkbox-group v-else-if="x.type==='checkbox'" v-model="x.value">
+        <el-checkbox v-for="option of x.options" :key="option" label="option"></el-checkbox>
       </el-checkbox-group>
-    </el-form-item>
-
-
-    <!-- NEED TO FIX!!!!!!! -->
-    <el-form-item label="Drive Team Members">
-      <el-input type="textarea" v-model="form.driveTeamMembers"></el-input>
-      <!-- <el-input type="textarea" v-model="form.driveTeamMembers"></el-input> -->
-    </el-form-item>
-
-    <el-form-item label="Practice Hours">
-      <el-input-number v-model="form.practiceHours" :min="0"></el-input-number>
-    </el-form-item>
-
-    <!-- ...... -->
-
-
-    <el-form-item label="Picture - Full Robot">
-      <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=full_robot"
-        :on-success="handleSuccess" :on-remove="handleRemove" :file-list="fileList.fullRobot">
+      <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
+      <el-input v-else-if="x.type==='textarea'" type="textarea" v-model="x.value" required></el-input>
+      <el-upload v-else-if="x.type==='file'" v-model="x.value" class="upload-demo" drag action="x.action" :on-success="handleSuccess" :on-remove="handleRemove" :file-list="fileList.fullRobot" required>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">Drag files here or <em>click to upload</em></div>
       </el-upload>
     </el-form-item>
-
-    <el-form-item label="Picture - Drive Train">
-      <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=drive_train"
-        :on-success="handleSuccess" :on-remove="handleRemove" :file-list="fileList.driveTrain">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">Drag files here or <em>click to upload</em></div>
-      </el-upload>
-    </el-form-item>
-
-    <el-form-item label="Additional Comments">
-      <el-input type="textarea" v-model="form.additionalComments"></el-input>
-    </el-form-item>
-
     <el-button type="primary" @click="submitForm">Submit</el-button>
   </el-form>
 </template>
@@ -79,8 +40,8 @@ export default {
         { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number', value:null},
         { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","Other: "], value:null },
         { question: 'Hours/Weeks of Practice', type: 'text',value:null },
-        { question: 'Picture - Full Robot', type: 'file',value:null,fileId:[] },
-        { question: 'Picture - Drive Train', type: 'file',value:null,fileId:[] },
+        { question: 'Picture - Full Robot', type: 'file',value:null,fileId:[],action:null },
+        { question: 'Picture - Drive Train', type: 'file',value:null,fileId:[],action:null},
         { question: 'Additional Comments', type: 'textarea',value:null }
       ],
       fileList : this.form.filter(item => item.type === 'file')
