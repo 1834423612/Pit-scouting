@@ -108,30 +108,24 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      form: {
-        event: '',
-        teamNumber: null,
-        driveTrainType: '',
-        wheelType: '',
-        intakeUse: '',
-        scoringLocations: [],
-        robotWeight: null,
-        robotLength: null,
-        robotWidth: null,
-        robotHeight: null,
-        driveTeamMembers: '',
-        practiceHours: '',
-        additionalComments: '',
-      },
-      fileList: {
-        fullRobot: [],
-        driveTrain: []
-      },
-      // Required for uploading files ID
-      fileIds: {
-        fullRobot: [],
-        driveTrain: []
-      }
+      form:[
+        { question: 'Event', type: 'text',value:null },
+        { question: 'Team number', type: 'number', value:null},
+        { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: '], value:null },
+        { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "], value:null },
+        { question: 'Intake Use:', type: 'radio', options: ["Ground","Station","Other: "], value:null},
+        { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Balance"], value:null},
+        { question: 'Robot Weight', type: 'number', value:null},
+        { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number', value:null },
+        { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number', value:null},
+        { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number', value:null},
+        { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","Other: "], value:null },
+        { question: 'Hours/Weeks of Practice', type: 'text',value:null },
+        { question: 'Picture - Full Robot', type: 'file',value:null,fileId:[] },
+        { question: 'Picture - Drive Train', type: 'file',value:null,fileId:[] },
+        { question: 'Additional Comments', type: 'textarea',value:null }
+      ],
+      fileList : this.form.filter(item => item.type === 'file')
     };
   },
   methods: {
