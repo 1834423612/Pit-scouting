@@ -127,7 +127,7 @@ export default {
         fullRobot: [],
         driveTrain: []
       },
-      // Requcored for uploading files ID
+      // Required for uploading files ID
       fileIds: {
         fullRobot: [],
         driveTrain: []
