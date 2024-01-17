@@ -1,39 +1,16 @@
 <template>
   <el-form ref="form" label-width="120px">
     <h3>Form</h3>
-
-    <el-form-item label="Event">
-      <el-input v-model="form.event"></el-input>
-    </el-form-item>
-
-    <el-form-item label="Team Number">
-      <el-input-number v-model="form.teamNumber" :min="0"></el-input-number>
-    </el-form-item>
-
-    <el-form-item label="Drive Train Type">
-      <el-radio-group v-model="form.driveTrainType">
-        <el-radio label="Tank Drive"></el-radio>
-        <el-radio label="Mecanum"></el-radio>
-        <el-radio label="Omni"></el-radio>
-        <el-radio label="Other"></el-radio>
+    <el-form-item v-for="x of inputs" :key="x.question" label="x.question">
+      <el-input v-if="x.type==='text'" v-model="x.value" required></el-input>
+      <el-input v-else-if="x.type==='number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
+      <el-radio-group v-else-if="x.type==='radio'" v-model="x.value" required>
+        <el-radio v-for="option of x.options" :key="option" label="option"></el-radio>
       </el-radio-group>
-    </el-form-item>
-
-    <el-form-item label="Wheel Type">
-      <el-radio-group v-model="form.wheelType">
-        <el-radio label="Traction"></el-radio>
-        <el-radio label="Mecanum"></el-radio>
-        <el-radio label="Omni"></el-radio>
-        <el-radio label="Other"></el-radio>
-      </el-radio-group>
-    </el-form-item>
-
-    <el-form-item label="Intake Use">
-      <el-radio-group v-model="form.intakeUse">
-        <el-radio label="Ground"></el-radio>
-        <el-radio label="Station"></el-radio>
-        <el-radio label="Other"></el-radio>
-      </el-radio-group>
+      <el-input v-else-if="x.type==='checkbox'" v-model="x.value" required></el-input>
+      <el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>
+      <el-input v-else-if="x.type==='textarea'" v-model="x.value" required></el-input>
+      <el-input v-else-if="x.type==='file'" v-model="x.value" required></el-input>
     </el-form-item>
 
     <el-form-item label="Scoring Locations">
@@ -43,25 +20,6 @@
         <el-checkbox label="Trap"></el-checkbox>
         <el-checkbox label="Balance"></el-checkbox>
       </el-checkbox-group>
-    </el-form-item>
-
-
-    <!-- ...... -->
-
-    <el-form-item label="Robot Weight">
-      <el-input-number v-model="form.robotWeight" :min="0"></el-input-number>
-    </el-form-item>
-
-    <el-form-item label="Robot Length">
-      <el-input-number v-model="form.robotLength" :min="0"></el-input-number>
-    </el-form-item>
-
-    <el-form-item label="Robot Width">
-      <el-input-number v-model="form.robotWidth" :min="0"></el-input-number>
-    </el-form-item>
-
-    <el-form-item label="Robot Height">
-      <el-input-number v-model="form.robotHeight" :min="0"></el-input-number>
     </el-form-item>
 
 
@@ -135,19 +93,11 @@ export default {
           try {
             // Initialize FormData for sending form data and files
             let formData = new FormData();
-            formData.append('event', this.form.event);
-            formData.append('teamNumber', this.form.teamNumber);
-            // Another stuff.....
-            formData.append('additionalComments', this.form.additionalComments);
-
-            // Upload images
-            this.fileList.fullRobot.forEach(file => {
-              formData.append('fullRobotImages', file.raw);
-            });
-            this.fileList.driveTrain.forEach(file => {
-              formData.append('driveTrainImages', file.raw);
-            });
-
+            //set the values
+            for(let i of this.form){
+              if(i.type==="file"){formData.append(i.question, i.value.raw);}
+              else{formData.append(i.question, i.value);}
+            }
             // Post form data & files to Back-End server
             await axios.post('http://localhost:3000/submit-form', formData, {
               headers: {
@@ -163,7 +113,8 @@ export default {
         }
       });
     },
-    handleSuccess(response, file, fileList) {
+    //not going to work after I changed the data types
+    /*handleSuccess(response, file, fileList) {
       console.log('Upload successful:', response);
 
       // 更新fileList以包含文件ID
@@ -179,8 +130,9 @@ export default {
         // 确保文件对象包含文件ID
         fileList[index].fileId = fileId;
       }
-    },
-    handleRemove(file, fileList) {
+    },*/
+    //this probably won't work either
+    /*handleRemove(file, fileList) {
       console.log('File removed:', file);
 
       // 替换为实际的文件ID属性
@@ -201,7 +153,7 @@ export default {
           console.error('Error deleting the file:', error);
           // 错误处理，如显示错误消息
         });
-    }
+    }*/
   }
 };
 </script>
