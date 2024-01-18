@@ -9,9 +9,11 @@
         }
 
         .file-image {
-            width: 150px;
-            height: 150px;
-            margin-right: 10px;
+            /*width: 150px;
+            height: 150px;*/
+            width: calc(45% - 150px);
+            height: calc(10% + 150px);
+            margin: 0px 15px;
         }
     </style>
 </head>
@@ -27,24 +29,28 @@
                 .then(files => {
                     const fileList = document.getElementById('file-list');
                     files.forEach(file => {
-                        const fileContainer = document.createElement('div');
-                        fileContainer.className = 'file-container';
+                        // if (file.mimeType !== 'application/vnd.google-apps.folder') {
+                        // ignore specific files
+                        if (!['scoutify', 'Full Robot', 'Drive Train'].includes(file.name)) {
+                            const fileContainer = document.createElement('div');
+                            fileContainer.className = 'file-container';
 
-                        const img = document.createElement('img');
-                        img.src = file.webViewLink;
-                        img.className = 'file-image';
-                        fileContainer.appendChild(img);
+                            const img = document.createElement('img');
+                            img.src = '/drive-image/' + file.id;
+                            img.className = 'file-image';
+                            fileContainer.appendChild(img);
 
-                        const link = document.createElement('a');
-                        link.href = file.webViewLink;
-                        link.textContent = file.name;
-                        link.target = '_blank';
-                        fileContainer.appendChild(link);
+                            const link = document.createElement('a');
+                            link.href = file.webViewLink;
+                            link.textContent = file.name;
+                            link.target = '_blank';
+                            fileContainer.appendChild(link);
 
-                        fileList.appendChild(fileContainer);
+                            fileList.appendChild(fileContainer);
+                        }
                     });
                 })
-                .catch(error => console.error('错误:', error));
+                .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

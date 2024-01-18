@@ -25,4 +25,9 @@ dist-ssr
 *.sln
 *.sw?
 .env
+uploads/*
+
+
+# Config files
 loyal-polymer-411002-b8ec065f71d9.json
+config/DBConfig.js
