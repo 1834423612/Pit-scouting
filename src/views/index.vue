@@ -171,16 +171,16 @@ export default {
     },
     handleSuccess(response, file, fileList) {
       console.log('Upload successful:', response);
-      // 检查响应中是否包含文件ID
+      // Check if the response contains the fileId
       if (response && response.fileId) {
-        // 在 fileList 中找到匹配的文件对象并直接更新它
+        // Find the matching file object in the fileList and update it directly
         const index = fileList.findIndex(f => f.uid === file.uid);
         if (index !== -1) {
-          // 更新文件对象以包含 fileId
+          // Update the file object to include the fileId
           fileList[index] = { ...fileList[index], fileId: response.fileId };
         }
 
-        // 根据不同的上传类型，将文件ID存储到相应的数组中
+        // According to the different upload types, store the file ID in the corresponding array
         if (fileList === this.fileList.fullRobot) {
           this.fileIds.fullRobot.push(response.fileId);
         } else if (fileList === this.fileList.driveTrain) {
@@ -202,7 +202,7 @@ export default {
       axios.get(`http://localhost:3000/delete?file_ID=${fileId}`)
         .then(response => {
           console.log('File deletion response:', response.data);
-          // 更新 fileIds 数组，移除已删除的文件ID
+          // Update fileIds array, remove the deleted fileId
           if (fileList === this.fileList.fullRobot) {
             this.fileIds.fullRobot = this.fileIds.fullRobot.filter(id => id !== fileId);
           } else if (fileList === this.fileList.driveTrain) {
