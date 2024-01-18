@@ -10,7 +10,7 @@
       <el-input-number v-model="form.teamNumber" :min="0"></el-input-number>
     </el-form-item>
 
-    <el-form-item label="Drive Train Type">
+    <el-form-item label="Drive Train Type" label-position="top">
       <el-radio-group v-model="form.driveTrainType">
         <el-radio label="Tank Drive"></el-radio>
         <el-radio label="Mecanum"></el-radio>
@@ -19,7 +19,7 @@
       </el-radio-group>
     </el-form-item>
 
-    <el-form-item label="Wheel Type">
+    <el-form-item label="Wheel Type" label-position="top">
       <el-radio-group v-model="form.wheelType">
         <el-radio label="Traction"></el-radio>
         <el-radio label="Mecanum"></el-radio>
@@ -28,7 +28,7 @@
       </el-radio-group>
     </el-form-item>
 
-    <el-form-item label="Intake Use">
+    <el-form-item label="Intake Use" label-position="top">
       <el-radio-group v-model="form.intakeUse">
         <el-radio label="Ground"></el-radio>
         <el-radio label="Station"></el-radio>
@@ -36,7 +36,7 @@
       </el-radio-group>
     </el-form-item>
 
-    <el-form-item label="Scoring Locations">
+    <el-form-item label="Scoring Locations" label-position="top">
       <el-checkbox-group v-model="form.scoringLocations">
         <el-checkbox label="Amp"></el-checkbox>
         <el-checkbox label="Speaker"></el-checkbox>
@@ -171,43 +171,50 @@ export default {
     },
     handleSuccess(response, file, fileList) {
       console.log('Upload successful:', response);
-
-      // 更新fileList以包含文件ID
-      // const index = fileList.indexOf(file);
+      // 检查响应中是否包含文件ID
       if (response && response.fileId) {
+        // 在 fileList 中找到匹配的文件对象并直接更新它
+        const index = fileList.findIndex(f => f.uid === file.uid);
+        if (index !== -1) {
+          // 更新文件对象以包含 fileId
+          fileList[index] = { ...fileList[index], fileId: response.fileId };
+        }
+
+        // 根据不同的上传类型，将文件ID存储到相应的数组中
         if (fileList === this.fileList.fullRobot) {
           this.fileIds.fullRobot.push(response.fileId);
         } else if (fileList === this.fileList.driveTrain) {
           this.fileIds.driveTrain.push(response.fileId);
         }
-      }
-      if (index !== -1) {
-        // 确保文件对象包含文件ID
-        fileList[index].fileId = fileId;
+      } else {
+        console.error('No fileId returned from the server');
       }
     },
     handleRemove(file, fileList) {
       console.log('File removed:', file);
 
-      // 替换为实际的文件ID属性
       const fileId = file.fileId;
-
       if (!fileId) {
         console.error('File ID is missing, cannot delete the file.');
         return;
       }
+
       axios.get(`http://localhost:3000/delete?file_ID=${fileId}`)
         .then(response => {
           console.log('File deletion response:', response.data);
-          // 可以在这里进行进一步的操作，如更新状态或通知用户
-          // 从fileList中移除已删除的文件
-          this.fileList = fileList.filter(f => f.fileId !== fileId);
+          // 更新 fileIds 数组，移除已删除的文件ID
+          if (fileList === this.fileList.fullRobot) {
+            this.fileIds.fullRobot = this.fileIds.fullRobot.filter(id => id !== fileId);
+          } else if (fileList === this.fileList.driveTrain) {
+            this.fileIds.driveTrain = this.fileIds.driveTrain.filter(id => id !== fileId);
+          }
         })
         .catch(error => {
           console.error('Error deleting the file:', error);
-          // 错误处理，如显示错误消息
         });
     }
   }
 };
 </script>
+
+<style></style>
