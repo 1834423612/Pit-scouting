@@ -1,7 +1,7 @@
 <template>
   <el-form ref="form" label-width="120px">
     <h3>Form</h3>
-    <el-form-item v-for="x of inputs" :key="x.question" label="x.question">
+    <el-form-item v-for="x of form" :key="x.question" label="x.question">
       <el-input v-if="x.type==='text'" v-model="x.value" required></el-input>
       <el-input v-else-if="x.type==='number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
       <el-radio-group v-else-if="x.type==='radio'" v-model="x.value" required>
