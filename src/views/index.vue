@@ -1,6 +1,7 @@
 <template>
   <el-form ref="form" label-width="120px">
     <h3>Form</h3>
+    
     <el-form-item v-for="x of form" :key="x.question" label="x.question">
       <el-input v-if="x.type==='text'" v-model="x.value" required></el-input>
       <el-input v-else-if="x.type==='number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
@@ -77,44 +78,51 @@ export default {
     //not going to work after I changed the data types
     /*handleSuccess(response, file, fileList) {
       console.log('Upload successful:', response);
-
-      // 更新fileList以包含文件ID
-      // const index = fileList.indexOf(file);
+      // Check if the response contains the fileId
       if (response && response.fileId) {
+        // Find the matching file object in the fileList and update it directly
+        const index = fileList.findIndex(f => f.uid === file.uid);
+        if (index !== -1) {
+          // Update the file object to include the fileId
+          fileList[index] = { ...fileList[index], fileId: response.fileId };
+        }
+
+        // According to the different upload types, store the file ID in the corresponding array
         if (fileList === this.fileList.fullRobot) {
           this.fileIds.fullRobot.push(response.fileId);
         } else if (fileList === this.fileList.driveTrain) {
           this.fileIds.driveTrain.push(response.fileId);
         }
-      }
-      if (index !== -1) {
-        // 确保文件对象包含文件ID
-        fileList[index].fileId = fileId;
+      } else {
+        console.error('No fileId returned from the server');
       }
     },*/
     //this probably won't work either
     /*handleRemove(file, fileList) {
       console.log('File removed:', file);
 
-      // 替换为实际的文件ID属性
       const fileId = file.fileId;
-
       if (!fileId) {
         console.error('File ID is missing, cannot delete the file.');
         return;
       }
+
       axios.get(`http://localhost:3000/delete?file_ID=${fileId}`)
         .then(response => {
           console.log('File deletion response:', response.data);
-          // 可以在这里进行进一步的操作，如更新状态或通知用户
-          // 从fileList中移除已删除的文件
-          this.fileList = fileList.filter(f => f.fileId !== fileId);
+          // Update fileIds array, remove the deleted fileId
+          if (fileList === this.fileList.fullRobot) {
+            this.fileIds.fullRobot = this.fileIds.fullRobot.filter(id => id !== fileId);
+          } else if (fileList === this.fileList.driveTrain) {
+            this.fileIds.driveTrain = this.fileIds.driveTrain.filter(id => id !== fileId);
+          }
         })
         .catch(error => {
           console.error('Error deleting the file:', error);
-          // 错误处理，如显示错误消息
         });
     }*/
   }
 };
 </script>
+
+<style scoped></style>
