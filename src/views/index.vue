@@ -26,6 +26,7 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">Drag files here or <em>click to upload</em></div>
       </el-upload>
+      <br>
     </el-form-item>
     <el-button type="primary" @click="submitForm">Submit</el-button>
   </el-form>
