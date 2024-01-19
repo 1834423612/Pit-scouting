@@ -45,7 +45,7 @@ export default {
         { question: 'Picture - Drive Train', type: 'file',value:null,fileId:[],action:null},
         { question: 'Additional Comments', type: 'textarea',value:null }
       ],
-      fileList : this.form.filter(item => item.type === 'file')
+      fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
     };
   },
   methods: {
@@ -125,4 +125,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+  
+</style>
