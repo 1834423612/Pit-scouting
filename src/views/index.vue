@@ -7,9 +7,14 @@
       <el-input v-else-if="x.type==='number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
       <el-radio-group v-else-if="x.type==='radio'" v-model="x.value" required>
         <el-radio v-for="option of x.options" :key="option" label="option"></el-radio>
+        <el-radio label="other"></el-radio>
+        <el-input></el-input>
+        
       </el-radio-group>
       <el-checkbox-group v-else-if="x.type==='checkbox'" v-model="x.value">
         <el-checkbox v-for="option of x.options" :key="option" label="option"></el-checkbox>
+        <el-checkbox label="other"></el-checkbox>
+        <el-input></el-input>
       </el-checkbox-group>
       <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
       <el-input v-else-if="x.type==='textarea'" type="textarea" v-model="x.value" required></el-input>
@@ -17,6 +22,7 @@
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">Drag files here or <em>click to upload</em></div>
       </el-upload>
+      <br>
     </el-form-item>
     <el-button type="primary" @click="submitForm">Submit</el-button>
   </el-form>
