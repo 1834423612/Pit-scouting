@@ -45,9 +45,13 @@ export default {
         { question: 'Picture - Drive Train', type: 'file',value:null,fileId:[],action:null},
         { question: 'Additional Comments', type: 'textarea',value:null }
       ],
-      fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
+      // fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
     };
   },
+  computed: {
+    fileList() {
+      return this.form.filter(item => item.type === 'file');
+  }
   methods: {
     submitForm() {
       this.$refs.form.validate(async (valid) => {
