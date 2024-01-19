@@ -51,7 +51,7 @@ export default {
   computed: {
     fileList() {
       return this.form.filter(item => item.type === 'file');
-  }
+  },
   methods: {
     submitForm() {
       this.$refs.form.validate(async (valid) => {
