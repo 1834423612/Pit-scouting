@@ -68,7 +68,6 @@ export default {
             'Tank Drive ("skid steer", plates on both sides of wheels)',
             "West Coast Drive (wheels mounted off one side of tube)",
             "Swerve Drive",
-            "Other: ",
           ],
           value: null,
           showOtherInput: false, // show the textarea when first load the page?
@@ -81,7 +80,6 @@ export default {
             "Traction",
             "Mecanum (rollers at 45° angle)",
             "Omni (rollers at 90° angle)",
-            "Other: ",
           ],
           value: null,
           showOtherInput: false, // show the textarea when first load the page?
@@ -90,7 +88,7 @@ export default {
         {
           question: "Intake Use:",
           type: "radio",
-          options: ["Ground", "Station", "Other: "],
+          options: ["Ground", "Station"],
           value: null,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
@@ -99,7 +97,7 @@ export default {
           question: "Scoring Locations:",
           type: "checkbox",
           options: ["Amp", "Speaker", "Trap", "Balance"],
-          value: null,
+          value: [], // should be an array if it's a checkbox
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
         },
@@ -127,7 +125,6 @@ export default {
           type: "radio",
           options: [
             "One person driving and operating the robot during a match",
-            "Other: ",
           ],
           value: null,
           showOtherInput: false, // show the textarea when first load the page?
