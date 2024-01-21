@@ -183,9 +183,9 @@ export default {
 
     watch: {
       'form': {
-        handler(newForm) {
-          newForm.forEach(question => {
-            if (question.otherValue !== '') {
+        handler(newForm, oldForm) {
+          newForm.forEach((question, index) => {
+            if (question.otherValue !== '' && oldForm[index].otherValue === '') {
               localStorage.setItem(question.question, question.otherValue);
             }
           });
