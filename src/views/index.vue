@@ -1,63 +1,160 @@
 <template>
-  <el-form ref="form" label-width="120px" label-position="top">
-    <h3>Form</h3>
+  <div class="form-container">
+    <el-form
+      :model="formData"
+      ref="form"
+      label-width="120px"
+      label-position="top"
+    >
+      <h3>Form</h3>
+      
 
-    <el-button type="danger" @click="clearForm">Clear Form</el-button>
-
-    <el-form-item v-for="x of form" :key="x.question" :label="x.required ? `${x.question}` : x.question"
-      :required="x.required" :rules="[{ required: x.required, message: 'This field is required', trigger: 'blur' }]">
-      <el-input v-if="x.type === 'text'" v-model="x.value" required></el-input>
-      <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-        title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
-
-      <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" required class="vertical-layout"
-        @change="handleRadioChange(x, $event)">
-        <el-radio v-for="option in x.options" :key="option" :label="option">{{
-          option
-        }}</el-radio>
-        <el-radio label="other"></el-radio>
-        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
-          placeholder="Please input"></el-input>
-      </el-radio-group>
-
-      <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" @change="handleCheckboxChange(x, $event)"
-        class="vertical-layout">
-        <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
-        <el-checkbox label="other"></el-checkbox>
-        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
-        <el-input v-else-if="x.type === 'number'" v-model="x.value" required></el-input>
-      </el-checkbox-group>
-
-      <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
-      <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
-    </el-form-item>
-    <!-- ...... -->
-
-    <el-form-item label="Picture - Full Robot">
-      <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=full_robot"
-        :on-success="handleSuccess" :on-remove="handleRemove" :file-list="fileList.fullRobot">
-        <el-icon :size="50" color="#b3b3b3">
-          <upload />
-        </el-icon>
-        <div class="el-upload__text">
-          Drag files here or <em>click to upload</em>
+      <el-divider border-style="dashed" />
+      <div class="form-header">
+        <el-button type="danger" @click="clearForm">Clear Form</el-button>
+        <div class="saving-status">
+          <el-icon v-if="!formModified" color="#337ecc" :size="20">
+            <checked />
+          </el-icon>
+          <el-icon v-else-if="savingStatus === 'saving'" class="is-loading">
+            <loading />
+          </el-icon>
+          <el-icon
+            v-else-if="savingStatus === 'success'"
+            color="#67C23A"
+            :size="20"
+          >
+            <check />
+          </el-icon>
+          <span v-if="formModified" style="color: #909399">{{
+            savingStatusText
+          }}</span>
+          <span v-else style="color: #529b2e">This form support auto-save</span>
         </div>
-      </el-upload>
-    </el-form-item>
+      </div>
 
-    <el-form-item label="Picture - Drive Train">
-      <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=drive_train"
-        :on-success="handleSuccess" :on-remove="handleRemove" :file-list="fileList.driveTrain">
-        <el-icon :size="50" color="#b3b3b3">
-          <upload />
-        </el-icon>
-        <div class="el-upload__text">
-          Drag files here or <em>click to upload</em>
-        </div>
-      </el-upload>
-    </el-form-item>
-    <el-button type="primary" @click="submitForm">Submit</el-button>
-  </el-form>
+      <el-form-item
+        v-for="x of form"
+        :key="x.question"
+        :label="x.required ? `${x.question}` : x.question"
+        :required="x.required"
+        :rules="[
+          {
+            required: x.required,
+            message: 'This field is required',
+            trigger: 'blur',
+          },
+        ]"
+      >
+        <el-input
+          v-if="x.type === 'text'"
+          v-model="x.value"
+          required
+        ></el-input>
+        <el-input
+          v-else-if="x.type === 'number'"
+          v-model="x.value"
+          pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
+          title="Valid forms: _ , _._ , n/d , _ n/d"
+          required
+        ></el-input>
+
+        <el-radio-group
+          v-else-if="x.type === 'radio'"
+          v-model="x.value"
+          required
+          class="vertical-layout"
+          @change="handleRadioChange(x, $event)"
+        >
+          <el-radio v-for="option in x.options" :key="option" :label="option">{{
+            option
+          }}</el-radio>
+          <el-radio label="other"></el-radio>
+          <el-input
+            v-if="x.showOtherInput"
+            v-model="x.otherValue"
+            :rows="3"
+            type="textarea"
+            placeholder="Please input"
+          ></el-input>
+        </el-radio-group>
+
+        <el-checkbox-group
+          v-else-if="x.type === 'checkbox'"
+          v-model="x.value"
+          @change="handleCheckboxChange(x, $event)"
+          class="vertical-layout"
+        >
+          <el-checkbox
+            v-for="option in x.options"
+            :key="option"
+            :label="option"
+            >{{ option }}</el-checkbox
+          >
+          <el-checkbox label="other"></el-checkbox>
+          <el-input
+            v-if="x.showOtherInput"
+            v-model="x.otherValue"
+            :rows="3"
+            placeholder="Please input"
+          ></el-input>
+          <el-input
+            v-else-if="x.type === 'number'"
+            v-model="x.value"
+            required
+          ></el-input>
+        </el-checkbox-group>
+
+        <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
+        <el-input
+          v-else-if="x.type === 'textarea'"
+          type="textarea"
+          v-model="x.value"
+          required
+        ></el-input>
+      </el-form-item>
+      <!-- ...... -->
+
+      <el-form-item label="Picture - Full Robot">
+        <el-upload
+          class="upload-demo"
+          drag
+          action="http://localhost:3000/upload?type=full_robot"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove"
+          :file-list="fileList.fullRobot"
+          list-type="picture"
+        >
+          <el-icon :size="50" color="#b3b3b3">
+            <upload />
+          </el-icon>
+          <div class="el-upload__text">
+            Drag files here or <em>click to upload</em>
+          </div>
+        </el-upload>
+      </el-form-item>
+
+      <el-form-item label="Picture - Drive Train">
+        <el-upload
+          class="upload-demo"
+          drag
+          action="http://localhost:3000/upload?type=drive_train"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove"
+          :file-list="fileList.driveTrain"
+          list-type="picture"
+        >
+          <el-icon :size="50" color="#b3b3b3">
+            <upload />
+          </el-icon>
+          <div class="el-upload__text">
+            Drag files here or <em>click to upload</em>
+          </div>
+        </el-upload>
+      </el-form-item>
+      <el-button type="primary" @click="submitForm">Submit</el-button>
+    </el-form>
+  </div>
 </template>
 
 <script>
@@ -66,6 +163,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error'
+      formModified: false,
+
       form: [
         {
           question: "Event",
@@ -184,10 +284,23 @@ export default {
         driveTrain: [],
       },
       textarea: "",
-      computed: {
-        fileList() {
-          return this.form.filter((item) => item.type === "file");
-        },
+      saveTimeout: "",
+
+      // el-form
+      formData: {
+        event: "",
+        teamNumber: "",
+        typeOfDriveTrain: "",
+        typeOfWheelsUsed: "",
+        intakeUse: "",
+        scoringLocations: "",
+        robotWeight: "",
+        robotDimensionLength: "",
+        robotDimensionWidth: "",
+        robotDimensionHeight: "",
+        driveTeamMembers: "",
+        hoursWeeksOfPractice: "",
+        additionalComments: "",
       },
     };
   },
@@ -196,24 +309,59 @@ export default {
     this.restoreFormData();
   },
 
+  computed: {
+    fileList() {
+      return this.form.filter((item) => item.type === "file");
+    },
+
+    savingStatusText() {
+      switch (this.savingStatus) {
+        case "idle":
+          return "";
+        case "saving":
+          return "Saving...";
+        case "success":
+          return "All changes saved";
+        case "error":
+          return "Error saving changes";
+        default:
+          return "";
+      }
+    },
+  },
+
   watch: {
     form: {
       handler(newForm) {
-        newForm.forEach((question) => {
-          if (question.type === "checkbox") {
-            localStorage.setItem(
-              question.question,
-              JSON.stringify(question.value)
-            );
-          } else {
-            localStorage.setItem(question.question, question.value);
-          }
+        // 如果表单被修改过，启动保存逻辑
+        if (!this.formModified) {
+          this.formModified = true;
+        }
+        if (this.saveTimeout) {
+          clearTimeout(this.saveTimeout);
+        }
 
-          localStorage.setItem(
-            question.question + "-otherValue",
-            question.otherValue
-          );
-        });
+        this.savingStatus = "saving";
+
+        this.saveTimeout = setTimeout(() => {
+          newForm.forEach((question) => {
+            if (question.type === "checkbox") {
+              localStorage.setItem(
+                question.question,
+                JSON.stringify(question.value)
+              );
+            } else {
+              localStorage.setItem(question.question, question.value);
+            }
+
+            localStorage.setItem(
+              question.question + "-otherValue",
+              question.otherValue
+            );
+          });
+
+          this.savingStatus = "success";
+        }, 2000); // 2秒后才将状态设置为'success'
       },
       deep: true,
     },
@@ -273,63 +421,75 @@ export default {
       });
     },
 
+    beforeDestroy() {
+      if (this.saveTimeout) {
+        clearTimeout(this.saveTimeout);
+      }
+    },
+
     clearForm() {
-      this.$confirm('Are you sure you want to clear the form?', 'Warning', {
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-        type: 'warning'
-      }).then(() => {
-        this.resetFormData();
-        this.$message({
-          type: 'success',
-          message: 'Form has been cleared!'
+      this.$confirm("Are you sure you want to clear the form?", "Warning", {
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        type: "warning",
+      })
+        .then(() => {
+          this.resetFormData();
+          this.$message({
+            type: "success",
+            message: "Form has been cleared!",
+          });
+
+          // 重置表单修改状态
+          this.formModified = false;
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Clear canceled",
+          });
         });
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: 'Clear canceled'
-        });
-      });
     },
 
     resetFormData() {
-      this.form.forEach(question => {
-        if (question.type === 'checkbox') {
+      this.form.forEach((question) => {
+        if (question.type === "checkbox") {
           question.value = [];
         } else {
           question.value = null;
         }
         question.showOtherInput = false;
-        question.otherValue = '';
+        question.otherValue = "";
       });
     },
 
     submitForm() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
+          console.log("Full Robot Image IDs:", this.fileIds.fullRobot);
+          console.log("Drive Train Image IDs:", this.fileIds.driveTrain);
           try {
-            // Initialize FormData for sending form data and files
             let formData = new FormData();
-            formData.append("event", this.form.event);
-            formData.append("teamNumber", this.form.teamNumber);
-            // Another stuff.....
-            formData.append("additionalComments", this.form.additionalComments);
-
-            // Upload images
-            this.fileList.fullRobot.forEach((file) => {
-              formData.append("fullRobotImages", file.raw);
-            });
-            this.fileList.driveTrain.forEach((file) => {
-              formData.append("driveTrainImages", file.raw);
+            this.form.forEach((item) => {
+              formData.append(item.question, item.value);
             });
 
-            // Post form data & files to Back-End server
+            // 处理图片文件ID
+            formData.append(
+              "fullRobotImageId",
+              this.fileIds.fullRobot.join(",")
+            );
+            formData.append(
+              "driveTrainImageId",
+              this.fileIds.driveTrain.join(",")
+            );
+
             await axios.post("http://localhost:3000/submit-form", formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
               },
             });
-            // After form is submitted, message will displayed
+
             this.$message.success("Form submitted successfully");
           } catch (error) {
             console.error("Error submitting form:", error);
@@ -338,27 +498,23 @@ export default {
         }
       });
     },
+
     handleSuccess(response, file, fileList) {
       console.log("Upload successful:", response);
-      // Check if the response contains the fileId
       if (response && response.fileId) {
-        // Find the matching file object in the fileList and update it directly
-        const index = fileList.findIndex((f) => f.uid === file.uid);
-        if (index !== -1) {
-          // Update the file object to include the fileId
-          fileList[index] = { ...fileList[index], fileId: response.fileId };
-        }
+        const fileId = response.fileId;
 
-        // According to the different upload types, store the file ID in the corresponding array
+        // 根据上传类型将 fileId 添加到相应数组
         if (fileList === this.fileList.fullRobot) {
-          this.fileIds.fullRobot.push(response.fileId);
+          this.fileIds.fullRobot.push(fileId);
         } else if (fileList === this.fileList.driveTrain) {
-          this.fileIds.driveTrain.push(response.fileId);
+          this.fileIds.driveTrain.push(fileId);
         }
       } else {
         console.error("No fileId returned from the server");
       }
     },
+
     handleRemove(file, fileList) {
       console.log("File removed:", file);
 
@@ -392,6 +548,28 @@ export default {
 </script>
 
 <style scoped>
+.form-container {
+  padding: 10px 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
+    -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
+    4px 0px 3px 0 rgba(0, 0, 0, 0.12);
+  background-color: #c6e2ff;
+}
+
+.form-header {
+  display: flex;
+  align-items: flex-end;
+  align-content: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.saving-status {
+  display: flex;
+  align-items: center;
+}
+
 .vertical-layout {
   display: inline-flex;
   align-items: flex-start;
