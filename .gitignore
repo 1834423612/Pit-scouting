@@ -30,4 +30,6 @@ uploads/*
 
 # Config files
 loyal-polymer-411002-b8ec065f71d9.json
+client_secret_392109503842-37oafhl6uh07ccq2i7vmv5a0lm1n1nr8.apps.googleusercontent.com.json
+token.json
 config/DBConfig.js

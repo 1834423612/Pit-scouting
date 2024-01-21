@@ -1,0 +1,14 @@
+{
+  "root": {
+    "name": "scoutify",
+    "id": "1ZmSWY03OpYb3-64r52IfgYe-CKm6-K-K"
+  },
+  "Drive Train": {
+    "name": "Drive Train",
+    "id": "1YHoc5uumAdb5mG9QY8vKN5oRhC1iZyxQ"
+  },
+  "Full Robot": {
+    "name": "Full Robot",
+    "id": "12sFqU4Y63mHCjdVmeW3Gm2h9fL0kapa3"
+  }
+}

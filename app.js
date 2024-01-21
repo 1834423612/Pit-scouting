@@ -29,7 +29,7 @@ const drive = google.drive({
 
 // const FOLDER_ID = '文件夹ID'; // 文件夹ID
 const FolderName = 'scoutify'; // 文件夹名称
-const userEmails = ['admin@kjchmc.cn', 'akahn@beachwoodstudents.org']; // 需要添加编辑权限的用户邮箱, 可以是多个, 用逗号分隔, 例如：['user1@xxx.com', 'user2@xxx.com']
+const userEmails = ['admin@kjchmc.cn']; // 需要添加编辑权限的用户邮箱, 可以是多个, 用逗号分隔, 例如：['user1@xxx.com', 'user2@xxx.com'], 'akahn@beachwoodstudents.org'
 
 
 // 识别上传文件的MIME类型
@@ -159,8 +159,8 @@ async function uploadFileAndSetPermissions(filePath, originalName, folderName) {
 
         return file.data;
     } catch (error) {
-        console.error('上传文件出错:', error);
-        throw new Error('文件上传失败');
+        console.error('An error when upload the image(s):', error);
+        throw new Error('Upload image(s) failed');
     }
 }
 
@@ -188,7 +188,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
     try {
         const driveResponse = await uploadFileAndSetPermissions(file.path, file.originalname, folderName);
-        fs.unlinkSync(file.path); // 删除上传的临时文件
+        fs.unlinkSync(file.path); // Delete the temporary storge file when upload complete
         res.send({ fileId: driveResponse.id, webViewLink: driveResponse.webViewLink });
     } catch (error) {
         console.error('Error uploading file to Google Drive:', error);
@@ -198,37 +198,27 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
 
 
-// 新增路由来提供主页
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Add new router become the index page
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'index.html'));
+// });
 
-// new file Form
-app.get('/form.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'form.html'));
-});
-
-// new upload
-app.get('/upload-img.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'upload-img.html'));
-});
-
-// 列出文件的路由
+// List files API router with JSON response
 app.get('/list-files', async (req, res) => {
     try {
         const files = await listFiles(auth);
-        res.json(files); // 发送JSON响应至客户端
+        res.json(files); // Return the file list as JSON format
     } catch (err) {
-        console.error('获取文件列表时出错:', err);
-        res.status(500).send('获取文件列表失败');
+        console.error('The API returned an error during get the files list:', err);
+        res.status(500).send('Error fetching file list');
     }
 });
 
 
-// 列出文件的路由
+// Create a new router for show the list page(Front-end)
 app.get('/list.html', async (req, res) => {
     const files = await listFiles(auth);
-    // console.log(files); // 在控制台打印文件列表
+    // console.log(files); // Print the file list in console, for debug
     res.sendFile(path.join(__dirname, 'list.html'));
 });
 
@@ -248,26 +238,6 @@ async function listFiles(auth) {
     }
 }
 
-app.post('/upload', upload.single('file'), async (req, res) => {
-    const file = req.file;
-    if (!file) {
-        return res.status(400).send('No file uploaded');
-    }
-
-    let folderName;
-    switch (req.query.type) {
-        // ... 您原有的 case 语句
-    }
-
-    try {
-        const driveResponse = await uploadFileAndSetPermissions(file.path, file.originalname, folderName);
-        fs.unlinkSync(file.path); // 删除上传的临时文件
-        res.send({ fileId: driveResponse.id, webViewLink: driveResponse.webViewLink });
-    } catch (error) {
-        console.error('Error uploading file to Google Drive:', error);
-        res.status(500).send('Error uploading file to Google Drive');
-    }
-});
 
 // 删除文件的路由
 app.get('/delete', async (req, res) => {
