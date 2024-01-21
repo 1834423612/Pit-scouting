@@ -15,12 +15,12 @@
           placeholder="Please input"></el-input>
       </el-radio-group>
 
-      <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" class="vertical-layout"
-        change="handleCheckboxChange(x, $event)">
+      <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" @change="handleCheckboxChange(x, $event)"
+        class="vertical-layout">
         <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
         <el-checkbox label="other"></el-checkbox>
-        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
-          placeholder="Please input"></el-input>
+        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
+        <el-input v-else-if="x.type === 'number'" v-model="x.value" required></el-input>
       </el-checkbox-group>
 
       <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
@@ -151,6 +151,27 @@ export default {
     };
   },
 
+  created() {
+    this.restoreFormData();
+  },
+
+  watch: {
+    form: {
+      handler(newForm) {
+        newForm.forEach(question => {
+          if (question.type === 'checkbox') {
+            localStorage.setItem(question.question, JSON.stringify(question.value));
+          } else {
+            localStorage.setItem(question.question, question.value);
+          }
+
+          localStorage.setItem(question.question + '-otherValue', question.otherValue);
+        });
+      },
+      deep: true
+    }
+  },
+
   methods: {
     handleRadioChange(question, value) {
       question.showOtherInput = (value === 'other');
@@ -158,40 +179,6 @@ export default {
     handleCheckboxChange(question, values) {
       question.showOtherInput = values.includes('other');
     },
-
-    created() {
-      this.form.forEach(question => {
-        const savedValue = localStorage.getItem(question.question);
-        if (savedValue) {
-          question.otherValue = savedValue;
-          if (question.type === 'radio' && savedValue !== '') {
-            question.value = 'other';
-            question.showOtherInput = true;
-          }
-          if (question.type === 'checkbox' && savedValue !== '') {
-            if (!question.value.includes('other')) {
-              question.value.push('other');
-            }
-            question.showOtherInput = true;
-          }
-        }
-      });
-    },
-
-    watch: {
-      // Watch for changes in the form and save the value of the text input
-      'form': {
-        handler(newForm, oldForm) {
-          newForm.forEach((question, index) => {
-            if (question.otherValue !== '' && oldForm[index].otherValue === '') {
-              localStorage.setItem(question.question, question.otherValue);
-            }
-          });
-        },
-        deep: true
-      }
-    },
-
     mounted() {
       // Check if the form has been saved before
       this.form.forEach(question => {
@@ -203,6 +190,38 @@ export default {
         }
       });
     },
+
+    restoreFormData() {
+      this.form.forEach(question => {
+        try {
+          // 对于普通值
+          const savedValue = localStorage.getItem(question.question);
+          if (savedValue && savedValue !== "null") {
+            question.value = savedValue;
+          }
+
+          // 对于 'otherValue'
+          const otherValue = localStorage.getItem(question.question + '-otherValue');
+          if (otherValue && otherValue !== "null") {
+            question.otherValue = otherValue;
+          }
+
+          // 对于 checkbox 类型，确保值是数组
+          if (question.type === 'checkbox' && savedValue) {
+            question.value = JSON.parse(savedValue);
+          }
+
+          // 更新 showOtherInput 状态
+          if ((question.type === 'radio' && question.value === 'other') ||
+            (question.type === 'checkbox' && question.value.includes('other'))) {
+            question.showOtherInput = true;
+          }
+        } catch (error) {
+          console.error('Error restoring form data:', error);
+        }
+      });
+    },
+
 
     submitForm() {
       this.$refs.form.validate(async (valid) => {
