@@ -182,6 +182,7 @@ export default {
     },
 
     watch: {
+      // Watch for changes in the form and save the value of the text input
       'form': {
         handler(newForm, oldForm) {
           newForm.forEach((question, index) => {
@@ -192,6 +193,18 @@ export default {
         },
         deep: true
       }
+    },
+
+    mounted() {
+      // Check if the form has been saved before
+      this.form.forEach(question => {
+        if (question.type === 'radio' && question.value === 'other') {
+          question.showOtherInput = true;
+        }
+        if (question.type === 'checkbox' && question.value.includes('other')) {
+          question.showOtherInput = true;
+        }
+      });
     },
 
     submitForm() {
