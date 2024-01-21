@@ -7,16 +7,20 @@
       <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
         title="Valid forms: _ , _._ , n/d , _ n/d" required></el-input>
 
-      <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" required class="vertical-layout">
+      <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" required class="vertical-layout"
+        @change="handleRadioChange(x, $event)">
         <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
         <el-radio label="other"></el-radio>
-        <el-input v-model="textarea" :rows="3" type="textarea" placeholder="Please input"></el-input>
+        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
+          placeholder="Please input"></el-input>
       </el-radio-group>
 
-      <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" class="vertical-layout">
+      <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" class="vertical-layout"
+        change="handleCheckboxChange(x, $event)">
         <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
         <el-checkbox label="other"></el-checkbox>
-        <el-input v-model="textarea" :rows="3" type="textarea" placeholder="Please input"></el-input>
+        <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
+          placeholder="Please input"></el-input>
       </el-checkbox-group>
 
       <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
@@ -67,6 +71,8 @@ export default {
             "Other: ",
           ],
           value: null,
+          showOtherInput: true,
+          otherValue: '' // Store the value of the text input
         },
         {
           question: "Type of wheels used",
@@ -78,18 +84,24 @@ export default {
             "Other: ",
           ],
           value: null,
+          showOtherInput: true,
+          otherValue: '' // Store the value of the text input
         },
         {
           question: "Intake Use:",
           type: "radio",
           options: ["Ground", "Station", "Other: "],
           value: null,
+          showOtherInput: true,
+          otherValue: '' // Store the value of the text input
         },
         {
           question: "Scoring Locations:",
           type: "checkbox",
           options: ["Amp", "Speaker", "Trap", "Balance"],
           value: null,
+          showOtherInput: true,
+          otherValue: '' // Store the value of the text input
         },
         { question: "Robot Weight", type: "number", value: null },
         {
@@ -118,6 +130,7 @@ export default {
             "Other: ",
           ],
           value: null,
+          showOtherInput: false,
         },
         { question: "Hours/Weeks of Practice", type: "text", value: null },
         { question: "Additional Comments", type: "textarea", value: null },
@@ -132,6 +145,7 @@ export default {
         fullRobot: [],
         driveTrain: []
       },
+      textarea: '',
       computed: {
         fileList() {
           return this.form.filter((item) => item.type === "file");
@@ -140,6 +154,12 @@ export default {
     };
   },
   methods: {
+    handleRadioChange(question, value) {
+      question.showOtherInput = (value === 'other');
+    },
+    handleCheckboxChange(question, values) {
+      question.showOtherInput = values.includes('other');
+    },
     submitForm() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
