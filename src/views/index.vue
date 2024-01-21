@@ -71,7 +71,7 @@ export default {
             "Other: ",
           ],
           value: null,
-          showOtherInput: true,
+          showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
         },
         {
@@ -84,7 +84,7 @@ export default {
             "Other: ",
           ],
           value: null,
-          showOtherInput: true,
+          showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
         },
         {
@@ -92,7 +92,7 @@ export default {
           type: "radio",
           options: ["Ground", "Station", "Other: "],
           value: null,
-          showOtherInput: true,
+          showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
         },
         {
@@ -100,7 +100,7 @@ export default {
           type: "checkbox",
           options: ["Amp", "Speaker", "Trap", "Balance"],
           value: null,
-          showOtherInput: true,
+          showOtherInput: false, // show the textarea when first load the page?
           otherValue: '' // Store the value of the text input
         },
         { question: "Robot Weight", type: "number", value: null },
@@ -130,7 +130,7 @@ export default {
             "Other: ",
           ],
           value: null,
-          showOtherInput: false,
+          showOtherInput: false, // show the textarea when first load the page?
         },
         { question: "Hours/Weeks of Practice", type: "text", value: null },
         { question: "Additional Comments", type: "textarea", value: null },
@@ -153,6 +153,7 @@ export default {
       },
     };
   },
+
   methods: {
     handleRadioChange(question, value) {
       question.showOtherInput = (value === 'other');
@@ -160,6 +161,39 @@ export default {
     handleCheckboxChange(question, values) {
       question.showOtherInput = values.includes('other');
     },
+
+    created() {
+      this.form.forEach(question => {
+        const savedValue = localStorage.getItem(question.question);
+        if (savedValue) {
+          question.otherValue = savedValue;
+          if (question.type === 'radio' && savedValue !== '') {
+            question.value = 'other';
+            question.showOtherInput = true;
+          }
+          if (question.type === 'checkbox' && savedValue !== '') {
+            if (!question.value.includes('other')) {
+              question.value.push('other');
+            }
+            question.showOtherInput = true;
+          }
+        }
+      });
+    },
+
+    watch: {
+      'form': {
+        handler(newForm) {
+          newForm.forEach(question => {
+            if (question.otherValue !== '') {
+              localStorage.setItem(question.question, question.otherValue);
+            }
+          });
+        },
+        deep: true
+      }
+    },
+
     submitForm() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
