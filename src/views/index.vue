@@ -164,11 +164,7 @@
 </template>
 
 <script>
-//import axios from "axios";
-import { ref, version as vueVersion } from 'vue'
-import { version as epVersion } from 'element-plus'
-import { ElementPlus } from '@element-plus/icons-vue'
-
+import axios from "axios";
 
 export default {
   data() {
