@@ -58,12 +58,14 @@
           pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
           title="Valid forms: _ , _._ , n/d , _ n/d"
           required
+          style="width:150px"
         ></el-input>
         <el-input
           v-else-if="x.type === 'integer'"
           v-model="x.value"
           required
           pattern="^\d+$"
+          style="width:100px"
         ></el-input>
         <el-radio-group
           v-else-if="x.type === 'radio'"
@@ -103,11 +105,6 @@
             v-model="x.otherValue"
             :rows="3"
             placeholder="Please input"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'number'"
-            v-model="x.value"
-            required
           ></el-input>
         </el-checkbox-group>
 
@@ -295,7 +292,7 @@ export default {
       // el-form
       formData: {
         event: "",
-        teamNumber: "",
+        teamNumber: null,
         typeOfDriveTrain: "",
         typeOfWheelsUsed: "",
         intakeUse: "",
