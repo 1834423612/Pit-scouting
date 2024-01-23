@@ -10,7 +10,8 @@
 
       <el-divider border-style="dashed" />
       <div class="form-header">
-        <el-button type="danger" @click="clearForm">Clear Form</el-button>
+        <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
+        
         <div class="saving-status">
           <el-icon v-if="!formModified" color="#337ecc" :size="20">
             <checked />
@@ -31,7 +32,7 @@
           <span v-else style="color: #529b2e">This form support auto-save</span>
         </div>
       </div>
-
+      <br>
       <el-form-item
         v-for="x of form"
         :key="x.question"
@@ -56,8 +57,15 @@
           pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
           title="Valid forms: _ , _._ , n/d , _ n/d"
           required
+          style="width:150px"
         ></el-input>
-
+        <el-input
+          v-else-if="x.type === 'integer'"
+          v-model="x.value"
+          required
+          pattern="^\d+$"
+          style="width:100px"
+        ></el-input>
         <el-radio-group
           v-else-if="x.type === 'radio'"
           v-model="x.value"
@@ -98,11 +106,6 @@
             v-model="x.otherValue"
             :rows="3"
             placeholder="Please input"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'number'"
-            v-model="x.value"
-            required
           ></el-input>
         </el-checkbox-group>
 
@@ -153,7 +156,7 @@
           </div>
         </el-upload>
       </el-form-item>
-      <el-button type="primary" @click="submitForm">Submit</el-button>
+      <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
     </el-form>
   </div>
 </template>
@@ -176,7 +179,7 @@ export default {
         },
         {
           question: "Team number",
-          type: "number",
+          type: "integer",
           required: true,
           value: null,
         },
@@ -290,7 +293,7 @@ export default {
       // el-form
       formData: {
         event: "",
-        teamNumber: "",
+        teamNumber: null,
         typeOfDriveTrain: "",
         typeOfWheelsUsed: "",
         intakeUse: "",
@@ -595,4 +598,11 @@ export default {
 
   margin-left: 2%;
 }
+.shadow {
+    box-shadow: 0 6px #3077b9;
+    transition: all .1s ease-in-out;
+}
+.shadow:hover { 
+  box-shadow: 0 6px #76a5e3;
+  transition: all .1s ease-in-out;}
 </style>
