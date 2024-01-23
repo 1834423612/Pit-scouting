@@ -7,7 +7,6 @@
       label-position="top"
     >
       <h3>Form</h3>
-      
 
       <el-divider border-style="dashed" />
       <div class="form-header">
@@ -69,7 +68,9 @@
           <el-radio v-for="option in x.options" :key="option" :label="option">{{
             option
           }}</el-radio>
-          <el-radio label="other"></el-radio>
+
+          <el-radio label="other" :value="x.otherValue"></el-radio>
+
           <el-input
             v-if="x.showOtherInput"
             v-model="x.otherValue"
@@ -333,7 +334,7 @@ export default {
   watch: {
     form: {
       handler(newForm) {
-        // 如果表单被修改过，启动保存逻辑
+        // If the form is modified, set the saving status to 'saving'
         if (!this.formModified) {
           this.formModified = true;
         }
@@ -440,7 +441,7 @@ export default {
             message: "Form has been cleared!",
           });
 
-          // 重置表单修改状态
+          // Reset the saving status
           this.formModified = false;
         })
         .catch(() => {
@@ -464,17 +465,29 @@ export default {
     },
 
     submitForm() {
+      console.log("Submitting form with fileIds:", this.fileIds);
       this.$refs.form.validate(async (valid) => {
         if (valid) {
+          // 在提交前打印fileIds的实际值
+          console.log("Submitting fileIds:", JSON.stringify(this.fileIds));
           console.log("Full Robot Image IDs:", this.fileIds.fullRobot);
           console.log("Drive Train Image IDs:", this.fileIds.driveTrain);
+          console.log("Other Value:", this.form[4].otherValue);
           try {
             let formData = new FormData();
             this.form.forEach((item) => {
-              formData.append(item.question, item.value);
+              // 检查是否是radio或checkbox类型且用户选择了'其他'
+              if (
+                (item.type === "radio" || item.type === "checkbox") &&
+                item.showOtherInput
+              ) {
+                formData.append(item.question, item.otherValue);
+              } else {
+                formData.append(item.question, item.value);
+              }
             });
 
-            // 处理图片文件ID
+            // Add file IDs to the form data
             formData.append(
               "fullRobotImageId",
               this.fileIds.fullRobot.join(",")
@@ -499,17 +512,20 @@ export default {
       });
     },
 
-    handleSuccess(response, file, fileList) {
+    handleSuccess(response, file) {
       console.log("Upload successful:", response);
       if (response && response.fileId) {
         const fileId = response.fileId;
 
-        // 根据上传类型将 fileId 添加到相应数组
-        if (fileList === this.fileList.fullRobot) {
+        // 判断上传类型并更新 fileIds
+        if (this.fileList.fullRobot.includes(file)) {
           this.fileIds.fullRobot.push(fileId);
-        } else if (fileList === this.fileList.driveTrain) {
+        } else if (this.fileList.driveTrain.includes(file)) {
           this.fileIds.driveTrain.push(fileId);
         }
+
+        // 打印更新后的 fileIds
+        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
         console.error("No fileId returned from the server");
       }
