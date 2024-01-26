@@ -46,7 +46,7 @@
           },
         ]"
       >
-        <img v-if="typeof(x.i)==='string'" src="x.i"></img>
+        <img v-if="typeof(x.i)==='string'" :src="x.i"></img>
         <el-input
           v-if="x.type === 'text'"
           v-model="x.value"
