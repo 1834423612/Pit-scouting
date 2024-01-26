@@ -525,9 +525,9 @@ export default {
       console.log("Upload successful:", response);
       if (response && response.fileId) {
         const fileId = response.fileId;
+        file.fileId = fileId; // Add fileId to the file object
         this.fileList.fullRobot.push(file); // Add file object to array
-        //this.fileIds.fullRobot = fileId; // Update fileIds
-        this.fileIds.fullRobot.push(fileId); // Add fileId to array
+        this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
@@ -539,9 +539,9 @@ export default {
       console.log("Upload successful:", response);
       if (response && response.fileId) {
         const fileId = response.fileId;
+        file.fileId = fileId; // Add fileId to the file object
         this.fileList.driveTrain.push(file); // Add file object to array
-        //his.fileIds.driveTrain = fileId; // Update fileIds
-        this.fileIds.fullRobot.push(fileId); // Add fileId to array
+        this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
