@@ -549,7 +549,7 @@ export default {
       }
     },
 
-    handleRemove(file, fileListName) {
+    handleRemove(file, fileList) {
       console.log("File removed:", file);
 
       const fileId = file.fileId;
@@ -558,7 +558,11 @@ export default {
         return;
       }
 
-      // Remove the fileID and file object
+      // Get the file list name
+      const fileListName =
+        fileList === this.fileList.fullRobot ? "fullRobot" : "driveTrain";
+
+      // Update the file list and fileID
       this.fileIds[fileListName] = this.fileIds[fileListName].filter(
         (id) => id !== fileId
       );
