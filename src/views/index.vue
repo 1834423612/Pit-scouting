@@ -46,6 +46,7 @@
           },
         ]"
       >
+        <img v-if="typeof(x.i)==='string'" src="x.i"></img>
         <el-input
           v-if="x.type === 'text'"
           v-model="x.value"
@@ -186,6 +187,7 @@ export default {
         {
           question: "Type of drive train",
           type: "radio",
+          i:https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A
           options: [
             'Tank Drive ("skid steer", plates on both sides of wheels)',
             "West Coast Drive (wheels mounted off one side of tube)",
@@ -199,6 +201,7 @@ export default {
         {
           question: "Type of wheels used",
           type: "radio",
+          i:https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw
           options: [
             "Traction",
             "Mecanum (rollers at 45° angle)",
