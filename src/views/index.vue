@@ -10,8 +10,10 @@
 
       <el-divider border-style="dashed" />
       <div class="form-header">
-        <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
-        
+        <el-button type="primary" @click="clearForm" class="shadow"
+          >Clear Form</el-button
+        >
+
         <div class="saving-status">
           <el-icon v-if="!formModified" color="#337ecc" :size="20">
             <checked />
@@ -32,7 +34,7 @@
           <span v-else style="color: #529b2e">This form support auto-save</span>
         </div>
       </div>
-      <br>
+      <br />
       <el-form-item
         v-for="x of form"
         :key="x.question"
@@ -46,6 +48,7 @@
           },
         ]"
       >
+        <!-- <img v-if="typeof(x.i)==='string'" :src="x.i"></img> -->
         <el-input
           v-if="x.type === 'text'"
           v-model="x.value"
@@ -57,14 +60,14 @@
           pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
           title="Valid forms: _ , _._ , n/d , _ n/d"
           required
-          style="width:150px"
+          style="width: 150px"
         ></el-input>
         <el-input
           v-else-if="x.type === 'integer'"
           v-model="x.value"
           required
           pattern="^\d+$"
-          style="width:100px"
+          style="width: 100px"
         ></el-input>
         <el-radio-group
           v-else-if="x.type === 'radio'"
@@ -124,7 +127,7 @@
           class="upload-demo"
           drag
           action="http://localhost:3000/upload?type=full_robot"
-          :on-success="handleSuccess"
+          :on-success="handleSuccess0"
           :on-remove="handleRemove"
           :file-list="fileList.fullRobot"
           list-type="picture"
@@ -143,7 +146,7 @@
           class="upload-demo"
           drag
           action="http://localhost:3000/upload?type=drive_train"
-          :on-success="handleSuccess"
+          :on-success="handleSuccess1"
           :on-remove="handleRemove"
           :file-list="fileList.driveTrain"
           list-type="picture"
@@ -156,7 +159,9 @@
           </div>
         </el-upload>
       </el-form-item>
-      <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+      <el-button type="primary" @click="submitForm" class="shadow"
+        >Submit</el-button
+      >
     </el-form>
   </div>
 </template>
@@ -282,18 +287,20 @@ export default {
         fullRobot: [],
         driveTrain: [],
       },
-      // Requcored for uploading files ID
+
+      // Required for uploading files ID
       fileIds: {
         fullRobot: [],
         driveTrain: [],
       },
+
       textarea: "",
       saveTimeout: "",
 
       // el-form
       formData: {
         event: "",
-        teamNumber: null,
+        teamNumber: "",
         typeOfDriveTrain: "",
         typeOfWheelsUsed: "",
         intakeUse: "",
@@ -314,9 +321,9 @@ export default {
   },
 
   computed: {
-    fileList() {
-      return this.form.filter((item) => item.type === "file");
-    },
+    //fileList() {
+    //  return this.form.filter((item) => item.type === "file");
+    // },
 
     savingStatusText() {
       switch (this.savingStatus) {
@@ -365,7 +372,7 @@ export default {
           });
 
           this.savingStatus = "success";
-        }, 2000); // 2秒后才将状态设置为'success'
+        }, 2000); // Set the saving status to 'success' after 2s
       },
       deep: true,
     },
@@ -393,13 +400,13 @@ export default {
     restoreFormData() {
       this.form.forEach((question) => {
         try {
-          // 对于普通值
+          // From normal input type, make sure the value is not null
           const savedValue = localStorage.getItem(question.question);
           if (savedValue && savedValue !== "null") {
             question.value = savedValue;
           }
 
-          // 对于 'otherValue'
+          // From radio type, make sure the value is 'other'
           const otherValue = localStorage.getItem(
             question.question + "-otherValue"
           );
@@ -407,12 +414,12 @@ export default {
             question.otherValue = otherValue;
           }
 
-          // 对于 checkbox 类型，确保值是数组
+          // From checkbox type, make sure the value is an array
           if (question.type === "checkbox" && savedValue) {
             question.value = JSON.parse(savedValue);
           }
 
-          // 更新 showOtherInput 状态
+          // Update the showOtherInput status
           if (
             (question.type === "radio" && question.value === "other") ||
             (question.type === "checkbox" && question.value.includes("other"))
@@ -471,7 +478,7 @@ export default {
       console.log("Submitting form with fileIds:", this.fileIds);
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          // 在提交前打印fileIds的实际值
+          // Print the form data after validation
           console.log("Submitting fileIds:", JSON.stringify(this.fileIds));
           console.log("Full Robot Image IDs:", this.fileIds.fullRobot);
           console.log("Drive Train Image IDs:", this.fileIds.driveTrain);
@@ -479,7 +486,7 @@ export default {
           try {
             let formData = new FormData();
             this.form.forEach((item) => {
-              // 检查是否是radio或checkbox类型且用户选择了'其他'
+              // Check if it's a radio or checkbox type and the user selected 'other'
               if (
                 (item.type === "radio" || item.type === "checkbox") &&
                 item.showOtherInput
@@ -515,26 +522,35 @@ export default {
       });
     },
 
-    handleSuccess(response, file) {
+    handleSuccess0(response, file) {
       console.log("Upload successful:", response);
       if (response && response.fileId) {
         const fileId = response.fileId;
+        this.fileList.fullRobot.push(file); // Add file object to array
+        //this.fileIds.fullRobot = fileId; // Update fileIds
+        this.fileIds.fullRobot.push(fileId); // Add fileId to array
 
-        // 判断上传类型并更新 fileIds
-        if (this.fileList.fullRobot.includes(file)) {
-          this.fileIds.fullRobot.push(fileId);
-        } else if (this.fileList.driveTrain.includes(file)) {
-          this.fileIds.driveTrain.push(fileId);
-        }
-
-        // 打印更新后的 fileIds
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
         console.error("No fileId returned from the server");
       }
     },
 
-    handleRemove(file, fileList) {
+    handleSuccess1(response, file) {
+      console.log("Upload successful:", response);
+      if (response && response.fileId) {
+        const fileId = response.fileId;
+        this.fileList.driveTrain.push(file); // Add file object to array
+        //his.fileIds.driveTrain = fileId; // Update fileIds
+        this.fileIds.fullRobot.push(fileId); // Add fileId to array
+
+        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
+      } else {
+        console.error("No fileId returned from the server");
+      }
+    },
+
+    handleRemove(file, fileListName) {
       console.log("File removed:", file);
 
       const fileId = file.fileId;
@@ -543,20 +559,19 @@ export default {
         return;
       }
 
+      // Remove the fileID and file object
+      this.fileIds[fileListName] = this.fileIds[fileListName].filter(
+        (id) => id !== fileId
+      );
+      this.fileList[fileListName] = this.fileList[fileListName].filter(
+        (f) => f.fileId !== fileId
+      );
+
+      // Send delete request to the server
       axios
         .get(`http://localhost:3000/delete?file_ID=${fileId}`)
         .then((response) => {
           console.log("File deletion response:", response.data);
-          // Update fileIds array, remove the deleted fileId
-          if (fileList === this.fileList.fullRobot) {
-            this.fileIds.fullRobot = this.fileIds.fullRobot.filter(
-              (id) => id !== fileId
-            );
-          } else if (fileList === this.fileList.driveTrain) {
-            this.fileIds.driveTrain = this.fileIds.driveTrain.filter(
-              (id) => id !== fileId
-            );
-          }
         })
         .catch((error) => {
           console.error("Error deleting the file:", error);
@@ -599,10 +614,11 @@ export default {
   margin-left: 2%;
 }
 .shadow {
-    box-shadow: 0 6px #3077b9;
-    transition: all .1s ease-in-out;
+  box-shadow: 0 6px #3077b9;
+  transition: all 0.1s ease-in-out;
 }
-.shadow:hover { 
+.shadow:hover {
   box-shadow: 0 6px #76a5e3;
-  transition: all .1s ease-in-out;}
+  transition: all 0.1s ease-in-out;
+}
 </style>
