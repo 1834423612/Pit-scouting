@@ -215,9 +215,9 @@ export default {
         },
         {
           question: "Intake Use:",
-          type: "radio",
+          type: "checkbox",
           options: ["Ground", "Station"],
-          value: null,
+          value: [], // should be an array if it's a checkbox
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: "", // Store the value of the text input
