@@ -2,11 +2,6 @@
 based on robot from last competition if form same season -->
 <template>
   <div class="app">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1" />
   <div class="form-container">
     <el-form
       :model="formData"
