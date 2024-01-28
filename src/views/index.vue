@@ -1,3 +1,4 @@
+//to-do: serverside event input, team# as select, save bar accuracy, pre-fill based on robot from last competition if form same season
 <template>
   <div class="form-container">
     <el-form
@@ -34,7 +35,7 @@
           <span v-else style="color: #529b2e">This form support auto-save</span>
         </div>
       </div>
-      <br />
+      <br/>
       <el-form-item
         v-for="x of form"
         :key="x.question"
@@ -620,12 +621,23 @@ export default {
 
   margin-left: 2%;
 }
-.shadow {
+
+.shadow  {
+  background-color:dodgerblue !important;
   box-shadow: 0 6px #3077b9;
   transition: all 0.1s ease-in-out;
 }
+
 .shadow:hover {
+  background-color:#66b3ff !important;
   box-shadow: 0 6px #76a5e3;
   transition: all 0.1s ease-in-out;
 }
+
+.shadow:active  {
+  background-color: #0066cc !important;
+  box-shadow: 0 6px #1f4e7a;
+  transition: all 0.1s ease-in-out;
+}
+
 </style>
