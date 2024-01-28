@@ -48,6 +48,7 @@
           },
         ]"
       >
+        <img v-if="typeof(x.i)==='string'" :src="x.i" alt= "Error" />
         <el-input
           v-if="x.type === 'text'"
           v-model="x.value"
@@ -188,6 +189,7 @@ export default {
           value: null,
         },
         {
+          i: "stuff",
           question: "Type of drive train",
           type: "radio",
           options: [
@@ -201,6 +203,7 @@ export default {
           otherValue: "", // Store the value of the text input
         },
         {
+          i:"stuff",
           question: "Type of wheels used",
           type: "radio",
           options: [
