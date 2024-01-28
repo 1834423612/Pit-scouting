@@ -171,7 +171,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error'
+      savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
 
       form: [
