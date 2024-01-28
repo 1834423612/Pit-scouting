@@ -1,5 +1,12 @@
-//to-do: serverside event input, team# as select, save bar accuracy, pre-fill based on robot from last competition if form same season
+<!-- //to-do: serverside event input, team# as select, save bar accuracy, pre-fill
+based on robot from last competition if form same season -->
 <template>
+  <div class="app">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1" />
   <div class="form-container">
     <el-form
       :model="formData"
@@ -35,94 +42,111 @@
           <span v-else style="color: #529b2e">This form support auto-save</span>
         </div>
       </div>
-      <br/>
-      <el-form-item
-        v-for="x of form"
-        :key="x.question"
-        :label="x.required ? `${x.question}` : x.question"
-        :required="x.required"
-        :rules="[
-          {
-            required: x.required,
-            message: 'This field is required',
-            trigger: 'blur',
-          },
-        ]"
-      >
-        <img v-if="typeof(x.i)==='string'" :src="x.i" alt="Error" width="100%"/>
-        <el-input
-          v-if="x.type === 'text'"
-          v-model="x.value"
-          required
-        ></el-input>
-        <el-input
-          v-else-if="x.type === 'number'"
-          v-model="x.value"
-          pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-          title="Valid forms: _ , _._ , n/d , _ n/d"
-          required
-          style="width: 150px"
-        ></el-input>
-        <el-input
-          v-else-if="x.type === 'integer'"
-          v-model="x.value"
-          required
-          pattern="^\d+$"
-          style="width: 100px"
-        ></el-input>
-        <el-radio-group
-          v-else-if="x.type === 'radio'"
-          v-model="x.value"
-          required
-          class="vertical-layout"
-          @change="handleRadioChange(x, $event)"
+      <br />
+
+      <div class="question-continer">
+        <el-form-item
+          v-for="x of form"
+          :key="x.question"
+          :label="x.required ? `${x.question}` : x.question"
+          :required="x.required"
+          :rules="[
+            {
+              required: x.required,
+              message: 'This field is required',
+              trigger: 'blur',
+            },
+          ]"
         >
-          <el-radio v-for="option in x.options" :key="option" :label="option">{{
-            option
-          }}</el-radio>
-
-          <el-radio label="other" :value="x.otherValue"></el-radio>
-
-          <el-input
-            v-if="x.showOtherInput"
-            v-model="x.otherValue"
-            :rows="3"
-            type="textarea"
-            placeholder="Please input"
-          ></el-input>
-        </el-radio-group>
-
-        <el-checkbox-group
-          v-else-if="x.type === 'checkbox'"
-          v-model="x.value"
-          @change="handleCheckboxChange(x, $event)"
-          class="vertical-layout"
-        >
-          <el-checkbox
-            v-for="option in x.options"
-            :key="option"
-            :label="option"
-            >{{ option }}</el-checkbox
+          <el-collapse
+            class="collapse"
+            v-if="typeof x.i === 'string'"
+            v-model="activeName"
+            accordion
           >
-          <el-checkbox label="other"></el-checkbox>
+            <el-collapse-item title="Consistency" name="1">
+              <div>
+                <img :src="x.i" alt="Error" :width="x.w" />
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+
           <el-input
-            v-if="x.showOtherInput"
-            v-model="x.otherValue"
-            :rows="3"
-            placeholder="Please input"
+            v-if="x.type === 'text'"
+            v-model="x.value"
+            required
           ></el-input>
-        </el-checkbox-group>
+          <el-input
+            v-else-if="x.type === 'number'"
+            v-model="x.value"
+            pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
+            title="Valid forms: _ , _._ , n/d , _ n/d"
+            required
+            style="width: 150px"
+          ></el-input>
+          <el-input
+            v-else-if="x.type === 'integer'"
+            v-model="x.value"
+            required
+            pattern="^\d+$"
+            style="width: 100px"
+          ></el-input>
+          <el-radio-group
+            v-else-if="x.type === 'radio'"
+            v-model="x.value"
+            required
+            class="vertical-layout"
+            @change="handleRadioChange(x, $event)"
+          >
+            <el-radio
+              v-for="option in x.options"
+              :key="option"
+              :label="option"
+              >{{ option }}</el-radio
+            >
 
-        <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
-        <el-input
-          v-else-if="x.type === 'textarea'"
-          type="textarea"
-          v-model="x.value"
-          required
-        ></el-input>
-      </el-form-item>
-      <!-- ...... -->
+            <el-radio label="other" :value="x.otherValue"></el-radio>
 
+            <el-input
+              v-if="x.showOtherInput"
+              v-model="x.otherValue"
+              :rows="3"
+              type="textarea"
+              placeholder="Please input"
+            ></el-input>
+          </el-radio-group>
+
+          <el-checkbox-group
+            v-else-if="x.type === 'checkbox'"
+            v-model="x.value"
+            @change="handleCheckboxChange(x, $event)"
+            class="vertical-layout"
+          >
+            <el-checkbox
+              v-for="option in x.options"
+              :key="option"
+              :label="option"
+              >{{ option }}</el-checkbox
+            >
+            <el-checkbox label="other"></el-checkbox>
+            <el-input
+              v-if="x.showOtherInput"
+              v-model="x.otherValue"
+              :rows="3"
+              placeholder="Please input"
+            ></el-input>
+          </el-checkbox-group>
+
+          <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
+          <el-input
+            v-else-if="x.type === 'textarea'"
+            type="textarea"
+            v-model="x.value"
+            required
+          ></el-input>
+        </el-form-item>
+        <!-- ...... -->
+      </div>
       <el-form-item label="Picture - Full Robot">
         <el-upload
           class="upload-demo"
@@ -165,11 +189,11 @@
       >
     </el-form>
   </div>
+  </div>
 </template>
 
 <script>
 //import axios from "axios";
-
 
 export default {
   data() {
@@ -192,6 +216,7 @@ export default {
         },
         {
           i: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
+          w: "50%",
           question: "Type of drive train",
           type: "radio",
           options: [
@@ -205,7 +230,8 @@ export default {
           otherValue: "", // Store the value of the text input
         },
         {
-          i:"https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
+          i: "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
+          w: "100%",
           question: "Type of wheels used",
           type: "radio",
           options: [
@@ -597,6 +623,7 @@ export default {
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
   background-color: #c6e2ff;
+  width: 100%;
 }
 
 .form-header {
@@ -622,22 +649,79 @@ export default {
   margin-left: 2%;
 }
 
-.shadow  {
-  background-color:dodgerblue !important;
+.question-continer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  flex: 1;
+  line-height: 32px;
+  position: relative;
+  font-size: var(--font-size);
+  min-width: 0;
+  flex-direction: column;
+  align-content: flex-start;
+  /* align-items: flex-start; */
+  /* Auto detect the width of the container */
+  width: -webkit-fill-available;
+}
+
+.collapse {
+  margin-left: 2%;
+  width: -webkit-fill-available;
+  background-color: #c6e2ff;
+}
+/* Style for <details> when it is not open */
+el-collapse-item {
+  width: 100%;
+}
+
+el-collapse-item {
+  background-color: #8192a4;
+}
+.shadow {
+  background-color: dodgerblue !important;
   box-shadow: 0 6px #3077b9;
   transition: all 0.1s ease-in-out;
 }
 
 .shadow:hover {
-  background-color:#66b3ff !important;
+  background-color: #66b3ff !important;
   box-shadow: 0 6px #76a5e3;
   transition: all 0.1s ease-in-out;
 }
 
-.shadow:active  {
+.shadow:active {
   background-color: #0066cc !important;
   box-shadow: 0 6px #1f4e7a;
   transition: all 0.1s ease-in-out;
 }
 
+/* Auto detect User's screen size */
+
+/* Lower than 960px */
+/* Phone size */
+@media screen and (max-width: 960px) {
+  #app {
+    max-width: 350px;
+    padding: 0rem;
+  }
+
+  .form-container {
+    background: #000;
+    padding: 10px 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
+    background-color: #c6e2ff;
+    /* width: 100%; */
+}
+}
+
+/* Higher than 960px */
+/* Laptop/PC size */
+@media screen and (min-width: 960px) {
+
+  .question-continer {
+    max-width: 650px;
+  }
+}
 </style>
