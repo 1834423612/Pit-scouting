@@ -48,7 +48,7 @@
           },
         ]"
       >
-        <img v-if="typeof(x.i)==='string'" :src="x.i" alt= "Error" />
+        <img v-if="typeof(x.i)==='string'" :src="x.i" alt="Error" width="100%"/>
         <el-input
           v-if="x.type === 'text'"
           v-model="x.value"
@@ -167,7 +167,8 @@
 </template>
 
 <script>
-import axios from "axios";
+//import axios from "axios";
+
 
 export default {
   data() {
@@ -189,7 +190,7 @@ export default {
           value: null,
         },
         {
-          i: "stuff",
+          i: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
           question: "Type of drive train",
           type: "radio",
           options: [
@@ -203,7 +204,7 @@ export default {
           otherValue: "", // Store the value of the text input
         },
         {
-          i:"stuff",
+          i:"https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
           question: "Type of wheels used",
           type: "radio",
           options: [
