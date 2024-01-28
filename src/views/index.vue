@@ -1,4 +1,4 @@
-<!-- //to-do: serverside event input, team# as select, save bar accuracy, pre-fill
+<!-- //to-do: serverside event input, team# as select, pre-fill from same bot number from last comp during this season,required attribute
 based on robot from last competition if form same season -->
 <template>
   <div class="app">
@@ -85,7 +85,21 @@ based on robot from last competition if form same season -->
             required
             pattern="^\d+$"
             style="width: 100px"
-          ></el-input>
+          >
+          </el-input>
+          <el-autocomplete
+            v-else-if="x.type === 'integerautocomplete'"
+            v-model="x.value"
+            required
+            pattern="^\d+$"
+            style="width: 100px"
+            :fetch-suggestions="querySearch"
+            :trigger-on-focus="false"
+            clearable
+            class="inline-input w-50"
+            placeholder="Please Input"
+            @select="handleSelect"
+          />
           <el-radio-group
             v-else-if="x.type === 'radio'"
             v-model="x.value"
@@ -132,7 +146,15 @@ based on robot from last competition if form same season -->
             ></el-input>
           </el-checkbox-group>
 
-          <!-- wrong:<el-input v-else-if="x.type==='select'" v-model="x.value" required></el-input>-->
+          <!--doesn't work:<el-select v-else-if="x.type==='select'" v-model="x.value" required>
+            <el-option
+              v-for="option in x.options"
+              :key="option"
+              :label="option"
+            >{{ option }}
+            </el-option>
+          </el-select>--->
+          
           <el-input
             v-else-if="x.type === 'textarea'"
             type="textarea"
@@ -205,7 +227,8 @@ export default {
         },
         {
           question: "Team number",
-          type: "integer",
+          type: "integerautocomplete",
+          options: [ "option0" , "option1" ],
           required: true,
           value: null,
         },
@@ -378,26 +401,19 @@ export default {
         }
 
         this.savingStatus = "saving";
-
-        this.saveTimeout = setTimeout(() => {
-          newForm.forEach((question) => {
-            if (question.type === "checkbox") {
-              localStorage.setItem(
-                question.question,
-                JSON.stringify(question.value)
-              );
-            } else {
-              localStorage.setItem(question.question, question.value);
-            }
-
+        newForm.forEach((question) => {
+          if (question.type === "checkbox") {
             localStorage.setItem(
-              question.question + "-otherValue",
-              question.otherValue
+              question.question,
+              JSON.stringify(question.value)
             );
-          });
-
-          this.savingStatus = "success";
-        }, 2000); // Set the saving status to 'success' after 2s
+          } else {localStorage.setItem(question.question, question.value);}
+          localStorage.setItem(
+            question.question + "-otherValue",
+            question.otherValue
+          );
+        });
+        this.saveTimeout = setTimeout(this.savingStatus = "success", 2000); // Set the saving status to 'success' after 2s
       },
       deep: true,
     },
