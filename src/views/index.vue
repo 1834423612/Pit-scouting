@@ -216,7 +216,7 @@ export default {
       teams = [
         { value: '695' },
         { value: '2000' },
-      ];
+      ],
       
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
