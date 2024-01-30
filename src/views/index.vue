@@ -59,7 +59,7 @@ based on robot from last competition if form same season -->
             v-model="activeName"
             accordion
           >
-            <el-collapse-item title="Consistency" name="1">
+            <el-collapse-item title="Image Drop-down" name="1">
               <div>
                 <img :src="x.i" alt="Error" :width="x.w" />
               </div>
