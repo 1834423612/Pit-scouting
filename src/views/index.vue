@@ -213,7 +213,7 @@ based on robot from last competition if form same season -->
 export default {
   data() {
     return {
-      teams = [
+      teams : [
         { value: '695' },
         { value: '2000' },
       ],
@@ -429,7 +429,7 @@ export default {
     handleCheckboxChange(question, values) {
       question.showOtherInput = values.includes("other");
     },
-    const handleSelect = (item) => {},
+    handleSelect : (item) => {},
     querySearch(queryString, cb) {
       const filter = (team) => team.value.indexOf(queryString) === 0;
       const results = queryString ? this.teams.filter(filter) : this.teams;
