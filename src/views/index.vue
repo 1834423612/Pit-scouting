@@ -96,8 +96,7 @@ based on robot from last competition if form same season -->
             :fetch-suggestions="querySearch"
             :trigger-on-focus="false"
             clearable
-            class="inline-input w-50"
-            placeholder="Please Input"
+            placeholder="Team #"
             @select="handleSelect"
           />
           <el-radio-group
@@ -153,7 +152,7 @@ based on robot from last competition if form same season -->
               :label="option"
             >{{ option }}
             </el-option>
-          </el-select>--->
+          </el-select>-->
           
           <el-input
             v-else-if="x.type === 'textarea'"
@@ -162,7 +161,6 @@ based on robot from last competition if form same season -->
             required
           ></el-input>
         </el-form-item>
-        <!-- ...... -->
       </div>
       <el-form-item label="Picture - Full Robot">
         <el-upload
@@ -215,6 +213,11 @@ based on robot from last competition if form same season -->
 export default {
   data() {
     return {
+      teams = [
+        { value: '695' },
+        { value: '2000' },
+      ];
+      
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
 
@@ -425,6 +428,12 @@ export default {
     },
     handleCheckboxChange(question, values) {
       question.showOtherInput = values.includes("other");
+    },
+    const handleSelect = (item) => {},
+    querySearch(queryString, cb) {
+      const filter = (team) => team.value.indexOf(queryString) === 0;
+      const results = queryString ? this.teams.filter(filter) : this.teams;
+      cb(results);
     },
     mounted() {
       // Check if the form has been saved before
