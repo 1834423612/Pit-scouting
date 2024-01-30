@@ -208,7 +208,7 @@ based on robot from last competition if form same season -->
 </template>
 
 <script>
-//import axios from "axios";
+import axios from "axios";
 
 export default {
   data() {
