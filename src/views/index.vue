@@ -277,7 +277,7 @@ export default {
         {
           question: "Scoring Locations:",
           type: "checkbox",
-          options: ["Amp", "Speaker", "Trap", "Hang"],
+          options: ["Amp", "Speaker", "Trap"],
           value: [], // should be an array if it's a checkbox
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
