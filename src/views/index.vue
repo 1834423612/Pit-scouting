@@ -245,12 +245,12 @@ export default {
 
       // el-form
       formData: {
-        event: "",
+        event: _event,
         teamNumber: "",
         typeOfDriveTrain: "",
         typeOfWheelsUsed: "",
-        intakeUse: "",
-        scoringLocations: "",
+        intakeUse: [],
+        scoringLocations: [],
         robotWeight: "",
         robotDimensionLength: "",
         robotDimensionWidth: "",
