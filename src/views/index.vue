@@ -343,7 +343,7 @@ export default {
     },
 
     restoreFormData() {
-      Object.values(this.formData).forEach(input,index => {
+      Object.values(this.formData).forEach( (input,index) => {
         const formtype = this.form.index.type;
         const formotherValue = this.form.index.otherValue;
         try {
