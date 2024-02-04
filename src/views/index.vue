@@ -353,6 +353,7 @@ export default {
         console.log(this.form[index]);
         const formtype = this.form[index].type;
         const formotherValue = this.form[index].otherValue;
+        const formshowotherinput = this.form[index].showOtherInputotherValue;
         try {
           // From normal input type, make sure the value is not null
           const savedValue = localStorage.getItem(input);
@@ -378,7 +379,7 @@ export default {
             (formtype === "radio" && input === "other") ||
             (formtype === "checkbox" && input.includes("other"))
           ) {
-            input.showOtherInput = true;
+            formshowotherinput = true;
           }
         } catch (error) {
           console.error("Error restoring form data:", error);
