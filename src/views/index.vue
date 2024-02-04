@@ -44,7 +44,6 @@ based on robot from last competition if form same season -->
           v-for="x of form"
           :key="x.question"
           :label="x.question"
-          :required="x.required"
           :rules="[
             {
               required: x.required,
@@ -157,7 +156,6 @@ based on robot from last competition if form same season -->
             v-else-if="x.type === 'textarea'"
             type="textarea"
             v-model="x.value"
-            required
           ></el-input>
         </el-form-item>
       </div>
@@ -229,7 +227,6 @@ export default {
         {
           question: "Team number",
           type: "autocomplete",
-          //options: [ "option0" , "option1" ],
           required: true,
           value: null,
         },
