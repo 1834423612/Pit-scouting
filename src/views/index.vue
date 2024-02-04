@@ -28,12 +28,8 @@ based on robot from last competition if form same season -->
         </div>
         <br />
 
-      <div class="question-continer">
-        <el-form-item
-          v-for="x of form"
-          :key="x.question"
-          :label="x.question"
-          :rules="[
+        <div class="question-continer">
+          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :rules="[
             {
               required: x.required,
               message: 'This field is required',
@@ -82,32 +78,21 @@ based on robot from last competition if form same season -->
             >{{ option }}
             </el-option>
           </el-select>-->
-          
-          <el-input
-            v-else-if="x.type === 'textarea'"
-            type="textarea"
-            v-model="x.value"
-          ></el-input>
+
+            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value"></el-input>
+          </el-form-item>
+        </div>
+        <el-form-item label="Picture - Full Robot">
+          <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=full_robot"
+            :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
+            <el-icon :size="50" color="#b3b3b3">
+              <upload />
+            </el-icon>
+            <div class="el-upload__text">
+              Drag files here or <em>click to upload</em>
+            </div>
+          </el-upload>
         </el-form-item>
-      </div>
-      <el-form-item label="Picture - Full Robot">
-        <el-upload
-          class="upload-demo"
-          drag
-          action="http://localhost:3000/upload?type=full_robot"
-          :on-success="handleSuccess0"
-          :on-remove="handleRemove"
-          :file-list="fileList.fullRobot"
-          list-type="picture"
-        >
-          <el-icon :size="50" color="#b3b3b3">
-            <upload />
-          </el-icon>
-          <div class="el-upload__text">
-            Drag files here or <em>click to upload</em>
-          </div>
-        </el-upload>
-      </el-form-item>
 
         <el-form-item label="Picture - Drive Train">
           <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=drive_train"
@@ -448,14 +433,14 @@ export default {
 
           // Add form data
           this.form.forEach((item) => {
-  if (item.type === 'checkbox' || (item.type === 'radio' && item.showOtherInput)) {
-    // 检查 item.value 是否为数组，如果不是，则将其作为单个元素的数组处理
-    const value = Array.isArray(item.value) ? item.value.join(', ') : item.value;
-    formData.append(item.question, item.otherValue || value);
-  } else {
-    formData.append(item.question, item.value);
-  }
-});
+            if (item.type === 'checkbox' || (item.type === 'radio' && item.showOtherInput)) {
+              // 检查 item.value 是否为数组，如果不是，则将其作为单个元素的数组处理
+              const value = Array.isArray(item.value) ? item.value.join(', ') : item.value;
+              formData.append(item.question, item.otherValue || value);
+            } else {
+              formData.append(item.question, item.value);
+            }
+          });
 
 
 
@@ -542,8 +527,9 @@ export default {
 
 <style scoped>
 .form-container {
-  margin-bottom: 10px;
+  margin: 10px 0px;
   padding: 15px 20px;
+  border-radius: 10px;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
