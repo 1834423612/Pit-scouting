@@ -43,7 +43,7 @@ based on robot from last competition if form same season -->
         <el-form-item
           v-for="x of form"
           :key="x.question"
-          :label="x.required ? `${x.question}` : x.question"
+          :label="x.question"
           :required="x.required"
           :rules="[
             {
@@ -67,7 +67,13 @@ based on robot from last competition if form same season -->
           </el-collapse>
 
           <el-input
-            v-if="x.type === 'text'"
+            v-if="x.type === 'hidden'"
+            type="hidden"
+            v-model="x.value"
+            required
+          ></el-input>
+          <el-input
+            v-else-if="x.type === 'text'"
             v-model="x.value"
             required
           ></el-input>
@@ -209,7 +215,7 @@ based on robot from last competition if form same season -->
 
 <script>
 import axios from "axios";
-
+const _event="d";
 export default {
   data() {
     return {
@@ -223,10 +229,10 @@ export default {
 
       form: [
         {
-          question: "Event",
-          type: "text",
+          question: "",
+          type: "hidden",
           required: true,
-          value: null,
+          value: _event,
         },
         {
           question: "Team number",
