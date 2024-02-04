@@ -415,7 +415,7 @@ export default {
 
     resetFormData() {
       Object.values(this.formData).forEach( (input,index) => {
-        if (input.type === "checkbox") {
+        if (formtype === "checkbox") {
           input = [];
         } else {
           input = null;
