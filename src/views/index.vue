@@ -641,8 +641,8 @@ export default {
 
 <style scoped>
 .form-container {
-  padding: 10px 20px;
-  border-radius: 15px;
+  margin-bottom: 10px;
+  padding: 15px 20px;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
