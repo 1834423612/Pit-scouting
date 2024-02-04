@@ -74,7 +74,7 @@ based on robot from last competition if form same season -->
           <el-input
             v-else-if="x.type === 'number'"
             v-model="x.value"
-            :pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
+            pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
             title="Valid forms: _ , _._ , n/d , _ n/d"
             required
             style="width: 150px"
@@ -83,7 +83,7 @@ based on robot from last competition if form same season -->
             v-else-if="x.type === 'integer'"
             v-model="x.value"
             required
-            :pattern="^\d+$"
+            pattern="^\d+$"
             style="width: 100px"
           >
           </el-input>
@@ -91,7 +91,7 @@ based on robot from last competition if form same season -->
             v-else-if="x.type === 'integerautocomplete'"
             v-model="x.value"
             required
-            :pattern="^\d+$"
+            pattern="^\d+$"
             style="width: 100px"
             :fetch-suggestions="querySearch"
             :trigger-on-focus="false"
