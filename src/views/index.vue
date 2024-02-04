@@ -70,34 +70,28 @@ based on robot from last competition if form same season -->
             v-if="x.type === 'hidden'"
             type="hidden"
             v-model="x.value"
-            required
           ></el-input>
           <el-input
             v-else-if="x.type === 'text'"
             v-model="x.value"
-            required
           ></el-input>
           <el-input
             v-else-if="x.type === 'number'"
             v-model="x.value"
             pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
             title="Valid forms: _ , _._ , n/d , _ n/d"
-            required
             style="width: 150px"
           ></el-input>
           <el-input
             v-else-if="x.type === 'integer'"
             v-model="x.value"
-            required
             pattern="^\d+$"
             style="width: 100px"
           >
           </el-input>
           <el-autocomplete
-            v-else-if="x.type === 'integerautocomplete'"
+            v-else-if="x.type === 'autocomplete'"
             v-model="x.value"
-            required
-            pattern="^\d+$"
             style="width: 100px"
             :fetch-suggestions="querySearch"
             :trigger-on-focus="false"
@@ -108,7 +102,6 @@ based on robot from last competition if form same season -->
           <el-radio-group
             v-else-if="x.type === 'radio'"
             v-model="x.value"
-            required
             class="vertical-layout"
             @change="handleRadioChange(x, $event)"
           >
@@ -215,7 +208,8 @@ based on robot from last competition if form same season -->
 
 <script>
 import axios from "axios";
-const _event="d";
+//import the right stuff below
+const _event="test";
 const teams=[695,2000];
 export default {
   data() {
@@ -234,8 +228,8 @@ export default {
         },
         {
           question: "Team number",
-          type: "integerautocomplete",
-          options: [ "option0" , "option1" ],
+          type: "autocomplete",
+          //options: [ "option0" , "option1" ],
           required: true,
           value: null,
         },
