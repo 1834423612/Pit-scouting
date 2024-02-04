@@ -344,9 +344,9 @@ export default {
 
     restoreFormData() {
       Object.values(this.formData).forEach( (input,index) => {
-        console.log(this.form.index)
-        const formtype = this.form.index.type;
-        const formotherValue = this.form.index.otherValue;
+        console.log(this.form[index]);
+        const formtype = this.form[index].type;
+        const formotherValue = this.form[index].otherValue;
         try {
           // From normal input type, make sure the value is not null
           const savedValue = localStorage.getItem(input);
@@ -411,14 +411,14 @@ export default {
     },
 
     resetFormData() {
-      this.form.forEach((question, index) => {
-        if (question.type === "checkbox") {
-          question.value = [];
+      Object.values(this.formData).forEach( (input,index) => {
+        if (input.type === "checkbox") {
+          input = [];
         } else {
-          question.value = null;
+          input = null;
         }
-        question.showOtherInput = false;
-        question.otherValue = "";
+        input.showOtherInput = false;
+        input.otherValue = "";
       });
     },
 
