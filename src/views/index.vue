@@ -299,16 +299,19 @@ export default {
         }
 
         this.savingStatus = "saving";
-        newForm.forEach((question) => {
-          if (question.type === "checkbox") {
+        Object.values(this.formData).forEach( (input, index) => {
+          const formtype = this.form.index.type;
+          const formquestion = this.form.index.question;
+          const formotherValue = this.form.index.otherValue;
+          if (formtype === "checkbox") {
             localStorage.setItem(
-              question.question,
-              JSON.stringify(question.value)
+              formquestion,
+              JSON.stringify(input)
             );
-          } else { localStorage.setItem(question.question, question.value); }
+          } else { localStorage.setItem(formquestion, input); }
           localStorage.setItem(
-            question.question + "-otherValue",
-            question.otherValue
+            formquestion + "-otherValue",
+            formotherValue
           );
         });
         this.saveTimeout = setTimeout(this.savingStatus = "success", 2000); // Set the saving status to 'success' after 2s
@@ -344,7 +347,6 @@ export default {
 
     restoreFormData() {
       Object.values(this.formData).forEach( (input,index) => {
-        console.log(this.form.index)
         const formtype = this.form.index.type;
         const formotherValue = this.form.index.otherValue;
         try {
