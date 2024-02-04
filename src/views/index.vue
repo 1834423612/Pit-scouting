@@ -2,149 +2,75 @@
 based on robot from last competition if form same season -->
 <template>
   <div class="app">
-  <div class="form-container">
-    <el-form
-      :model="formData"
-      ref="form"
-      label-width="120px"
-      label-position="top"
-    >
-      <h3>Form</h3>
+    <div class="form-container">
+      <el-form :model="formData" ref="form" label-width="120px" label-position="top">
+        <h3>Form</h3>
 
-      <el-divider border-style="dashed" />
-      <div class="form-header">
-        <el-button type="primary" @click="clearForm" class="shadow"
-          >Clear Form</el-button
-        >
+        <el-divider border-style="dashed" />
+        <div class="form-header">
+          <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
 
-        <div class="saving-status">
-          <el-icon v-if="!formModified" color="#337ecc" :size="20">
-            <checked />
-          </el-icon>
-          <el-icon v-else-if="savingStatus === 'saving'" class="is-loading">
-            <loading />
-          </el-icon>
-          <el-icon
-            v-else-if="savingStatus === 'success'"
-            color="#67C23A"
-            :size="20"
-          >
-            <check />
-          </el-icon>
-          <span v-if="formModified" style="color: #909399">{{
-            savingStatusText
-          }}</span>
-          <span v-else style="color: #529b2e">This form support auto-save</span>
+          <div class="saving-status">
+            <el-icon v-if="!formModified" color="#337ecc" :size="20">
+              <checked />
+            </el-icon>
+            <el-icon v-else-if="savingStatus === 'saving'" class="is-loading">
+              <loading />
+            </el-icon>
+            <el-icon v-else-if="savingStatus === 'success'" color="#67C23A" :size="20">
+              <check />
+            </el-icon>
+            <span v-if="formModified" style="color: #909399">{{
+              savingStatusText
+            }}</span>
+            <span v-else style="color: #529b2e">This form support auto-save</span>
+          </div>
         </div>
-      </div>
-      <br />
+        <br />
 
-      <div class="question-continer">
-        <el-form-item
-          v-for="x of form"
-          :key="x.question"
-          :label="x.question"
-          :required="x.required"
-          :rules="[
+        <div class="question-continer">
+          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :required="x.required" :rules="[
             {
               required: x.required,
               message: 'This field is required',
               trigger: 'blur',
             },
-          ]"
-        >
-          <el-collapse
-            class="collapse"
-            v-if="typeof x.i === 'string'"
-            v-model="activeName"
-            accordion
-          >
-            <el-collapse-item title="Image Drop-down" name="1">
-              <div>
-                <img :src="x.i" alt="Error" :width="x.w" />
-              </div>
-            </el-collapse-item>
-          </el-collapse>
+          ]">
+            <el-collapse class="collapse" v-if="typeof x.i === 'string'" v-model="activeName" accordion>
+              <el-collapse-item title="Image Drop-down" name="1">
+                <div>
+                  <img :src="x.i" alt="Error" :width="x.w" />
+                </div>
+              </el-collapse-item>
+            </el-collapse>
 
-          <el-input
-            v-if="x.type === 'hidden'"
-            type="hidden"
-            v-model="x.value"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'text'"
-            v-model="x.value"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'number'"
-            v-model="x.value"
-            pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-            title="Valid forms: _ , _._ , n/d , _ n/d"
-            style="width: 150px"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'integer'"
-            v-model="x.value"
-            pattern="^\d+$"
-            style="width: 100px"
-          >
-          </el-input>
-          <el-autocomplete
-            v-else-if="x.type === 'autocomplete'"
-            v-model="x.value"
-            style="width: 100px"
-            :fetch-suggestions="querySearch"
-            :trigger-on-focus="false"
-            clearable
-            placeholder="Team #"
-            @select="handleSelect"
-          />
-          <el-radio-group
-            v-else-if="x.type === 'radio'"
-            v-model="x.value"
-            class="vertical-layout"
-            @change="handleRadioChange(x, $event)"
-          >
-            <el-radio
-              v-for="option in x.options"
-              :key="option"
-              :label="option"
-              >{{ option }}</el-radio
-            >
+            <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
+            <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
+            <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
+              title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
+            <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
+            </el-input>
+            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
+              :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
+              @select="handleSelect" />
+            <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
+              @change="handleRadioChange(x, $event)">
+              <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
 
-            <el-radio label="other" :value="x.otherValue"></el-radio>
+              <el-radio label="other" :value="x.otherValue"></el-radio>
 
-            <el-input
-              v-if="x.showOtherInput"
-              v-model="x.otherValue"
-              :rows="3"
-              type="textarea"
-              placeholder="Please input"
-            ></el-input>
-          </el-radio-group>
+              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
+                placeholder="Please input"></el-input>
+            </el-radio-group>
 
-          <el-checkbox-group
-            v-else-if="x.type === 'checkbox'"
-            v-model="x.value"
-            @change="handleCheckboxChange(x, $event)"
-            class="vertical-layout"
-          >
-            <el-checkbox
-              v-for="option in x.options"
-              :key="option"
-              :label="option"
-              >{{ option }}</el-checkbox
-            >
-            <el-checkbox label="other"></el-checkbox>
-            <el-input
-              v-if="x.showOtherInput"
-              v-model="x.otherValue"
-              :rows="3"
-              placeholder="Please input"
-            ></el-input>
-          </el-checkbox-group>
+            <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value"
+              @change="handleCheckboxChange(x, $event)" class="vertical-layout">
+              <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
+              <el-checkbox label="other"></el-checkbox>
+              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
+            </el-checkbox-group>
 
-          <!--doesn't work:<el-select v-else-if="x.type==='select'" v-model="x.value" required>
+            <!--doesn't work:<el-select v-else-if="x.type==='select'" v-model="x.value" required>
             <el-option
               v-for="option in x.options"
               :key="option"
@@ -152,70 +78,49 @@ based on robot from last competition if form same season -->
             >{{ option }}
             </el-option>
           </el-select>-->
-          
-          <el-input
-            v-else-if="x.type === 'textarea'"
-            type="textarea"
-            v-model="x.value"
-            required
-          ></el-input>
-        </el-form-item>
-      </div>
-      <el-form-item label="Picture - Full Robot">
-        <el-upload
-          class="upload-demo"
-          drag
-          action="http://localhost:3000/upload?type=full_robot"
-          :on-success="handleSuccess0"
-          :on-remove="handleRemove"
-          :file-list="fileList.fullRobot"
-          list-type="picture"
-        >
-          <el-icon :size="50" color="#b3b3b3">
-            <upload />
-          </el-icon>
-          <div class="el-upload__text">
-            Drag files here or <em>click to upload</em>
-          </div>
-        </el-upload>
-      </el-form-item>
 
-      <el-form-item label="Picture - Drive Train">
-        <el-upload
-          class="upload-demo"
-          drag
-          action="http://localhost:3000/upload?type=drive_train"
-          :on-success="handleSuccess1"
-          :on-remove="handleRemove"
-          :file-list="fileList.driveTrain"
-          list-type="picture"
-        >
-          <el-icon :size="50" color="#b3b3b3">
-            <upload />
-          </el-icon>
-          <div class="el-upload__text">
-            Drag files here or <em>click to upload</em>
-          </div>
-        </el-upload>
-      </el-form-item>
-      <el-button type="primary" @click="submitForm" class="shadow"
-        >Submit</el-button
-      >
-    </el-form>
-  </div>
+            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
+          </el-form-item>
+        </div>
+        <el-form-item label="Picture - Full Robot">
+          <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=full_robot"
+            :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
+            <el-icon :size="50" color="#b3b3b3">
+              <upload />
+            </el-icon>
+            <div class="el-upload__text">
+              Drag files here or <em>click to upload</em>
+            </div>
+          </el-upload>
+        </el-form-item>
+
+        <el-form-item label="Picture - Drive Train">
+          <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=drive_train"
+            :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
+            <el-icon :size="50" color="#b3b3b3">
+              <upload />
+            </el-icon>
+            <div class="el-upload__text">
+              Drag files here or <em>click to upload</em>
+            </div>
+          </el-upload>
+        </el-form-item>
+        <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 //import the right stuff below
-const _event="test";
-const teams=[695,2000];
+const _event = "test";
+const teams = [695, 2000];
 export default {
   data() {
     return {
       teams: teams.map(team => ({ value: team.toString() })),
-      
+
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
 
@@ -408,7 +313,7 @@ export default {
               question.question,
               JSON.stringify(question.value)
             );
-          } else {localStorage.setItem(question.question, question.value);}
+          } else { localStorage.setItem(question.question, question.value); }
           localStorage.setItem(
             question.question + "-otherValue",
             question.otherValue
@@ -427,7 +332,7 @@ export default {
     handleCheckboxChange(question, values) {
       question.showOtherInput = values.includes("other");
     },
-    handleSelect : (item) => {},
+    handleSelect: (item) => { },
     querySearch(queryString, cb) {
       const filter = (team) => team.value.indexOf(queryString) === 0;
       const results = queryString ? this.teams.filter(filter) : this.teams;
@@ -523,52 +428,40 @@ export default {
     },
 
     submitForm() {
-      console.log("Submitting form with fileIds:", this.fileIds);
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          // Print the form data after validation
-          console.log("Submitting fileIds:", JSON.stringify(this.fileIds));
-          console.log("Full Robot Image IDs:", this.fileIds.fullRobot);
-          console.log("Drive Train Image IDs:", this.fileIds.driveTrain);
-          console.log("Other Value:", this.form[4].otherValue);
+          let formData = new FormData();
+
+          // Add form data
+          this.form.forEach((item) => {
+  if (item.type === 'checkbox' || (item.type === 'radio' && item.showOtherInput)) {
+    // 检查 item.value 是否为数组，如果不是，则将其作为单个元素的数组处理
+    const value = Array.isArray(item.value) ? item.value.join(', ') : item.value;
+    formData.append(item.question, item.otherValue || value);
+  } else {
+    formData.append(item.question, item.value);
+  }
+});
+
+
+
           try {
-            let formData = new FormData();
-            this.form.forEach((item) => {
-              // Check if it's a radio or checkbox type and the user selected 'other'
-              if (
-                (item.type === "radio" || item.type === "checkbox") &&
-                item.showOtherInput
-              ) {
-                formData.append(item.question, item.otherValue);
-              } else {
-                formData.append(item.question, item.value);
+            const response = await axios.post('http://localhost:3000/submit-form', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
               }
             });
-
-            // Add file IDs to the form data
-            formData.append(
-              "fullRobotImageId",
-              this.fileIds.fullRobot.join(",")
-            );
-            formData.append(
-              "driveTrainImageId",
-              this.fileIds.driveTrain.join(",")
-            );
-
-            await axios.post("http://localhost:3000/submit-form", formData, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            });
-
-            this.$message.success("Form submitted successfully");
+            // this.$message.success('Form submitted successfully');
+            console.log('Form submitted successfully:', response.data);
           } catch (error) {
-            console.error("Error submitting form:", error);
-            this.$message.error("Error submitting form");
+            console.error('Error submitting form:', error);
+            // this.$message.error('Error submitting form');
           }
         }
       });
     },
+
+
 
     handleSuccess0(response, file) {
       console.log("Upload successful:", response);
@@ -688,6 +581,7 @@ export default {
   width: -webkit-fill-available;
   background-color: #c6e2ff;
 }
+
 /* Style for <details> when it is not open */
 el-collapse-item {
   width: 100%;
@@ -696,6 +590,7 @@ el-collapse-item {
 el-collapse-item {
   background-color: #8192a4;
 }
+
 .shadow {
   background-color: dodgerblue !important;
   box-shadow: 0 6px #3077b9;
@@ -731,7 +626,7 @@ el-collapse-item {
     box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
     background-color: #c6e2ff;
     /* width: 100%; */
-}
+  }
 }
 
 /* Higher than 960px */
