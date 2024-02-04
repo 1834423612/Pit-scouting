@@ -335,12 +335,15 @@ export default {
     },
     mounted() {
       // Check if the form has been saved before
-      this.form.forEach((question) => {
-        if (question.type === "radio" && question.value === "other") {
-          question.showOtherInput = true;
+      Object.values(this.formData).forEach((input, index) => {
+        const formtype = this.form.index.type;
+        const formquestion = this.form.index.question;
+        const formshowotherinput = this.form.index.showOtherInput;
+        if (formtype === "radio" && input === "other") {
+          formshowotherinput = true;
         }
-        if (question.type === "checkbox" && question.value.includes("other")) {
-          question.showOtherInput = true;
+        if (formtype === "checkbox" && input.includes("other")) {
+          formshowOtherInput = true;
         }
       });
     },
