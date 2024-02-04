@@ -299,7 +299,7 @@ export default {
         }
 
         this.savingStatus = "saving";
-        newForm.forEach((question,index) => {
+        newForm.forEach((question) => {
           if (question.type === "checkbox") {
             localStorage.setItem(
               question.question,
@@ -343,33 +343,35 @@ export default {
     },
 
     restoreFormData() {
-      this.form.forEach((question) => {
+      this.formData.values(formData).forEach(input,index => {
+        const formtype = this.form.index.type;
+        const formotherValue = this.form.index.otherValue;
         try {
           // From normal input type, make sure the value is not null
-          const savedValue = localStorage.getItem(question.question);
+          const savedValue = localStorage.getItem(input);
           if (savedValue && savedValue !== "null") {
-            question.value = savedValue;
+            input = savedValue;
           }
 
           // From radio type, make sure the value is 'other'
           const otherValue = localStorage.getItem(
-            question.question + "-otherValue"
+            input + "-otherValue"
           );
           if (otherValue && otherValue !== "null") {
-            question.otherValue = otherValue;
+            formotherValue = otherValue;
           }
 
           // From checkbox type, make sure the value is an array
-          if (question.type === "checkbox" && savedValue) {
-            question.value = JSON.parse(savedValue);
+          if (formtype === "checkbox" && savedValue) {
+            input = JSON.parse(savedValue);
           }
 
           // Update the showOtherInput status
           if (
-            (question.type === "radio" && question.value === "other") ||
-            (question.type === "checkbox" && question.value.includes("other"))
+            (formtype === "radio" && input === "other") ||
+            (formtype === "checkbox" && input.includes("other"))
           ) {
-            question.showOtherInput = true;
+            input.showOtherInput = true;
           }
         } catch (error) {
           console.error("Error restoring form data:", error);
@@ -408,7 +410,7 @@ export default {
     },
 
     resetFormData() {
-      this.form.forEach((question) => {
+      this.form.forEach((question, index) => {
         if (question.type === "checkbox") {
           question.value = [];
         } else {
