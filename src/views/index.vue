@@ -216,13 +216,11 @@ based on robot from last competition if form same season -->
 <script>
 import axios from "axios";
 const _event="d";
+const teams=[695,2000];
 export default {
   data() {
     return {
-      teams : [
-        { value: '695' },
-        { value: '2000' },
-      ],
+      teams: teams.map(team => ({ value: team.toString() })),
       
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
