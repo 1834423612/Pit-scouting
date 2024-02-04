@@ -299,7 +299,7 @@ export default {
         }
 
         this.savingStatus = "saving";
-        newForm.forEach((question) => {
+        newForm.forEach((question,index) => {
           if (question.type === "checkbox") {
             localStorage.setItem(
               question.question,
@@ -423,20 +423,6 @@ export default {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           let formData = new FormData();
-
-          // Add form data
-          this.form.forEach((item) => {
-            if (item.type === 'checkbox' || (item.type === 'radio' && item.showOtherInput)) {
-              // 检查 item.value 是否为数组，如果不是，则将其作为单个元素的数组处理
-              const value = Array.isArray(item.value) ? item.value.join(', ') : item.value;
-              formData.append(item.question, item.otherValue || value);
-            } else {
-              formData.append(item.question, item.value);
-            }
-          });
-
-
-
           try {
             const response = await axios.post('http://localhost:3000/submit-form', formData, {
               headers: {
