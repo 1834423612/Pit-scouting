@@ -28,24 +28,15 @@ based on robot from last competition if form same season -->
         </div>
         <br />
 
-<<<<<<< HEAD
-      <div class="question-continer">
-        <el-form-item
-          v-for="(x, index) in form"
-          :key="x.question"
-          :label="x.question"
-          :prop="Object.keys(formData)[index]"
-          :rules="[
-=======
         <div class="question-continer">
-          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :rules="[
->>>>>>> 18c02d652a4ba4c618fc1416428592242d5a6f0d
-            {
-              required: x.required,
-              message: 'This field is required',
-              trigger: ['blur', 'change'],
-            },
-          ]">
+          <el-form-item v-for="(x, index) in form" :key="x.question" :label="x.question"
+            :prop="Object.keys(formData)[index]" :rules="[
+              {
+                required: x.required,
+                message: 'This field is required',
+                trigger: ['blur', 'change'],
+              },
+            ]">
             <el-collapse class="collapse" v-if="typeof x.i === 'string'" v-model="activeName" accordion>
               <el-collapse-item title="Image Drop-down" name="1">
                 <div>
@@ -54,113 +45,35 @@ based on robot from last competition if form same season -->
               </el-collapse-item>
             </el-collapse>
 
-<<<<<<< HEAD
-          <el-input
-            v-if="x.type === 'hidden'"
-            type="hidden"
-            v-model="formData[Object.keys(formData)[index]]"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'text'"
-            v-model="formData[Object.keys(formData)[index]]"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'number'"
-            v-model="formData[Object.keys(formData)[index]]"
-            pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-            title="Valid forms: _ , _._ , n/d , _ n/d"
-            style="width: 150px"
-          ></el-input>
-          <el-input
-            v-else-if="x.type === 'integer'"
-            v-model="formData[Object.keys(formData)[index]]"
-            pattern="^\d+$"
-            style="width: 100px"
-          >
-          </el-input>
-          <el-autocomplete
-            v-else-if="x.type === 'autocomplete'"
-            v-model="formData[Object.keys(formData)[index]]"
-            style="width: 150px"
-            :fetch-suggestions="querySearch"
-            :trigger-on-focus="false"
-            clearable
-            placeholder="Team #"
-            @select="handleSelect"
-          />
-          <el-radio-group
-            v-else-if="x.type === 'radio'"
-            v-model="formData[Object.keys(formData)[index]]"
-            class="vertical-layout"
-            @change="handleRadioChange(x, $event)"
-          >
-            <el-radio
-              v-for="option in x.options"
-              :key="option"
-              :label="option"
-              >{{ option }}</el-radio
-            >
-=======
-            <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
-            <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
-            <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-              title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
-            <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
+            <el-input v-if="x.type === 'hidden'" type="hidden"
+              v-model="formData[Object.keys(formData)[index]]"></el-input>
+            <el-input v-else-if="x.type === 'text'" v-model="formData[Object.keys(formData)[index]]"></el-input>
+            <el-input v-else-if="x.type === 'number'" v-model="formData[Object.keys(formData)[index]]"
+              pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d"
+              style="width: 150px"></el-input>
+            <el-input v-else-if="x.type === 'integer'" v-model="formData[Object.keys(formData)[index]]" pattern="^\d+$"
+              style="width: 100px">
             </el-input>
-            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
-              :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
-              @select="handleSelect" />
-            <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
-              @change="handleRadioChange(x, $event)">
+            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="formData[Object.keys(formData)[index]]"
+              style="width: 150px" :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable
+              placeholder="Team #" @select="handleSelect" />
+            <el-radio-group v-else-if="x.type === 'radio'" v-model="formData[Object.keys(formData)[index]]"
+              class="vertical-layout" @change="handleRadioChange(x, $event)">
               <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
->>>>>>> 18c02d652a4ba4c618fc1416428592242d5a6f0d
 
               <el-radio label="other" :value="x.otherValue"></el-radio>
 
-<<<<<<< HEAD
-            <el-input
-              v-if="x.showOtherInput"
-              v-model="formData[Object.keys(formData)[index]]"
-              :rows="3"
-              type="textarea"
-              placeholder="Please input"
-            ></el-input>
-          </el-radio-group>
-=======
-              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
+              <el-input v-if="x.showOtherInput" v-model="formData[Object.keys(formData)[index]]" :rows="3" type="textarea"
                 placeholder="Please input"></el-input>
             </el-radio-group>
->>>>>>> 18c02d652a4ba4c618fc1416428592242d5a6f0d
 
-<<<<<<< HEAD
-          <el-checkbox-group
-            v-else-if="x.type === 'checkbox'"
-            v-model="formData[Object.keys(formData)[index]]"
-            @change="handleCheckboxChange(x, $event)"
-            class="vertical-layout"
-          >
-            <el-checkbox
-              v-for="option in x.options"
-              :key="option"
-              :label="option"
-              >{{ option }}</el-checkbox
-            >
-            <el-checkbox label="other"></el-checkbox>
-            <el-input
-              v-if="x.showOtherInput"
-              v-model="formData[Object.keys(formData)[index]]"
-              :rows="3"
-              placeholder="Please input"
-            ></el-input>
-          </el-checkbox-group>
-=======
-            <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value"
+            <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="formData[Object.keys(formData)[index]]"
               @change="handleCheckboxChange(x, $event)" class="vertical-layout">
               <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
               <el-checkbox label="other"></el-checkbox>
-              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
+              <el-input v-if="x.showOtherInput" v-model="formData[Object.keys(formData)[index]]" :rows="3"
+                placeholder="Please input"></el-input>
             </el-checkbox-group>
->>>>>>> 18c02d652a4ba4c618fc1416428592242d5a6f0d
 
             <!--doesn't work:<el-select v-else-if="x.type==='select'" v-model="x.value" required>
             <el-option
@@ -170,16 +83,9 @@ based on robot from last competition if form same season -->
             >{{ option }}
             </el-option>
           </el-select>-->
-<<<<<<< HEAD
-          
-          <el-input
-            v-else-if="x.type === 'textarea'"
-            type="textarea"
-            v-model="formData[Object.keys(formData)[index]]"
-          ></el-input>
-=======
 
-            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value"></el-input>
+            <el-input v-else-if="x.type === 'textarea'" type="textarea"
+              v-model="formData[Object.keys(formData)[index]]"></el-input>
           </el-form-item>
         </div>
         <el-form-item label="Picture - Full Robot">
@@ -192,7 +98,6 @@ based on robot from last competition if form same season -->
               Drag files here or <em>click to upload</em>
             </div>
           </el-upload>
->>>>>>> 18c02d652a4ba4c618fc1416428592242d5a6f0d
         </el-form-item>
 
         <el-form-item label="Picture - Drive Train">
