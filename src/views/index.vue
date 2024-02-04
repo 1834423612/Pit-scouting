@@ -135,13 +135,12 @@ export default {
           question: "",
           type: "hidden",
           required: true,
-          value: _event,
         },
         {
           question: "Team number",
           type: "autocomplete",
           required: true,
-          value: null,
+          ,
         },
         {
           i: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
@@ -153,7 +152,6 @@ export default {
             "West Coast Drive (wheels mounted off one side of tube)",
             "Swerve Drive",
           ],
-          value: null,
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: "", // Store the value of the text input
@@ -168,7 +166,6 @@ export default {
             "Mecanum (rollers at 45° angle)",
             "Omni (rollers at 90° angle)",
           ],
-          value: null,
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: "", // Store the value of the text input
@@ -177,7 +174,6 @@ export default {
           question: "Intake Use:",
           type: "checkbox",
           options: ["Ground", "Station"],
-          value: [], // should be an array if it's a checkbox
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: "", // Store the value of the text input
@@ -186,7 +182,6 @@ export default {
           question: "Scoring Locations:",
           type: "checkbox",
           options: ["Amp", "Speaker", "Trap"],
-          value: [], // should be an array if it's a checkbox
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
           otherValue: "", // Store the value of the text input
@@ -195,28 +190,24 @@ export default {
           question: "Robot Weight",
           type: "number",
           required: true,
-          value: null,
         },
         {
           question:
             "Robot Dimension (Length in Inches) without bumpers - front to back",
           type: "number",
           required: true,
-          value: null,
         },
         {
           question:
             "Robot Dimension (Width in Inches) without bumpers - left to right",
           type: "number",
           required: true,
-          value: null,
         },
         {
           question:
             "Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match",
           type: "number",
           required: true,
-          value: null,
         },
         {
           question: "Drive Team Members",
@@ -224,7 +215,6 @@ export default {
           options: [
             "One person driving and operating the robot during a match",
           ],
-          value: null,
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
         },
@@ -232,13 +222,11 @@ export default {
           question: "Hours/Weeks of Practice",
           type: "text",
           required: true,
-          value: null,
         },
         {
           question: "Additional Comments",
           type: "textarea",
           required: false,
-          value: null,
         },
       ],
       // fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
