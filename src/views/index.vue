@@ -300,9 +300,9 @@ export default {
 
         this.savingStatus = "saving";
         Object.values(this.formData).forEach( (input, index) => {
-          const formtype = this.form.index.type;
-          const formquestion = this.form.index.question;
-          const formotherValue = this.form.index.otherValue;
+          let formtype = this.form[index].type;
+          let formquestion = this.form[index].question;
+          let formotherValue = this.form[index].otherValue;
           if (formtype === "checkbox") {
             localStorage.setItem(
               formquestion,
@@ -336,9 +336,9 @@ export default {
     mounted() {
       // Check if the form has been saved before
       Object.values(this.formData).forEach((input, index) => {
-        const formtype = this.form.index.type;
-        const formquestion = this.form.index.question;
-        const formshowotherinput = this.form.index.showOtherInput;
+        let formtype = this.form[index].type;
+        let formquestion = this.form[index].question;
+        let formshowotherinput = this.form[index].showOtherInput;
         if (formtype === "radio" && input === "other") {
           formshowotherinput = true;
         }
@@ -351,9 +351,9 @@ export default {
     restoreFormData() {
       Object.values(this.formData).forEach( (input,index) => {
         console.log(this.form[index]);
-        const formtype = this.form[index].type;
-        const formotherValue = this.form[index].otherValue;
-        const formshowotherinput = this.form[index].showOtherInputotherValue;
+        let formtype = this.form[index].type;
+        let formotherValue = this.form[index].otherValue;
+        let formshowotherinput = this.form[index].showOtherInput;
         try {
           // From normal input type, make sure the value is not null
           const savedValue = localStorage.getItem(input);
