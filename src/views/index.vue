@@ -1,5 +1,5 @@
-<!-- //to-do: serverside event input, team# as select, pre-fill from same bot number from last comp during this season,required attribute
-based on robot from last competition if form same season -->
+<!-- //to-do: save othervalues, fix database and saving status,when do arrays have their props reorganized, pre-fill from same bot number from last comp during this season,required attribute
+based on robot from last competition if from same season -->
 <template>
   <div class="app">
     <div class="form-container">
@@ -288,32 +288,13 @@ export default {
   },
 
   watch: {
-    form: {
-      handler(newForm) {
+    formData: {
+      handler(newForm,oldForm) {
         // If the form is modified, set the saving status to 'saving'
-        if (!this.formModified) {
-          this.formModified = true;
-        }
-        if (this.saveTimeout) {
-          clearTimeout(this.saveTimeout);
-        }
-
+        this.formModified = true;
+        if (this.saveTimeout) { clearTimeout(this.saveTimeout); }
         this.savingStatus = "saving";
-        Object.values(this.formData).forEach( (input, index) => {
-          let formtype = this.form[index].type;
-          let formquestion = this.form[index].question;
-          let formotherValue = this.form[index].otherValue;
-          if (formtype === "checkbox") {
-            localStorage.setItem(
-              formquestion,
-              JSON.stringify(input)
-            );
-          } else { localStorage.setItem(formquestion, input); }
-          localStorage.setItem(
-            formquestion + "-otherValue",
-            formotherValue
-          );
-        });
+        localStorage.setItem('form', JSON.stringify(newForm));  
         this.saveTimeout = setTimeout(this.savingStatus = "success", 2000); // Set the saving status to 'success' after 2s
       },
       deep: true,
@@ -337,62 +318,22 @@ export default {
       // Check if the form has been saved before
       Object.values(this.formData).forEach((input, index) => {
         let formtype = this.form[index].type;
-        let formquestion = this.form[index].question;
-        let formshowotherinput = this.form[index].showOtherInput;
-        if (formtype === "radio" && input === "other") {
-          formshowotherinput = true;
-        }
-        if (formtype === "checkbox" && input.includes("other")) {
-          formshowOtherInput = true;
+        if ( (formtype === "checkbox" && input.includes("other") ) || (formtype === "radio" && input === "other") ) {
+          this.form[index].showOtherInput = true;
         }
       });
     },
-
     restoreFormData() {
-      Object.values(this.formData).forEach( (input,index) => {
-        console.log(this.form[index]);
-        let formtype = this.form[index].type;
-        let formotherValue = this.form[index].otherValue;
-        let formshowotherinput = this.form[index].showOtherInput;
-        try {
-          // From normal input type, make sure the value is not null
-          const savedValue = localStorage.getItem(input);
-          if (savedValue && savedValue !== "null") {
-            input = savedValue;
-          }
-
-          // From radio type, make sure the value is 'other'
-          const otherValue = localStorage.getItem(
-            input + "-otherValue"
-          );
-          if (otherValue && otherValue !== "null") {
-            formotherValue = otherValue;
-          }
-
-          // From checkbox type, make sure the value is an array
-          if (formtype === "checkbox" && savedValue) {
-            input = JSON.parse(savedValue);
-          }
-
-          // Update the showOtherInput status
-          if (
-            (formtype === "radio" && input === "other") ||
-            (formtype === "checkbox" && input.includes("other"))
-          ) {
-            formshowotherinput = true;
-          }
-        } catch (error) {
-          console.error("Error restoring form data:", error);
-        }
-      });
-    },
-
-    beforeDestroy() {
-      if (this.saveTimeout) {
-        clearTimeout(this.saveTimeout);
+      try {
+        this.formData = JSON.parse(localStorage.getItem('form')) || {};
+        console.log('Form data restored successfully.');
+      } catch (error) {
+        console.error('Error restoring form data:', error);
       }
     },
-
+    beforeDestroy() {
+      if (this.saveTimeout) {clearTimeout(this.saveTimeout);}
+    },
     clearForm() {
       this.$confirm("Are you sure you want to clear the form?", "Warning", {
         confirmButtonText: "Yes",
@@ -418,15 +359,21 @@ export default {
     },
 
     resetFormData() {
-      Object.values(this.formData).forEach( (input,index) => {
-        if (formtype === "checkbox") {
-          input = [];
-        } else {
-          input = null;
-        }
-        input.showOtherInput = false;
-        input.otherValue = "";
-      });
+      this.formData = {
+        event: _event,
+        teamNumber: "",
+        typeOfDriveTrain: "",
+        typeOfWheelsUsed: "",
+        intakeUse: [],
+        scoringLocations: [],
+        robotWeight: "",
+        robotDimensionLength: "",
+        robotDimensionWidth: "",
+        robotDimensionHeight: "",
+        driveTeamMembers: "",
+        hoursWeeksOfPractice: "",
+        additionalComments: "",
+      };
     },
 
     submitForm() {
