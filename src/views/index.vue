@@ -118,7 +118,7 @@ based on robot from last competition if from same season -->
 </template>
 
 <script>
-import axios from "axios";
+//import axios from "axios";
 //import the right stuff below
 const _event = "test";
 const teams = [695, 2000];
