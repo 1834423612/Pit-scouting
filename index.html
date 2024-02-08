@@ -3,7 +3,27 @@
 <head>
   <title>Pit Scouting</title>
   <style>
-    /* Add your styles here */
+    body{background-color:rgb(100,210,255);}
+    .shadow{
+  border:none;
+  background-color: dodgerblue !important;
+  box-shadow: 0 6px #3077b9;
+  transition: all 0.1s ease-in-out;
+}
+
+.shadow:hover {
+  border:none;
+  background-color: #66b3ff !important;
+  box-shadow: 0 6px #76a5e3;
+  transition: all 0.1s ease-in-out;
+}
+
+.shadow:active {
+  border:none;
+  background-color: #0066cc !important;
+  box-shadow: 0 6px #1f4e7a;
+  transition: all 0.1s ease-in-out;
+}
   </style>
 </head>
 <body>
@@ -11,10 +31,12 @@
   <form action="" id="dynamicForm"></form>
 </div>
 <script>
+//autocomplete and image
   const form = document.getElementById('dynamicForm');
-
+  const teams = [695, 2000];
+  const _event="test";
   const inputs = [
-    { question: 'Event', type: 'text' },
+    { question: 'Event', type: 'hidden',value: _event },
     { question: 'Team number', type: 'number' },
     { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
     { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
@@ -32,6 +54,33 @@
   ];
 
   inputs.forEach(x => {
+  	if(typeof(x.src)==="string"){
+    const details = document.createElement('details');
+    details.className = 'collapse';
+    details.open = true;
+    const summary = document.createElement('summary');
+    summary.textContent = "Image Drop-down";
+    const collapseContent = document.createElement('div');
+    collapseContent.className = 'collapse-content';
+    const img = document.createElement('img');
+    img.src = x.src;
+    img.alt = "error";
+    img.width = x.width;
+    collapseContent.appendChild(img);
+    details.appendChild(summary);
+    details.appendChild(collapseContent);
+    }
+    if (x.type === 'hidden') {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = x.question;
+        hiddenInput.value = x.value;
+        hiddenInput.style.display = 'none'; // Hide the hidden input
+        form.appendChild(hiddenInput);
+        return;
+      }
+    
+    
     const label = document.createElement('label');
     label.textContent = x.question;
 
@@ -62,8 +111,6 @@
         inputElement = document.createElement('input');
         inputElement.type = "text";
         if (x.type === 'number') {
-          //<input type="text" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$" title="Valid forms: _ , _._ , n/d , _ n/d" required>
-
           inputElement.pattern = '^[0-9]+(\\s[0-9]+\\/[0-9]+)?(\\.[0-9]+)?$|^[0-9]+\\/[0-9]+$';
 inputElement.title = 'Valid forms: _ , _._ , n/d , _ n/d';
         }
@@ -94,7 +141,7 @@ inputElement.title = 'Valid forms: _ , _._ , n/d , _ n/d';
         });
         break;
     }
-
+	if(details){form.appendChild(label);}
     form.appendChild(label);
     form.appendChild(br);
     form.appendChild(inputElement);
@@ -104,10 +151,11 @@ inputElement.title = 'Valid forms: _ , _._ , n/d , _ n/d';
   const submitButton = document.createElement('input');
   submitButton.type = 'submit';
   submitButton.value = 'Submit';
-
+  submitButton.classList.add("shadow")
   const resetButton = document.createElement('input');
   resetButton.type = 'reset';
   resetButton.value = 'Reset';
+  resetButton.classList.add("shadow");
 
   form.appendChild(submitButton);
   form.appendChild(resetButton);
