@@ -1,48 +1,48 @@
-const express = require('express'); // Web框架
-const multer = require('multer'); // 处理文件上传
-const { google } = require('googleapis'); // Google API客户端库
+const express = require('express'); // Web Framework
+const multer = require('multer'); // For handling file uploads
+const { google } = require('googleapis'); // Google API client library
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline'); // 用于获取用户输入
+const readline = require('readline'); // For reading user input
 
 const app = express();
-const upload = multer({ dest: 'uploads/' }); // 上传文件的临时目录
+const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files(images)
 const cors = require('cors');
 
-// 使用默认的 CORS 配置
+// Allow cross-origin requests, use the default settings
 app.use(cors());
 
 
-// 加载客户端秘钥
+// Load client secrets from local, DON'T SHARE THIS FILE!!!
 const CREDENTIALS_PATH = './client_secret_392109503842-37oafhl6uh07ccq2i7vmv5a0lm1n1nr8.apps.googleusercontent.com.json';
 const TOKEN_PATH = './token.json';
 
-let oAuth2Client; // 定义为全局变量
-let drive; // Google Drive API实例，全局变量
+let oAuth2Client; // Define the OAuth2 client as a global variable
+let drive; // Google Drive API client
 
 
-// 创建一个OAuth 2客户端
+// Create an OAuth 2 client
 function authorize(credentials) {
     return new Promise((resolve, reject) => {
         const { client_secret, client_id, redirect_uris } = credentials;
         oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
-        // 检查是否已经有了令牌
+        // Check if have previously stored a token.
         if (fs.existsSync(TOKEN_PATH)) {
             const token = fs.readFileSync(TOKEN_PATH);
             oAuth2Client.setCredentials(JSON.parse(token));
 
-            // 初始化Google Drive API实例
+            // Initialize the Google Drive API instance
             drive = google.drive({ version: 'v3', auth: oAuth2Client });
-            resolve(); // 当初始化完成时，解决 Promise
+            resolve(); // When the token is set, resolve the Promise
         } else {
             getAccessToken(oAuth2Client);
-            resolve(); // 在获取新令牌后解决 Promise
+            resolve(); // After getting the token, resolve the Promise
         }
     });
 }
 
-// 在服务器启动时初始化文件夹结构并加载
+// When the server starts, initialize the folder structure and load it
 async function start() {
     try {
         const content = fs.readFileSync(CREDENTIALS_PATH);
@@ -51,20 +51,20 @@ async function start() {
             console.error('Missing "web" field in credentials');
             return;
         }
-        await authorize(credentials.web); // 等待授权完成
-        await initAndLoadFolders(); // 然后初始化和加载文件夹
+        await authorize(credentials.web); // Waiting for the Promise to resolve
+        await initAndLoadFolders(); // Then initialize and load the folders
         console.log("Folders initialized and loaded.");
     } catch (error) {
         console.error("Error starting the app:", error);
     }
 }
 
-start(); // 启动应用
+start(); // Start the app
 
 
 
 
-// 获取访问令牌
+// Get the access token and store it to the file
 function getAccessToken(oAuth2Client) {
     const authUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
@@ -80,19 +80,19 @@ function getAccessToken(oAuth2Client) {
         oAuth2Client.getToken(code, (err, token) => {
             if (err) return console.error('Error retrieving access token', err);
             oAuth2Client.setCredentials(token);
-            // 存储令牌到文件
+            // Store the token as a JSON
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(token));
             console.log('Token stored to', TOKEN_PATH);
         });
     });
 }
 
-// 加载客户端秘钥并创建认证客户端
-// 在fs.readFile回调中调用authorize函数
+// Load client secrets from a local file and create an OAuth2 client
+// Recall the authorize function in the fs.readFile callback
 fs.readFile(CREDENTIALS_PATH, (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
 
-    // 解析credentials和错误处理
+    // Parse the credentials and handle errors
     let credentials;
     try {
         credentials = JSON.parse(content);
@@ -101,32 +101,32 @@ fs.readFile(CREDENTIALS_PATH, (err, content) => {
         return;
     }
 
-    // 检查并使用web字段
+    // Check and use the web field
     if (!credentials.web) {
         console.error('Missing "web" field in credentials');
         return;
     }
-    authorize(credentials.web); // 不再返回oAuth2Client
+    authorize(credentials.web); // Doesn't return a Promise, so no need to await
     // const drive = google.drive({ version: 'v3', auth: oAuth2Client });
 });
 
 
-// OAuth2回调路由
+// OAuth2 callback route
 app.get('/oauth2callback', async (req, res) => {
     const code = req.query.code;
     if (code) {
         try {
-            // 使用授权码获取访问令牌
+            // Use the code to get the access token
             const { tokens } = await oAuth2Client.getToken(code);
             oAuth2Client.setCredentials(tokens);
 
-            // 再次初始化drive，因为现在oAuth2Client有了令牌
+            // Initialize the drive again, because now oAuth2Client has the token
             // drive = google.drive({ version: 'v3', auth: oAuth2Client });
 
-            // 初始化文件夹结构
+            // Initialize and load the folders structure
             initAndLoadFolders();
 
-            // 可以选择将令牌保存到文件中
+            // Can choose to save the token to a file
             fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens));
             console.log('Token stored to', TOKEN_PATH);
 
@@ -144,19 +144,20 @@ app.get('/oauth2callback', async (req, res) => {
 
 
 
-// const FOLDER_ID = '文件夹ID'; // 文件夹ID
-// const FolderName = 'scoutify'; // 文件夹名称
-// 定义文件夹名称
+// const FOLDER_ID = 'Folder ID'; // Folder ID
+// const FolderName = 'scoutify'; // Folder Name
+
+// Define the folder names
 const rootFolderName = 'scoutify';
 const subFolderNames = ['Drive Train', 'Full Robot'];
-const userEmails = ['admin@kjchmc.cn']; // 需要添加编辑权限的用户邮箱, 可以是多个, 用逗号分隔, 例如：['user1@xxx.com', 'user2@xxx.com'], 'akahn@beachwoodstudents.org'
+const userEmails = ['admin@kjchmc.cn']; // Users' email addresses that need to add edit permission, can be multiple, separated by comma, e.g. ['user1@xxx.com', 'user2@xxx.com'], 'akahn@beachwoodstudents.org'
 
-// 全局变量来存储文件夹结构
+// Store the folder structure in a global variable
 let folderStructure = {};
 const folderStructureFilePath = './folderStructure.json';
 
 
-// 在服务器启动时初始化文件夹结构并加载
+// When the server starts, initialize the folder structure and load it
 async function initFolders() {
     try {
         const rootFolderId = await findOrCreateFolder(rootFolderName, null);
@@ -174,7 +175,7 @@ async function initFolders() {
 }
 
 
-// 验证文件夹是否存在于Google Drive上，如果不存在则创建
+// Check if the folder exists on Google Drive, if not, create it
 async function validateAndCreateFolders() {
     if (!drive) {
         console.error("Drive API client is not initialized.");
@@ -195,7 +196,7 @@ async function validateAndCreateFolders() {
 }
 
 
-// 验证单个文件夹是否存在，如果不存在则创建
+// Check if a single file exists on Google Drive, if not, create it
 async function validateFolder(folderName, parentId) {
     if (folderStructure[folderName] && folderStructure[folderName].id) {
         const folderId = folderStructure[folderName].id;
@@ -207,7 +208,7 @@ async function validateFolder(folderName, parentId) {
     return await findOrCreateFolder(folderName, parentId);
 }
 
-// 检查文件夹是否存在于Google Drive上
+// Check if the folder exists on Google Drive
 async function isFolderExists(folderId) {
     if (!drive) {
         console.error("Drive API client is not initialized.");
@@ -215,10 +216,10 @@ async function isFolderExists(folderId) {
     }
     try {
         const response = await drive.files.get({ fileId: folderId, fields: 'trashed' });
-        return !response.data.trashed; // 检查文件夹是否被放入回收站
+        return !response.data.trashed; // Check if the folder is at trashed
     } catch (error) {
         if (error.code === 404) {
-            return false; // 文件夹不存在
+            return false; // Folder not defined
         } else {
             console.error(`Error checking if folder exists: ${error.message}`);
             throw error;
@@ -227,7 +228,7 @@ async function isFolderExists(folderId) {
 }
 
 
-// 从本地JSON文件加载文件夹结构
+// Load the folder structure from a local JSON file
 function loadFolderStructure() {
     if (fs.existsSync(folderStructureFilePath)) {
         const data = fs.readFileSync(folderStructureFilePath, 'utf8');
@@ -239,17 +240,18 @@ function loadFolderStructure() {
 
 
 
-// 在服务器启动时初始化文件夹结构并加载
+// When the server starts, initialize the folder structure and load it
 async function initAndLoadFolders() {
-    // 检查是否已有文件夹结构JSON文件
+    // Check if the folder structure JSON file exists
     if (!fs.existsSync(folderStructureFilePath)) {
         console.log("Folder structure file not found. Creating folders...");
-        // 没有文件夹结构JSON文件，初始化文件夹结构
+        // Initialize the folder structure
         await initFolders();
     } else {
         console.log("Loading existing folder structure from file...");
-        loadFolderStructure(); // 加载现有的文件夹结构
-        // 验证并（如有必要）创建文件夹
+        loadFolderStructure(); // Loading the folder structure from the local JSON file
+
+        // Validate and (if necessary) create the folders
         await validateAndCreateFolders();
     }
     console.log("Folders initialized and loaded.");
@@ -257,7 +259,7 @@ async function initAndLoadFolders() {
 
 
 
-// 识别上传文件的MIME类型
+// Determine the MIME type of the uploaded file
 function getMimeType(filePath) {
     const extension = path.extname(filePath).toLowerCase();
     switch (extension) {
@@ -267,11 +269,11 @@ function getMimeType(filePath) {
         case '.png':
             return 'image/png';
         default:
-            return 'application/octet-stream'; // 通用的文件类型
+            return 'application/octet-stream'; // Commonly used for binary files
     }
 }
 
-// 检查并设置文件夹权限
+// Check and set folder permissions
 async function setFolderPermissions(folderId) {
     for (const email of userEmails) {
         try {
@@ -284,12 +286,13 @@ async function setFolderPermissions(folderId) {
                 },
             });
         } catch (error) {
-            console.error(`为邮箱 ${email} 设置权限时出错:`, error);
+            // console.error(`为邮箱 ${email} 设置权限时出错:`, error);
+            console.error(`Error setting permission for email ${email}:`, error);
         }
     }
 }
 
-// 查找文件夹, 不存在则创建, 并返回文件夹ID
+// Find or create a folder on Google Drive and return the folder ID
 async function findOrCreateFolder(folderName, parentId = null) {
     if (!drive) {
         console.error("Google Drive API client is not initialized.");
@@ -331,18 +334,19 @@ async function findOrCreateFolder(folderName, parentId = null) {
 // console.log("Drive object:", drive);
 
 
-// 上传文件并设置权限
+// Upload the file to Google Drive and set permissions
 async function uploadFileAndSetPermissions(filePath, originalName, folderType) {
-    // 确保这里使用 folderType 参数
+
+    // Make sure to use the folderType parameter here
     const folderId = folderStructure[folderType]?.id || folderStructure['root'].id;
     console.log(`Uploading to folder: ${folderType}, Folder ID: ${folderId}`);
 
     try {
-        // 根据文件类型获取对应文件夹ID
+        // Get the folder ID based on the file type
         const folderId = folderStructure[folderType]?.id || folderStructure['root'].id;
         const mimeType = getMimeType(filePath);
 
-        // 上传文件到该文件夹
+        // Upload the file to the folder
         const fileMetadata = {
             name: originalName,
             parents: [folderId],
@@ -357,7 +361,7 @@ async function uploadFileAndSetPermissions(filePath, originalName, folderType) {
             fields: 'id, webViewLink',
         });
 
-        // 设置文件权限
+        // Set the file permissions
         await drive.permissions.create({
             fileId: file.data.id,
             requestBody: {
@@ -386,7 +390,7 @@ async function uploadFileAndSetPermissions(filePath, originalName, folderType) {
 
 
 
-// 上传文件的路由
+// Upload file route
 app.post('/upload', upload.single('file'), async (req, res) => {
     const file = req.file;
     if (!file) {
@@ -394,6 +398,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     }
 
     // 根据上传的文件类型选择文件夹
+    // Determine the folder based on the file type
+
     // let folderName;
     // switch (req.query.type) {
     //     case 'full_robot':
@@ -406,11 +412,11 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     //         folderName = 'scoutify';
     // }
 
-    const folderType = req.query.type || 'root'; // 使用查询参数确定文件夹类型
-    const formattedFolderType = formatFolderType(folderType); // 格式化 folderType
+    const folderType = req.query.type || 'root'; // Use the query parameter as the folder type
+    const formattedFolderType = formatFolderType(folderType); // Format the folderType
 
     try {
-        await initAndLoadFolders(); // 确保文件夹信息是最新的
+        await initAndLoadFolders(); // Make sure the folder structure is initialized and loaded with the latest data
         const driveResponse = await uploadFileAndSetPermissions(file.path, file.originalname, formattedFolderType);
         fs.unlinkSync(file.path); // Delete the temporary storge file when upload complete
         res.send({ fileId: driveResponse.id, webViewLink: driveResponse.webViewLink });
@@ -420,15 +426,16 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-// 格式化文件夹类型, 例如: 'full_robot' => 'Full Robot'
+// Format the folder type, e.g. 'full_robot' => 'Full Robot'
 function formatFolderType(folderType) {
-    // 将 'full_robot' 转换为 'Full Robot'
+
+    // Convert 'full_robot' to 'Full Robot'
     if (folderType === 'full_robot') {
         return 'Full Robot';
     } else if (folderType === 'drive_train') {
         return 'Drive Train';
     }
-    return 'root'; // 默认返回 'root'
+    return 'root'; // Default to the 'root' folder
 }
 
 
@@ -458,13 +465,13 @@ app.get('/list.html', async (req, res) => {
 });
 
 
-// 列出文件的函数
+// List files in the user's Google Drive
 async function listFiles(auth) {
     const drive = google.drive({ version: 'v3', auth });
     try {
         const response = await drive.files.list({
             pageSize: 10,
-            fields: 'nextPageToken, files(id, name, webViewLink)', // 返回所需的字段
+            fields: 'nextPageToken, files(id, name, webViewLink)', // Return the file ID, name and webViewLink
         });
         return response.data.files;
     } catch (err) {
@@ -473,9 +480,10 @@ async function listFiles(auth) {
     }
 }
 
-// 删除文件的路由
+
+// Delete file route
 app.get('/delete', async (req, res) => {
-    const fileId = req.query.file_ID; // 获取文件ID
+    const fileId = req.query.file_ID; // Get the file ID from the query parameter
     if (!fileId) {
         return res.status(400).send('No file ID provided');
     }
@@ -492,6 +500,7 @@ app.get('/delete', async (req, res) => {
 
 
 // 删除文件的函数 (危险操作, 慎用!!!)
+// Delete file function (Dangerous operation, use with caution!!!)
 
 /*
 async function deleteFile(fileId) {
@@ -507,37 +516,46 @@ async function deleteFile(fileId) {
 }
  
 // 示例用法
+// Example usage
+
 const fileToDelete = '要删除的文件ID'; // 替换为要删除的文件ID
 deleteFile(fileToDelete);
 */
 
 const mysql = require('mysql');
-const dbConfig = require('./config/DBConfig'); // 引入数据库配置
+const dbConfig = require('./config/DBConfig'); //   Import the database configuration
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
 const connection = mysql.createConnection(dbConfig);
 
-// 连接到数据库
+// Connect to the database
 connection.connect(error => {
     if (error) throw error;
     console.log("Successfully connected to the database.");
 });
 
-// API端点来接收数据并存储到数据库
-app.post('/submit-form', (req, res) => {
-    const formData = req.body;
-    // 假设你有一个名为survey_responses的表来存储表单数据
-    const query = 'INSERT INTO survey_responses SET ?';
 
-    db.query(query, formData, (err, result) => {
+// API endpoint to receive data and store it in the database
+app.post('/submit-form', upload.none(), (req, res) => {
+    const formData = req.body;
+    if (Object.keys(formData).length === 0) {
+        return res.status(400).send('No data received');
+    }
+
+    // Build the SQL statement
+    const columns = Object.keys(formData).map(key => `\`${key}\``).join(', ');
+    const placeholders = Object.keys(formData).map(() => '?').join(', ');
+    const query = `INSERT INTO survey_responses (${columns}) VALUES (${placeholders})`;
+    const values = Object.values(formData);
+
+    connection.query(query, values, (err, result) => {
         if (err) {
-            console.error(err);
-            res.status(500).send('Server error');
-        } else {
-            res.send('Data saved successfully');
+            console.error('Database error:', err);
+            return res.status(500).send('Server error');
         }
+        res.send('Data saved successfully');
     });
 });
 
@@ -549,7 +567,9 @@ app.post('/submit-form', (req, res) => {
 
 const stream = require('stream');
 
-// Google Drive 图片代理路由
+
+// Google Drive image proxy route
+// This function will spend much more flow, so it's not recommended to use in production environment
 app.get('/drive-image/:fileId', async (req, res) => {
     try {
         const fileId = req.params.fileId;
@@ -558,7 +578,7 @@ app.get('/drive-image/:fileId', async (req, res) => {
             alt: 'media'
         }, { responseType: 'stream' });
 
-        res.setHeader('Content-Type', 'image/jpeg'); // 可根据需要更改 MIME 类型
+        res.setHeader('Content-Type', 'image/jpeg'); // Change the MIME type to the actual file type if needed
         driveResponse.data
             .on('end', () => console.log('Done streaming file.'))
             .on('error', err => {
@@ -574,6 +594,6 @@ app.get('/drive-image/:fileId', async (req, res) => {
 
 
 
-// 启动服务器
+// Start the server
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
