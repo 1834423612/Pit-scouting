@@ -1,0 +1,63 @@
+<script setup>
+import { ref, computed } from 'vue'
+const fruit = ref('')
+const errors = computed(() => {
+  return fruit.value ? [`Sorry, we are sold out of ${fruit.value}`] : []
+})
+const _event="test";
+const form=[
+  { question: 'Team number', type: 'autocomplete', options: ["695","2000"] },
+  { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
+  { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
+  { question: 'Intake Use:', type: 'radio', options: ["Ground","Station","Other: "] },
+  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Balance"] },
+  { question: 'Robot Weight', type: 'number' },
+  { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number' },//might need to be text
+  { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number' },//might need to be text
+  { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number' },//might need to be text
+  { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","Other: "] },
+  { question: 'Hours/Weeks of Practice', type: 'text' },
+  { question: 'Picture - Full Robot', type: 'file' },
+  { question: 'Picture - Drive Train', type: 'file' },
+  { question: 'Additional Comments', type: 'textarea' }
+];
+//probably will need v-model
+</script>
+
+<template>
+  <FormKit label="event"  value="_event" />
+  <FormKit
+    type="autocomplete"
+    :name="form[0].question"
+    :label="form[0].question"
+    :options="form[0].options"
+    placeholder="Team #"
+    popover
+    :filter="
+      (option, search) =>
+        option.label.toLowerCase().startsWith(search.toLowerCase())
+    "
+    validation="required"
+  />
+  <FormKit
+  type="radio"
+  :label="form[1].question"
+  :options="form[1].options"
+  validation="required"
+  />
+  <FormKit
+    :label="form[4].question"
+    type="checkbox"
+    :options="form[4].options"
+    validation="required"
+  />
+  <FormKit
+  type="text"
+  :label="form[5].question"
+  :validation="[ ['required'], ['matches', /^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$/] ]"
+  :validation-messages="{
+    matches: 'Valid forms: _ , _._ , n/d , _ n/d',
+  }"
+  />
+  <br/>
+</template>
