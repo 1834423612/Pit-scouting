@@ -8,27 +8,27 @@ const year=2024;
 const form=[
   { question: 'event', type: 'hidden', value: _event },
   { question: 'event', type: 'hidden', value: year },
-  { question: 'Team number', type: 'autocomplete', options: ["695","2000"] },
-  { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
-  { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
-  { question: 'Intake Use:', type: 'checkbox', options: ["Ground","Station"] },
-  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Hang"] },
-  { question: 'Robot Weight', type: 'number' },
-  { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number' },//might need to be text
-  { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number' },//might need to be text
-  { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number' },//might need to be text
-  { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","Other: "] },
-  { question: 'Hours/Weeks of Practice', type: 'text' },
-  { question: 'Picture - Full Robot', type: 'file' },
-  { question: 'Picture - Drive Train', type: 'file' },
-  { question: 'Additional Comments', type: 'textarea' }
+  { question: 'Team number', type: 'autocomplete', options: ["695","2000"], value:"" },
+  { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive'], value:""  },
+  { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)"], value:"" },
+  { question: 'Intake Use:', type: 'checkbox', options: ["Ground","Station"], value:[] },
+  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Hang"], value:[] },
+  { question: 'Robot Weight', type: 'number', value:"" },
+  { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number', value:"" },//might need to be text
+  { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number', value:"" },//might need to be text
+  { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number', value:"" },//might need to be text
+  { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","One person driving and One person operating the robot during a match","Other"], value:"" },
+  { question: 'Hours/Weeks of Practice', type: 'text', value:"" },
+  { question: 'Picture - Full Robot', type: 'file', value:"" },
+  { question: 'Picture - Drive Train', type: 'file', value:"" },
+  { question: 'Additional Comments', type: 'textarea', value:"" }
 ];
 
 //probably will need v-model
 </script>
 
 <template>
-  <h1>FormKit</h1>
+  <h1>Pit Scouting Form</h1>
     <FormKit
     type="form"
     submit-label="Submit"
@@ -59,6 +59,7 @@ const form=[
               option.label.toLowerCase().startsWith(search.toLowerCase())
           "
           validation="required"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='radio'"
@@ -67,6 +68,7 @@ const form=[
           :options="item.options"
           validation="required"
           :name="item.question"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='checkbox'"
@@ -75,6 +77,7 @@ const form=[
           :options="item.options"
           validation="required"
           :name="item.question"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='number'"
@@ -85,6 +88,7 @@ const form=[
           :validation-messages="{
             matches: 'Valid forms: _ , _._ , n/d , _ n/d',
           }"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='text'"
@@ -92,6 +96,7 @@ const form=[
           :name="item.question"
           type="text"
           validation="required"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='file'"
@@ -99,6 +104,7 @@ const form=[
           :type="item.type"
           :label="item.question"
           accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
+          v-model="item.value"
         />
         <FormKit
           v-else-if="item.type==='textarea'"
@@ -107,6 +113,7 @@ const form=[
           :label="item.question"
           validation="length:0,120"
           validation-visibility="live"
+          v-model="item.value"
         />
       </div>
       <FormKit type="submit" label="Submit" />
