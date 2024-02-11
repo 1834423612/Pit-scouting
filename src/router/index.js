@@ -8,6 +8,12 @@ const routes = [
         path: '/',
         component: Index,
     },
+
+    {
+        path: '/pit-scouting',
+        component: Index,
+    },
+
     {
         path: '/formkit',
         component: FormKitTest,
