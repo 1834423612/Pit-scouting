@@ -115,7 +115,7 @@ const form=[
         v-model="item.value"
       />
     </div>
-    <pre wrap>{{value}}</pre>
+    <!-to see data while entering<pre wrap>{{value}}</pre>-->
   </FormKit>
   <br/>
 </template>
