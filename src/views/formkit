@@ -1,7 +1,9 @@
 <script setup>
 const _event="test";
+const year=2024;
 const form=[
-  { question: 'event', type: 'hidden' },
+  { question: 'event', type: 'hidden', value: _event },
+  { question: 'event', type: 'hidden', value: year },
   { question: 'Team number', type: 'autocomplete', options: ["695","2000"] },
   { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
   { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
@@ -23,14 +25,14 @@ const form=[
 <template>
   <FormKit 
   :name="form[0].question"
-  :type="form[0].type" 
-  :value="_event"
+  :type="form[0].type"
+  :value="form[0].value"
   />
   <FormKit
     type="autocomplete"
-    :name="form[1].question"
-    :label="form[1].question"
-    :options="form[1].options"
+    :name="form[2].question"
+    :label="form[2].question"
+    :options="form[2].options"
     placeholder="Team #"
     popover
     :filter="
@@ -41,38 +43,38 @@ const form=[
   />
   <FormKit
   type="radio"
-  :label="form[2].question"
-  :options="form[2].options"
+  :label="form[3].question"
+  :options="form[3].options"
   validation="required"
   />
   <FormKit
-    :label="form[5].question"
+    :label="form[6].question"
     type="checkbox"
-    :options="form[5].options"
+    :options="form[6].options"
     validation="required"
   />
   <FormKit
   type="text"
-  :label="form[6].question"
+  :label="form[7].question"
   :validation="[ ['required'], ['matches', /^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$/] ]"
   :validation-messages="{
     matches: 'Valid forms: _ , _._ , n/d , _ n/d',
   }"
   />
   <FormKit 
-  :label="form[11].question"
+  :label="form[12].question"
   type="text"
   validation="required"
   />
   <FormKit
-    :type="form[12].type"
-    :label="form[12].question"
+    :type="form[13].type"
+    :label="form[13].question"
     accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
   />
   <FormKit
-  :type="form[14].type"
-  :name="form[14].question"
-  :label="form[14].question"
+  :type="form[15].type"
+  :name="form[15].question"
+  :label="form[15].question"
   validation="length:0,120"
   validation-visibility="live"
 />
