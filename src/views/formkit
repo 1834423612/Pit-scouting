@@ -34,7 +34,7 @@ const form=[
       :value="item.value"
     />
     <FormKit
-      v-if="item.type==='autocomplete'"
+      v-else-if="item.type==='autocomplete'"
       type="autocomplete"
       :name="item.question"
       :label="item.question"
@@ -48,7 +48,7 @@ const form=[
       validation="required"
     />
     <FormKit
-      v-if="item.type==='radio'"
+      v-else-if="item.type==='radio'"
       type="radio"
       :label="item.question"
       :options="item.options"
@@ -56,7 +56,7 @@ const form=[
       :name="item.question"
     />
     <FormKit
-      v-if="item.type==='checkbox'"
+      v-else-if="item.type==='checkbox'"
       :label="item.question"
       type="checkbox"
       :options="item.options"
@@ -64,7 +64,7 @@ const form=[
       :name="item.question"
     />
     <FormKit
-      v-if="item.type==='number'"
+      v-else-if="item.type==='number'"
       type="text"
       :name="item.question"
       :label="item.question"
@@ -74,21 +74,21 @@ const form=[
       }"
     />
     <FormKit
-      v-if="item.type==='text'"
+      v-else-if="item.type==='text'"
       :label="item.question"
       :name="item.question"
       type="text"
       validation="required"
     />
     <FormKit
-      v-if="item.type==='file'"
+      v-else-if="item.type==='file'"
       :name="item.question"
       :type="item.type"
       :label="item.question"
       accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
     />
     <FormKit
-      v-if="item.type==='textarea'"
+      v-else-if="item.type==='textarea'"
       :type="item.type"
       :name="item.question"
       :label="item.question"
