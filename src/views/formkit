@@ -1,4 +1,8 @@
 <script setup>
+const submitHandler =  () => {
+  alert("Form Submited");
+}
+
 const _event="test";
 const year=2024;
 const form=[
@@ -7,8 +11,8 @@ const form=[
   { question: 'Team number', type: 'autocomplete', options: ["695","2000"] },
   { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
   { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
-  { question: 'Intake Use:', type: 'radio', options: ["Ground","Station","Other: "] },
-  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Balance"] },
+  { question: 'Intake Use:', type: 'checkbox', options: ["Ground","Station"] },
+  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Hang"] },
   { question: 'Robot Weight', type: 'number' },
   { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number' },//might need to be text
   { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number' },//might need to be text
@@ -19,83 +23,94 @@ const form=[
   { question: 'Picture - Drive Train', type: 'file' },
   { question: 'Additional Comments', type: 'textarea' }
 ];
+
 //probably will need v-model
 </script>
 
 <template>
-  <div
-    v-for="(item, index) in form"
-    :key="index"
-  >
+  <h1>FormKit</h1>
     <FormKit
-      v-if="item.type==='hidden'"
-      :name="item.question"
-      type="hidden"
-      :value="item.value"
-    />
-    <FormKit
-      v-else-if="item.type==='autocomplete'"
-      type="autocomplete"
-      :name="item.question"
-      :label="item.question"
-      :options="item.options"
-      placeholder="Team #"
-      popover
-      :filter="
-        (option, search) =>
-          option.label.toLowerCase().startsWith(search.toLowerCase())
-      "
-      validation="required"
-    />
-    <FormKit
-      v-else-if="item.type==='radio'"
-      type="radio"
-      :label="item.question"
-      :options="item.options"
-      validation="required"
-      :name="item.question"
-    />
-    <FormKit
-      v-else-if="item.type==='checkbox'"
-      :label="item.question"
-      type="checkbox"
-      :options="item.options"
-      validation="required"
-      :name="item.question"
-    />
-    <FormKit
-      v-else-if="item.type==='number'"
-      type="text"
-      :name="item.question"
-      :label="item.question"
-      :validation="[ ['required'], ['matches', /^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$/] ]"
-      :validation-messages="{
-        matches: 'Valid forms: _ , _._ , n/d , _ n/d',
-      }"
-    />
-    <FormKit
-      v-else-if="item.type==='text'"
-      :label="item.question"
-      :name="item.question"
-      type="text"
-      validation="required"
-    />
-    <FormKit
-      v-else-if="item.type==='file'"
-      :name="item.question"
-      :type="item.type"
-      :label="item.question"
-      accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
-    />
-    <FormKit
-      v-else-if="item.type==='textarea'"
-      :type="item.type"
-      :name="item.question"
-      :label="item.question"
-      validation="length:0,120"
-      validation-visibility="live"
-    />
-  </div>
-  <br/>
-  <br/>
+    type="form"
+    submit-label="Submit"
+    @submit="submitHandler"
+    :actions="false"
+    #default="{ value }"
+    >
+      <div
+        v-for="(item, index) in form"
+        :key="index"
+      >
+        <FormKit
+          v-if="item.type==='hidden'"
+          :name="item.question"
+          type="hidden"
+          :value="item.value"
+        />
+        <FormKit
+          v-else-if="item.type==='autocomplete'"
+          type="autocomplete"
+          :name="item.question"
+          :label="item.question"
+          :options="item.options"
+          placeholder="Team #"
+          popover
+          :filter="
+            (option, search) =>
+              option.label.toLowerCase().startsWith(search.toLowerCase())
+          "
+          validation="required"
+        />
+        <FormKit
+          v-else-if="item.type==='radio'"
+          type="radio"
+          :label="item.question"
+          :options="item.options"
+          validation="required"
+          :name="item.question"
+        />
+        <FormKit
+          v-else-if="item.type==='checkbox'"
+          :label="item.question"
+          type="checkbox"
+          :options="item.options"
+          validation="required"
+          :name="item.question"
+        />
+        <FormKit
+          v-else-if="item.type==='number'"
+          type="text"
+          :name="item.question"
+          :label="item.question"
+          :validation="[ ['required'], ['matches', /^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$/] ]"
+          :validation-messages="{
+            matches: 'Valid forms: _ , _._ , n/d , _ n/d',
+          }"
+        />
+        <FormKit
+          v-else-if="item.type==='text'"
+          :label="item.question"
+          :name="item.question"
+          type="text"
+          validation="required"
+        />
+        <FormKit
+          v-else-if="item.type==='file'"
+          :name="item.question"
+          :type="item.type"
+          :label="item.question"
+          accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
+        />
+        <FormKit
+          v-else-if="item.type==='textarea'"
+          :type="item.type"
+          :name="item.question"
+          :label="item.question"
+          validation="length:0,120"
+          validation-visibility="live"
+        />
+      </div>
+      <FormKit type="submit" label="Submit" />
+      <br/>
+      <br/>
+    </FormKit>
 </template>
