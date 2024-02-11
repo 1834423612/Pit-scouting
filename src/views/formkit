@@ -1,9 +1,4 @@
 <script setup>
-import { ref, computed } from 'vue'
-const fruit = ref('')
-const errors = computed(() => {
-  return fruit.value ? [`Sorry, we are sold out of ${fruit.value}`] : []
-})
 const _event="test";
 const form=[
   { question: 'event', type: 'hidden' },
@@ -74,5 +69,13 @@ const form=[
     :label="form[12].question"
     accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
   />
+  <FormKit
+  :type="form[14].type"
+  :name="form[14].question"
+  :label="form[14].question"
+  validation="length:0,120"
+  validation-visibility="live"
+/>
+  <br/>
   <br/>
 </template>
