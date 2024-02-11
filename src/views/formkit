@@ -6,6 +6,7 @@ const errors = computed(() => {
 })
 const _event="test";
 const form=[
+  { question: 'event', type: 'hidden' },
   { question: 'Team number', type: 'autocomplete', options: ["695","2000"] },
   { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', 'West Coast Drive (wheels mounted off one side of tube)', 'Swerve Drive','Other: ']  },
   { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)","Other: "] },
@@ -25,12 +26,16 @@ const form=[
 </script>
 
 <template>
-  <FormKit label="event"  value="_event" />
+  <FormKit 
+  :name="form[0].question"
+  :type="form[0].type" 
+  :value="_event"
+  />
   <FormKit
     type="autocomplete"
-    :name="form[0].question"
-    :label="form[0].question"
-    :options="form[0].options"
+    :name="form[1].question"
+    :label="form[1].question"
+    :options="form[1].options"
     placeholder="Team #"
     popover
     :filter="
@@ -41,23 +46,33 @@ const form=[
   />
   <FormKit
   type="radio"
-  :label="form[1].question"
-  :options="form[1].options"
+  :label="form[2].question"
+  :options="form[2].options"
   validation="required"
   />
   <FormKit
-    :label="form[4].question"
+    :label="form[5].question"
     type="checkbox"
-    :options="form[4].options"
+    :options="form[5].options"
     validation="required"
   />
   <FormKit
   type="text"
-  :label="form[5].question"
+  :label="form[6].question"
   :validation="[ ['required'], ['matches', /^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$/] ]"
   :validation-messages="{
     matches: 'Valid forms: _ , _._ , n/d , _ n/d',
   }"
+  />
+  <FormKit 
+  :label="form[11].question"
+  type="text"
+  validation="required"
+  />
+  <FormKit
+    :type="form[12].type"
+    :label="form[12].question"
+    accept=".png,.jpg,.jpeg,.dng,.heif,.heic"
   />
   <br/>
 </template>
