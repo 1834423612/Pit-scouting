@@ -165,7 +165,7 @@ based on robot from last competition if form same season -->
         <el-upload
           class="upload-demo"
           drag
-          action="http://localhost:3000/upload?type=full_robot"
+          action="https://scoutify.makesome.cool/upload?type=full_robot"
           :on-success="handleSuccess0"
           :on-remove="handleRemove"
           :file-list="fileList.fullRobot"
@@ -184,7 +184,7 @@ based on robot from last competition if form same season -->
         <el-upload
           class="upload-demo"
           drag
-          action="http://localhost:3000/upload?type=drive_train"
+          action="https://scoutify.makesome.cool/upload?type=drive_train"
           :on-success="handleSuccess1"
           :on-remove="handleRemove"
           :file-list="fileList.driveTrain"
@@ -555,7 +555,7 @@ export default {
               this.fileIds.driveTrain.join(",")
             );
 
-            await axios.post("http://localhost:3000/submit-form", formData, {
+            await axios.post("https://scoutify.makesome.cool/submit-form", formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
               },
@@ -621,7 +621,7 @@ export default {
 
       // Send delete request to the server
       axios
-        .get(`http://localhost:3000/delete?file_ID=${fileId}`)
+        .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
         .then((response) => {
           console.log("File deletion response:", response.data);
         })
