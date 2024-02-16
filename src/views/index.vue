@@ -282,7 +282,7 @@ export default {
           otherValue: "", // Store the value of the text input
         },
         {
-          question: "Robot Weight",
+          question: "Robot Weight (in pounds)",
           type: "number",
           required: true,
           value: null,
@@ -317,6 +317,22 @@ export default {
           value: null,
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
+        },
+        
+       {
+          question: "Intake Use:",
+          type: "checkbox",
+          options: ["Can it drive under the core"],
+          value: [], // should be an array if it's a checkbox
+          required: false,
+          showOtherInput: false, // show the textarea when first load the page?
+          otherValue: "", // Store the value of the text input
+        },
+        {
+          question: "Height when fully extended (in inches)",
+          type: "number",
+          required: true,
+          value: null,
         },
         {
           question: "Hours/Weeks of Practice",
