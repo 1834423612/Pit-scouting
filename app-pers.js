@@ -538,18 +538,28 @@ connection.connect(error => {
 
 
 // API endpoint to receive data and store it in the database
-app.post('/submit-form', upload.none(), (req, res) => {
-    const formData = req.body;
-    if (Object.keys(formData).length === 0) {
-        return res.status(400).send('No data received');
-    }
+app.post('/submit-form', (req, res) => {
+    let formData = req.body;
 
-    // Build the SQL statement
+    // Output the form data for debugging
+    // console.log('Received form data:', formData);
+
+    // Handle fields that may be NULL or empty arrays
+    Object.keys(formData).forEach(key => {
+        if (formData[key] === null || formData[key] === undefined) {
+            formData[key] = ''; // Convert NULL/undefined to an empty string
+        } else if (Array.isArray(formData[key]) && formData[key].length === 0) {
+            formData[key] = JSON.stringify(formData[key]); // Convert an empty array to an empty string
+        }
+    });
+
+    // Build the SQL query
     const columns = Object.keys(formData).map(key => `\`${key}\``).join(', ');
     const placeholders = Object.keys(formData).map(() => '?').join(', ');
     const query = `INSERT INTO survey_responses (${columns}) VALUES (${placeholders})`;
     const values = Object.values(formData);
 
+    // Execute the SQL query
     connection.query(query, values, (err, result) => {
         if (err) {
             console.error('Database error:', err);
@@ -558,6 +568,29 @@ app.post('/submit-form', upload.none(), (req, res) => {
         res.send('Data saved successfully');
     });
 });
+
+// app.post('/submit-form', upload.none(), (req, res) => {
+//     const formData = req.body;
+//     if (Object.keys(formData).length === 0) {
+//         return res.status(400).send('No data received');
+//     }
+
+//     console.log('Received form data:', formData);
+
+//     // Build the SQL statement
+//     const columns = Object.keys(formData).map(key => `\`${key}\``).join(', ');
+//     const placeholders = Object.keys(formData).map(() => '?').join(', ');
+//     const query = `INSERT INTO survey_responses (${columns}) VALUES (${placeholders})`;
+//     const values = Object.values(formData);
+
+//     connection.query(query, values, (err, result) => {
+//         if (err) {
+//             console.error('Database error:', err);
+//             return res.status(500).send('Server error');
+//         }
+//         res.send('Data saved successfully');
+//     });
+// });
 
 
 
@@ -595,5 +628,6 @@ app.get('/drive-image/:fileId', async (req, res) => {
 
 
 // Start the server
-const PORT = 3000;
+// const PORT = 3000;
+const PORT = process.env.PORT || 39390; // Use the environment port if it's set
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
