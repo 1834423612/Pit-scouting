@@ -98,7 +98,7 @@ based on robot from last competition if form same season -->
           </el-form-item>
         </div>
         <el-form-item label="Picture - Full Robot">
-          <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=full_robot"
+          <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
             :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
             <el-icon :size="50" color="#b3b3b3">
               <upload />
@@ -110,7 +110,7 @@ based on robot from last competition if form same season -->
         </el-form-item>
 
         <el-form-item label="Picture - Drive Train">
-          <el-upload class="upload-demo" drag action="http://localhost:3000/upload?type=drive_train"
+          <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
             :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
             <el-icon :size="50" color="#b3b3b3">
               <upload />
@@ -500,7 +500,7 @@ export default {
             };
 
             try {
-              await axios.post("http://localhost:3000/submit-form", this.formData);
+              await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
               this.$message.success("Form submitted successfully");
               // 提交后将自动保存状态重置为成功
               this.savingStatus = 'success';
@@ -522,7 +522,7 @@ export default {
         this.resetFormState(); // 页面加载时重置表单状态
       },
 
-      
+
       // New method: Format array values
       formatArrayValues(arrayValues, otherValue) {
         // If the array contains 'other', then use otherValue to replace, otherwise convert the array to a comma-separated string
@@ -585,7 +585,7 @@ export default {
 
         // Send delete request to the server
         axios
-          .get(`http://localhost:3000/delete?file_ID=${fileId}`)
+          .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
           .then((response) => {
             console.log("File deletion response:", response.data);
           })
