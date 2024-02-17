@@ -4,14 +4,14 @@ const { google } = require('googleapis'); // Google API client library
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline'); // For reading user input
-
+const SQL = require('sql-template-strings');
 const app = express();
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files(images)
 const cors = require('cors');
 
+let pool;
 // Allow cross-origin requests, use the default settings
 app.use(cors());
-
 
 // Load client secrets from local, DON'T SHARE THIS FILE!!!
 const CREDENTIALS_PATH = './client_secret_392109503842-37oafhl6uh07ccq2i7vmv5a0lm1n1nr8.apps.googleusercontent.com.json';
@@ -62,7 +62,31 @@ async function start() {
 start(); // Start the app
 
 
-
+function executeQuery(sql, callback=false) {
+    console.log(sql)
+    return new Promise((res, rej) => {
+        pool.query(sql, function (error, results, fields) {
+            console.log(results)
+            if (error) {
+                if (callback) {
+                    rej(callback(error, null))
+                }
+                else {
+                    rej([error, null])
+                }
+                console.log("ERROR: " + String(error))
+                throw new Error()
+            } else {
+                if (callback) {
+                    res(callback(null, results))
+                }
+                else {
+                    console.log(res([null, results]))
+                }
+            }
+        })
+    })
+}
 
 // Get the access token and store it to the file
 function getAccessToken(oAuth2Client) {
@@ -522,24 +546,57 @@ const fileToDelete = '要删除的文件ID'; // 替换为要删除的文件ID
 deleteFile(fileToDelete);
 */
 
+
+
+
+
+
+
+
+
+
 const mysql = require('mysql');
 const dbConfig = require('./config/DBConfig'); //   Import the database configuration
 const bodyParser = require('body-parser');
+
+console.log(dbConfig);
 
 app.use(bodyParser.json());
 
 const connection = mysql.createConnection(dbConfig);
 
+pool = mysql.createPool(dbConfig);
+
+pool.getConnection((err, connection) => {
+    if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.');
+        }
+        if (err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.');
+        }
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.');
+        }
+    }
+    if (connection) connection.release();
+    return;
+})
+
 // Connect to the database
+/*
 connection.connect(error => {
     if (error) throw error;
     console.log("Successfully connected to the database.");
 });
+*/
+
 
 
 // API endpoint to receive data and store it in the database
-app.post('/submit-form', (req, res) => {
-    let formData = req.body;
+app.post('/submit-form', async (req, res) => {
+    console.log("RECIEVED REQUEST")
+    const formData = req.body;
 
     // Output the form data for debugging
     // console.log('Received form data:', formData);
@@ -554,19 +611,55 @@ app.post('/submit-form', (req, res) => {
     });
 
     // Build the SQL query
-    const columns = Object.keys(formData).map(key => `\`${key}\``).join(', ');
+    const columns = Object.keys(formData).map(key => key).join(', ');
     const placeholders = Object.keys(formData).map(() => '?').join(', ');
-    const query = `INSERT INTO survey_responses (${columns}) VALUES (${placeholders})`;
-    const values = Object.values(formData);
+    const query = SQL`INSERT INTO survey_responses (
+        Drive_Train_Type, 
+        Wheel_Type, 
+        Intake_Type, 
+        Scoring_Locations, 
+        Robot_Weight, 
+        Robot_Length, 
+        Robot_Width, 
+        Robot_Height, 
+        Drive_Team_Members, 
+        Practice_Hours, 
+        Additional_Comments, 
+        Full_Robot_ImgId, 
+        Drive_Train_ImgId) VALUES (
+        ${formData.Drive_Train_Type}, 
+        ${formData.Wheel_Type}, 
+        ${formData.Intake_Type}, 
+        ${formData.Scoring_Locations}, 
+        ${formData.Robot_Weight}, 
+        ${formData.Robot_Length}, 
+        ${formData.Robot_Width}, 
+        ${formData.Robot_Height}, 
+        ${formData.Drive_Team_Members}, 
+        ${formData.Practice_Hours}, 
+        ${formData.Additional_Comments}, 
+        ${formData.Full_Robot_ImgId}, 
+        ${formData.Drive_Train_ImgId}
+        )`;
 
     // Execute the SQL query
-    connection.query(query, values, (err, result) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).send('Server error');
-        }
+    try {
+        await executeQuery(query); ////
         res.send('Data saved successfully');
-    });
+      } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).send('Server error');
+      }
+
+
+
+    // connection.query(query, values, (err, result) => {
+    //     if (err) {
+    //         console.error('Database error:', err);
+    //         return res.status(500).send('Server error');
+    //     }
+    //     res.send('Data saved successfully');
+    // });
 });
 
 // app.post('/submit-form', upload.none(), (req, res) => {
@@ -624,6 +717,39 @@ app.get('/drive-image/:fileId', async (req, res) => {
         res.status(500).send('Error fetching file');
     }
 });
+
+app.get("/", (req, res) => {
+    console.log("recieved")
+    return res.send("hello")
+})
+
+app.get('/teams', (req, res) => {
+    const query = req.query.query; // 获取查询参数
+    fs.readFile('teams.json', (err, data) => {
+      if (err) {
+        res.status(500).send('Error reading the JSON file');
+        return;
+      }
+      const teams = JSON.parse(data);
+      // 如果有查询参数，过滤 JSON 数据；否则返回全部数据
+      const filteredTeams = query
+        ? teams.filter(team =>
+            team.tm_name.toLowerCase().includes(query.toLowerCase())
+          )
+        : teams;
+  
+      res.json(filteredTeams); // 发送过滤后的数据
+    });
+  });
+  
+
+
+
+
+
+
+
+
 
 
 
