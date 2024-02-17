@@ -13,7 +13,7 @@
     "@formkit/vue": "^1.5.7",
     "axios": "^1.6.5",
     "element-plus": "^2.5.1",
-    "my-vue-app": "link:",
+    "my-vue-app": "file:",
     "vform-builds": "^2.2.9",
     "vform3-builds": "^3.0.10",
     "vue": "^3.3.11",
