@@ -10,8 +10,8 @@ based on robot from last competition if form same season -->
         <div class="form-header">
           <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
 
+          <!-- Auto-save status -->
           <div class="saving-status">
-
             <span v-if="savingStatus === 'idle'" style="color: #529b2e; display: contents;">
               <el-icon color="#337ecc" :size="20">
                 <checked />
@@ -43,6 +43,7 @@ based on robot from last competition if form same season -->
         </div>
         <br />
 
+        <!-- Form questions -->
         <div class="question-continer">
           <el-form-item v-for="x of form" :key="x.question" :label="x.question" :required="x.required" :rules="[
             {
@@ -65,6 +66,7 @@ based on robot from last competition if form same season -->
               title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
             <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
             </el-input>
+
             <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
               :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
               @select="handleSelect" />
@@ -128,9 +130,18 @@ based on robot from last competition if form same season -->
 
 <script>
 import axios from "axios";
+
 //import the right stuff below
 const _event = "test";
-const teams = [695, 2000];
+const teams = [];
+
+
+// const teams = apiU;
+
+
+
+
+
 export default {
   data() {
     return {
@@ -284,19 +295,19 @@ export default {
 
       // el-form
       formData: {
-        event: _event, // 从组件的其他部分获取，或者设为默认值
-        teamNumber: null, // 默认值，将在表单中选择
-        driveTrainType: null, // 根据用户的选择设置
-        wheelType: null, // 根据用户的选择设置
-        intakeType: [], // 多选，因此使用数组
-        scoringLocations: [], // 多选，因此使用数组
-        robotWeight: null, // 用户输入
-        robotDimensionLength: null, // 用户输入
-        robotDimensionWidth: null, // 用户输入
-        robotDimensionHeight: null, // 用户输入
-        driveTeamMembers: null, // 根据用户的选择或输入设置
-        practiceHoursPerWeek: null, // 用户输入
-        additionalComments: null, // 用户输入
+        event: _event,
+        teamNumber: null,
+        driveTrainType: null,
+        wheelType: null,
+        intakeType: [],
+        scoringLocations: [],
+        robotWeight: null,
+        robotDimensionLength: null,
+        robotDimensionWidth: null,
+        robotDimensionHeight: null,
+        driveTeamMembers: null,
+        practiceHoursPerWeek: null,
+        additionalComments: null,
       },
     };
   },
@@ -352,249 +363,273 @@ export default {
             );
           });
           setTimeout(() => {
-              this.savingStatus = 'success';
-              this.formModified = false; // 重置表单修改状态，以便再次触发
-            }, 2000); // 假设保存操作需要2秒
-          }, 500); // 用户停止输入500毫秒后开始保存
-        },
-        deep: true,
+            this.savingStatus = 'success';
+            this.formModified = false; // 重置表单修改状态，以便再次触发
+          }, 1400); // 假设保存操作需要1.4秒
+        }, 300); // 用户停止输入300毫秒后开始保存
       },
+      deep: true,
     },
+  },
 
-    methods: {
-      handleRadioChange(question, value) {
-        question.showOtherInput = value === "other";
-      },
-      handleCheckboxChange(question, values) {
-        question.showOtherInput = values.includes("other");
-      },
-      handleSelect: (item) => { },
-      querySearch(queryString, cb) {
-        const filter = (team) => team.value.indexOf(queryString) === 0;
-        const results = queryString ? this.teams.filter(filter) : this.teams;
-        cb(results);
-      },
-      mounted() {
-        // Check if the form has been saved before
-        this.form.forEach((question) => {
-          if (question.type === "radio" && question.value === "other") {
-            question.showOtherInput = true;
-          }
-          if (question.type === "checkbox" && question.value.includes("other")) {
-            question.showOtherInput = true;
-          }
-        });
-      },
+  methods: {
+    querySearch(queryString, cb) {
+      if (queryString.trim().length === 0) {
+        cb([]);
+        return;
+      }
 
-      restoreFormData() {
-        this.form.forEach((question) => {
-          try {
-            // From normal input type, make sure the value is not null
-            const savedValue = localStorage.getItem(question.question);
-            if (savedValue && savedValue !== "null") {
-              question.value = savedValue;
-            }
+      // 这里替换为你的API URL
+      // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
+      const apiUrl = `http://localhost:39390/teams?query=${queryString}`;
 
-            // From radio type, make sure the value is 'other'
-            const otherValue = localStorage.getItem(
-              question.question + "-otherValue"
-            );
-            if (otherValue && otherValue !== "null") {
-              question.otherValue = otherValue;
-            }
-
-            // From checkbox type, make sure the value is an array
-            if (question.type === "checkbox" && savedValue) {
-              question.value = JSON.parse(savedValue);
-            }
-
-            // Update the showOtherInput status
-            if (
-              (question.type === "radio" && question.value === "other") ||
-              (question.type === "checkbox" && question.value.includes("other"))
-            ) {
-              question.showOtherInput = true;
-            }
-          } catch (error) {
-            console.error("Error restoring form data:", error);
-          }
-        });
-      },
-
-      // 模拟保存方法，实际应替换为真实的保存逻辑
-      async simulateSave() {
-        // 模拟异步保存操作
-        return new Promise((resolve, reject) => {
-          // 模拟保存成功
-          resolve();
-          // 若需要模拟保存失败，可使用 reject();
-        });
-      },
-
-      // 在组件销毁前清除定时器
-      beforeDestroy() {
-        if (this.saveTimeout) {
-          clearTimeout(this.saveTimeout);
-        }
-      },
-
-      clearForm() {
-        this.$confirm("Are you sure you want to clear the form?", "Warning", {
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-          type: "warning",
+      axios.get(apiUrl)
+        .then(response => {
+          // 假设响应数据的格式是 [{tm_number: '1', tm_name: 'The Juggernauts'}, {...}]
+          const results = response.data.map(item => ({
+            value: `${item.tm_number} - ${item.tm_name}`
+          }));
+          cb(results);
         })
-          .then(() => {
-            this.resetFormData();
-            this.$message({
-              type: "success",
-              message: "Form has been cleared!",
-            });
-
-            // Reset the saving status
-            this.savingStatus = 'idle';
-            this.formModified = false;
-          })
-          .catch(() => {
-            this.$message({
-              type: "error",
-              message: "Clear Canceled",
-            });
-          });
-      },
-
-      // Reset the form data
-      resetFormData() {
-        this.form.forEach((question) => {
-          if (question.type === "checkbox") {
-            question.value = [];
-          } else {
-            question.value = null;
-          }
-          question.showOtherInput = false;
-          question.otherValue = "";
+        .catch(error => {
+          console.error('Error during API call:', error);
+          cb([]);
         });
-      },
-
-      submitForm() {
-        this.$refs.form.validate(async (valid) => {
-          if (valid) {
-
-            // Update the formData object to include all form fields
-            this.formData = {
-              Event: this.form.find(item => item.question === "").value,
-              Team_Number: this.form.find(item => item.question === "Team number").value,
-              Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
-              Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
-              Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
-              Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
-              Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
-              Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
-              Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
-              Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
-              Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
-              Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
-              Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
-              Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
-              Drive_Train_ImgId: this.fileIds.driveTrain.join(",") // Drive Train Image ID
-            };
-
-            try {
-              await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
-              this.$message.success("Form submitted successfully");
-              // 提交后将自动保存状态重置为成功
-              this.savingStatus = 'success';
-              this.formModified = false; // 重置表单修改状态
-            } catch (error) {
-              console.error("Error submitting form:", error);
-              this.$message.error("Error submitting form");
-              this.savingStatus = 'error'; // 更新状态为错误
-            }
-          }
-        });
-        // 表单提交逻辑保持不变...
-        this.resetFormState(); // 重置表单状态
-      },
-
-      // 页面加载和表单恢复数据时调用此方法重置状态
-      created() {
-        this.restoreFormData();
-        this.resetFormState(); // 页面加载时重置表单状态
-      },
-
-
-      // New method: Format array values
-      formatArrayValues(arrayValues, otherValue) {
-        // If the array contains 'other', then use otherValue to replace, otherwise convert the array to a comma-separated string
-        if (arrayValues.includes('other')) {
-          return otherValue;
-        } else {
-          return arrayValues.join(",");
-        }
-      },
-
-
-      handleSuccess0(response, file) {
-        console.log("Upload successful:", response);
-        if (response && response.fileId) {
-          const fileId = response.fileId;
-          file.fileId = fileId; // Add fileId to the file object
-          this.fileList.fullRobot.push(file); // Add file object to array
-          this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
-
-          console.log("Updated fileIds:", JSON.stringify(this.fileIds));
-        } else {
-          console.error("No fileId returned from the server");
-        }
-      },
-
-      handleSuccess1(response, file) {
-        console.log("Upload successful:", response);
-        if (response && response.fileId) {
-          const fileId = response.fileId;
-          file.fileId = fileId; // Add fileId to the file object
-          this.fileList.driveTrain.push(file); // Add file object to array
-          this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
-
-          console.log("Updated fileIds:", JSON.stringify(this.fileIds));
-        } else {
-          console.error("No fileId returned from the server");
-        }
-      },
-
-      handleRemove(file, fileList) {
-        console.log("File removed:", file);
-
-        const fileId = file.fileId;
-        if (!fileId) {
-          console.error("File ID is missing, cannot delete the file.");
-          return;
-        }
-
-        // Get the file list name
-        const fileListName =
-          fileList === this.fileList.fullRobot ? "fullRobot" : "driveTrain";
-
-        // Update the file list and fileID
-        this.fileIds[fileListName] = this.fileIds[fileListName].filter(
-          (id) => id !== fileId
-        );
-        this.fileList[fileListName] = this.fileList[fileListName].filter(
-          (f) => f.fileId !== fileId
-        );
-
-        // Send delete request to the server
-        axios
-          .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
-          .then((response) => {
-            console.log("File deletion response:", response.data);
-          })
-          .catch((error) => {
-            console.error("Error deleting the file:", error);
-          });
-      },
     },
-  };
+
+    handleRadioChange(question, value) {
+      question.showOtherInput = value === "other";
+    },
+    handleCheckboxChange(question, values) {
+      question.showOtherInput = values.includes("other");
+    },
+    handleSelect: (item) => { },
+    querySearch(queryString, cb) {
+      const filter = (team) => team.value.indexOf(queryString) === 0;
+      const results = queryString ? this.teams.filter(filter) : this.teams;
+      cb(results);
+    },
+    mounted() {
+      // Check if the form has been saved before
+      this.form.forEach((question) => {
+        if (question.type === "radio" && question.value === "other") {
+          question.showOtherInput = true;
+        }
+        if (question.type === "checkbox" && question.value.includes("other")) {
+          question.showOtherInput = true;
+        }
+      });
+    },
+
+    restoreFormData() {
+      this.form.forEach((question) => {
+        try {
+          // From normal input type, make sure the value is not null
+          const savedValue = localStorage.getItem(question.question);
+          if (savedValue && savedValue !== "null") {
+            question.value = savedValue;
+          }
+
+          // From radio type, make sure the value is 'other'
+          const otherValue = localStorage.getItem(
+            question.question + "-otherValue"
+          );
+          if (otherValue && otherValue !== "null") {
+            question.otherValue = otherValue;
+          }
+
+          // From checkbox type, make sure the value is an array
+          if (question.type === "checkbox" && savedValue) {
+            question.value = JSON.parse(savedValue);
+          }
+
+          // Update the showOtherInput status
+          if (
+            (question.type === "radio" && question.value === "other") ||
+            (question.type === "checkbox" && question.value.includes("other"))
+          ) {
+            question.showOtherInput = true;
+          }
+        } catch (error) {
+          console.error("Error restoring form data:", error);
+        }
+      });
+    },
+
+    // 模拟保存方法，实际应替换为真实的保存逻辑
+    async simulateSave() {
+      // 模拟异步保存操作
+      return new Promise((resolve, reject) => {
+        // 模拟保存成功
+        resolve();
+        // 若需要模拟保存失败，可使用 reject();
+      });
+    },
+
+    // 在组件销毁前清除定时器
+    beforeDestroy() {
+      if (this.saveTimeout) {
+        clearTimeout(this.saveTimeout);
+      }
+    },
+
+    clearForm() {
+      this.$confirm("Are you sure you want to clear the form?", "Warning", {
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        type: "warning",
+      })
+        .then(() => {
+          this.resetFormData();
+          this.$message({
+            type: "success",
+            message: "Form has been cleared!",
+          });
+
+          // Reset the saving status
+          this.savingStatus = 'idle';
+          this.formModified = false;
+        })
+        .catch(() => {
+          this.$message({
+            type: "error",
+            message: "Clear Canceled",
+          });
+        });
+    },
+
+    // Reset the form data
+    resetFormData() {
+      this.form.forEach((question) => {
+        if (question.type === "checkbox") {
+          question.value = [];
+        } else {
+          question.value = null;
+        }
+        question.showOtherInput = false;
+        question.otherValue = "";
+      });
+    },
+
+    submitForm() {
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+
+          // Update the formData object to include all form fields
+          this.formData = {
+            Event: this.form.find(item => item.question === "").value,
+            Team_Number: this.form.find(item => item.question === "Team number").value,
+            Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
+            Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
+            Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
+            Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
+            Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
+            Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
+            Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
+            Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
+            Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
+            Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
+            Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
+            Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
+            Drive_Train_ImgId: this.fileIds.driveTrain.join(",") // Drive Train Image ID
+          };
+
+          try {
+            await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
+            this.$message.success("Form submitted successfully");
+            // 提交后将自动保存状态重置为成功
+            this.savingStatus = 'success';
+            this.formModified = false; // 重置表单修改状态
+          } catch (error) {
+            console.error("Error submitting form:", error);
+            this.$message.error("Error submitting form");
+            this.savingStatus = 'error'; // 更新状态为错误
+          }
+        }
+      });
+      // 表单提交逻辑保持不变...
+      this.resetFormState(); // 重置表单状态
+    },
+
+    // 页面加载和表单恢复数据时调用此方法重置状态
+    created() {
+      this.restoreFormData();
+      this.resetFormState(); // 页面加载时重置表单状态
+    },
+
+
+    // New method: Format array values
+    formatArrayValues(arrayValues, otherValue) {
+      // If the array contains 'other', then use otherValue to replace, otherwise convert the array to a comma-separated string
+      if (arrayValues.includes('other')) {
+        return otherValue;
+      } else {
+        return arrayValues.join(",");
+      }
+    },
+
+
+    handleSuccess0(response, file) {
+      console.log("Upload successful:", response);
+      if (response && response.fileId) {
+        const fileId = response.fileId;
+        file.fileId = fileId; // Add fileId to the file object
+        this.fileList.fullRobot.push(file); // Add file object to array
+        this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
+
+        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
+      } else {
+        console.error("No fileId returned from the server");
+      }
+    },
+
+    handleSuccess1(response, file) {
+      console.log("Upload successful:", response);
+      if (response && response.fileId) {
+        const fileId = response.fileId;
+        file.fileId = fileId; // Add fileId to the file object
+        this.fileList.driveTrain.push(file); // Add file object to array
+        this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
+
+        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
+      } else {
+        console.error("No fileId returned from the server");
+      }
+    },
+
+    handleRemove(file, fileList) {
+      console.log("File removed:", file);
+
+      const fileId = file.fileId;
+      if (!fileId) {
+        console.error("File ID is missing, cannot delete the file.");
+        return;
+      }
+
+      // Get the file list name
+      const fileListName =
+        fileList === this.fileList.fullRobot ? "fullRobot" : "driveTrain";
+
+      // Update the file list and fileID
+      this.fileIds[fileListName] = this.fileIds[fileListName].filter(
+        (id) => id !== fileId
+      );
+      this.fileList[fileListName] = this.fileList[fileListName].filter(
+        (f) => f.fileId !== fileId
+      );
+
+      // Send delete request to the server
+      axios
+        .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
+        .then((response) => {
+          console.log("File deletion response:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error deleting the file:", error);
+        });
+    },
+  },
+};
 </script>
 
 <style scoped>
