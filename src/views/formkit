@@ -9,14 +9,15 @@ const form=[
   { question: 'event', type: 'hidden', value: _event },
   { question: 'event', type: 'hidden', value: year },
   { question: 'Team number', type: 'autocomplete', options: ["695","2000"], value:"" },
-  { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', "West Coast Drive (wheels mounted off one side of tube)", "Swerve Drive"], value:"",  src: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A", w: "50%" },
-  { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)"], value:"", src: "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw", w: "100%"},
+  { question: 'Type of drive train', type: 'radio', options: ['Tank Drive ("skid steer", plates on both sides of wheels)', "West Coast Drive (wheels mounted off one side of tube)", "Swerve Drive", "Other"], value:"",  src: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A", w: "40%" },
+  { question: 'Type of wheels used', type: 'radio', options: ["Traction","Mecanum (rollers at 45° angle)","Omni (rollers at 90° angle)", "Other"], value:"", src: "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw", w: "70%"},
   { question: 'Intake Use:', type: 'checkbox', options: ["Ground","Station"], value:[] },
-  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Hang"], value:[] },
-  { question: 'Robot Weight', type: 'number', value:"" },
-  { question: 'Robot Dimension (Length in Inches) without bumpers - front to back', type: 'number', value:"" },//might need to be text
-  { question: 'Robot Dimension (Width in Inches) without bumpers - left to right', type: 'number', value:"" },//might need to be text
-  { question: 'Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match', type: 'number', value:"" },//might need to be text
+  { question: 'Scoring Locations:', type: 'checkbox', options: ["Amp","Speaker","Trap","Hang","Harmony"], value:[] },
+  { question: 'Robot Weight (lbs)', type: 'number', value:"" },
+  { question: 'Robot Length (in) without bumpers - front to back', type: 'number', value:"" },//might need to be text
+  { question: 'Robot Width (in) without bumpers - left to right', type: 'number', value:"" },//might need to be text
+  { question: 'Starting Robot Height (in) from floor to highest point on robot at the start of the match', type: 'number', value:"" },//might need to be text
+  {question: "Manueverability", type: "checkbox", options: ["Can it drive under the core"], value: []},
   { question: 'Drive Team Members', type: 'radio', options: ["One person driving and operating the robot during a match","One person driving and One person operating the robot during a match","Other"], value:"" },
   { question: 'Hours/Weeks of Practice', type: 'text', value:"" },
   { question: 'Picture - Full Robot', type: 'file', value:"" },
@@ -27,8 +28,8 @@ const form=[
 </script>
 
 <template>
-  <h1>Pit Scouting Form</h1>
-  <FormKit
+  <h1 style="background-color:skyblue">Pit Scouting Form</h1>
+  <FormKit style="background-color:skyblue"
   type="form"
   submit-label="Submit"
   @submit="submitHandler"
@@ -60,15 +61,22 @@ const form=[
         validation="required"
         v-model="item.value"
       />
-      <FormKit
-        v-else-if="item.type==='radio'"
-        type="radio"
-        :label="item.question"
-        :options="item.options"
-        validation="required"
-        :name="item.question"
-        v-model="item.value"
-      />
+      <div v-else-if="item.type==='radio'">
+        <FormKit
+          type="radio"
+          :label="item.question"
+          :options="item.options"
+          validation="required"
+          :name="item.question"
+          v-model="item.value"
+        />
+        <FormKit
+          v-if="item.value==='Other'"
+          type="text"
+          :name="'Other: '+item.question"
+          v-model="item.othervalue"
+        />
+      </div>
       <FormKit
         v-else-if="item.type==='checkbox'"
         :label="item.question"
@@ -115,7 +123,7 @@ const form=[
         v-model="item.value"
       />
     </div>
-    <!-to see data while entering<pre wrap>{{value}}</pre>-->
+    <!--to see data while entering<pre wrap>{{value}}</pre>-->
   </FormKit>
   <br/>
 </template>
