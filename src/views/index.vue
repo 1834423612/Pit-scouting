@@ -305,6 +305,7 @@ export default {
         robotDimensionLength: null,
         robotDimensionWidth: null,
         robotDimensionHeight: null,
+        heightWhenFullyExtended: null,
         driveTeamMembers: null,
         practiceHoursPerWeek: null,
         additionalComments: null,
