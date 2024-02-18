@@ -14,6 +14,7 @@
     "axios": "^1.6.5",
     "element-plus": "^2.5.1",
     "my-vue-app": "file:",
+    "sweetalert2": "^11.10.5",
     "vform-builds": "^2.2.9",
     "vform3-builds": "^3.0.10",
     "vue": "^3.3.11",
