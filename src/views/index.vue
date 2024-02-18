@@ -98,31 +98,31 @@ based on robot from last competition if form same season -->
 
             <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
           </el-form-item>
-        </div>
-        <el-form-item label="Picture - Full Robot">
-          <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
-            :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
-            <el-icon :size="50" color="#b3b3b3">
-              <upload />
-            </el-icon>
-            <div class="el-upload__text">
-              Drag files here or <em>click to upload</em>
-            </div>
-          </el-upload>
-        </el-form-item>
+          <el-form-item label="Picture - Full Robot">
+            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
+              :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
+              <el-icon :size="50" color="#b3b3b3">
+                <upload />
+              </el-icon>
+              <div class="el-upload__text">
+                Drag files here or <em>click to upload</em>
+              </div>
+            </el-upload>
+          </el-form-item>
 
-        <el-form-item label="Picture - Drive Train">
-          <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
-            :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
-            <el-icon :size="50" color="#b3b3b3">
-              <upload />
-            </el-icon>
-            <div class="el-upload__text">
-              Drag files here or <em>click to upload</em>
-            </div>
-          </el-upload>
-        </el-form-item>
-        <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+          <el-form-item label="Picture - Drive Train">
+            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
+              :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
+              <el-icon :size="50" color="#b3b3b3">
+                <upload />
+              </el-icon>
+              <div class="el-upload__text">
+                Drag files here or <em>click to upload</em>
+              </div>
+            </el-upload>
+          </el-form-item>
+          </div>
+          <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
       </el-form>
     </div>
   </div>
@@ -134,6 +134,19 @@ import axios from "axios";
 //import the right stuff below
 const _event = "test";
 const teams = [];
+
+
+// 转换换行符为 <br> 的示例
+// // 假设 additionalComments 是从数据库中取出的字符串
+// let additionalComments = "这是一段文本。\n这是新的一行。";
+
+// // 在 HTML 中显示时，将 \n 转换为 <br>
+// additionalComments = additionalComments.replace(/\n/g, '<br>');
+
+// // 然后将处理后的字符串设置到相应的元素中
+// document.getElementById('comments').innerHTML = additionalComments;
+
+
 
 
 // const teams = apiU;
