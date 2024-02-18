@@ -571,7 +571,7 @@ export default {
         }
       });
       // 表单提交逻辑保持不变...
-      this.resetFormState(); // 重置表单状态
+      this.resetFormData(); // 重置表单状态
     },
 
     // 页面加载和表单恢复数据时调用此方法重置状态
