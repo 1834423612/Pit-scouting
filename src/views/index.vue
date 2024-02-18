@@ -264,7 +264,7 @@ export default {
         },
 
         {
-          question: "Manueverability",
+          question: "Maneuverability",
           type: "checkbox",
           options: ["Can it drive under the core"],
           value: [], // should be an array if it's a checkbox
@@ -318,7 +318,7 @@ export default {
         robotDimensionLength: null,
         robotDimensionWidth: null,
         robotDimensionHeight: null,
-        manueverability: null,
+        maneuverability: [],
         heightWhenFullyExtended: null,
         driveTeamMembers: null,
         practiceHoursPerWeek: null,
@@ -536,13 +536,21 @@ export default {
             Team_Number: this.form.find(item => item.question === "Team number").value,
             Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
             Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
+            // Intake_Type: this.form.find(item => item.question === "Intake Use:").value === "other" ? this.form.find(item => item.question === "Intake Use:").otherValue : this.form.find(item => item.question === "Intake Use:").value,
+            
             Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
+            
+            
             Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
             Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
             Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
             Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
             Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
             Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
+            // Manueverability: this.form.find(item => item.question === "Manueverability").value === "other" ? this.form.find(item => item.question === "Manueverability").otherValue : this.form.find(item => item.question === "Manueverability").value,
+            
+            Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
+
             Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
             Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
             Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
