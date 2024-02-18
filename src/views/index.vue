@@ -121,8 +121,8 @@ based on robot from last competition if form same season -->
               </div>
             </el-upload>
           </el-form-item>
-          </div>
-          <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+        </div>
+        <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
       </el-form>
     </div>
   </div>
@@ -130,6 +130,7 @@ based on robot from last competition if form same season -->
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 //import the right stuff below
 const _event = "test";
@@ -219,7 +220,7 @@ export default {
         {
           question: "Scoring Locations:",
           type: "checkbox",
-          options: ["Amp", "Speaker", "Trap","Hang", "Harmony"],
+          options: ["Amp", "Speaker", "Trap", "Hang", "Harmony"],
           value: [], // should be an array if it's a checkbox
           required: true,
           showOtherInput: false, // show the textarea when first load the page?
@@ -527,46 +528,85 @@ export default {
     },
 
     submitForm() {
-      this.$refs.form.validate(async (valid) => {
-        if (valid) {
+      // 使用SweetAlert2创建确认对话框
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "It will submit the form once you click the button, and you won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Submit',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 用户确认提交
+          this.$refs.form.validate(async (valid) => {
+            if (valid) {
 
-          // Update the formData object to include all form fields
-          this.formData = {
-            Event: this.form.find(item => item.question === "").value,
-            Team_Number: this.form.find(item => item.question === "Team number").value,
-            Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
-            Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
-            Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
-            Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
-            Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
-            Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
-            Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
-            Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
-            Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
-            Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
+              // Update the formData object to include all form fields
+              this.formData = {
+                Event: this.form.find(item => item.question === "").value,
+                Team_Number: this.form.find(item => item.question === "Team number").value,
+                Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
+                Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
+                Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
+                Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
+                Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
+                Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
+                Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
+                Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
+                Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
+                Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
 
-            Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
-            Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
-            Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
-            Drive_Train_ImgId: this.fileIds.driveTrain.join(",") // Drive Train Image ID
-          };
+                Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
+                Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
+                Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
+                Drive_Train_ImgId: this.fileIds.driveTrain.join(",") // Drive Train Image ID
+              };
 
-          try {
-            await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
-            this.$message.success("Form submitted successfully");
-            // 提交后将自动保存状态重置为成功
-            this.savingStatus = 'success';
-            this.formModified = false; // 重置表单修改状态
-          } catch (error) {
-            console.error("Error submitting form:", error);
-            this.$message.error("Error submitting form");
-            this.savingStatus = 'error'; // 更新状态为错误
-          }
+              try {
+                await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
+
+                // 显示提交成功的提示
+                Swal.fire(
+                  'Success!',
+                  'Form submitted successfully',
+                  'success'
+                )
+                this.$message.success("Form submitted successfully");
+                // 清空表单和重置状态
+                this.resetFormData();
+                this.savingStatus = 'idle'; // 重置自动保存状态
+                this.formModified = false;
+              } catch (error) {
+                console.error("Error submitting form:", error);
+                this.$message.error("Error submitting form");
+                this.savingStatus = 'error'; // 更新状态为错误
+                // 处理提交失败的情况
+                Swal.fire(
+                  'Error!',
+                  'An error occurred while submitting the form',
+                  'error'
+                )
+              }
+            }
+          });
         }
       });
-      // 表单提交逻辑保持不变...
-      this.resetFormData(); // 重置表单状态
     },
+
+    resetFormData() {
+      // 清空表单数据的逻辑
+      this.form.forEach((question) => {
+        question.value = question.type === "checkbox" ? [] : null;
+        question.showOtherInput = false;
+        question.otherValue = "";
+      });
+      // 清空其他需要重置的状态或数据
+    },
+
 
     // 页面加载和表单恢复数据时调用此方法重置状态
     created() {
@@ -584,7 +624,6 @@ export default {
         return arrayValues.join(",");
       }
     },
-
 
     handleSuccess0(response, file) {
       console.log("Upload successful:", response);
