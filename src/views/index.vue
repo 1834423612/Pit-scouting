@@ -482,7 +482,7 @@ export default {
       });
     },
 
-    // 在组件销毁前清除定时器
+    // Will be called before the component is destroyed
     beforeDestroy() {
       if (this.saveTimeout) {
         clearTimeout(this.saveTimeout);
@@ -528,7 +528,7 @@ export default {
     },
 
     submitForm() {
-      // 使用SweetAlert2创建确认对话框
+      // Use SweetAlert2 to create a confirmation dialog
       Swal.fire({
         title: 'Are you sure?',
         text: "It will submit the form once you click the button, and you won't be able to revert this!",
@@ -541,7 +541,8 @@ export default {
         cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
-          // 用户确认提交
+
+          // Check if the form is valid
           this.$refs.form.validate(async (valid) => {
             if (valid) {
 
@@ -569,22 +570,24 @@ export default {
               try {
                 await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
 
-                // 显示提交成功的提示
+                // Show the success message
                 Swal.fire(
                   'Success!',
                   'Form submitted successfully',
                   'success'
                 )
                 this.$message.success("Form submitted successfully");
-                // 清空表单和重置状态
+
+                // Clear the form and reset the state
                 this.resetFormData();
-                this.savingStatus = 'idle'; // 重置自动保存状态
+                this.savingStatus = 'idle'; // Reset the status to default
                 this.formModified = false;
               } catch (error) {
                 console.error("Error submitting form:", error);
                 this.$message.error("Error submitting form");
-                this.savingStatus = 'error'; // 更新状态为错误
-                // 处理提交失败的情况
+                this.savingStatus = 'error'; // Update the status to error
+
+                // Show the error message
                 Swal.fire(
                   'Error!',
                   'An error occurred while submitting the form',
@@ -598,20 +601,20 @@ export default {
     },
 
     resetFormData() {
-      // 清空表单数据的逻辑
+      // Reset form data logic
       this.form.forEach((question) => {
         question.value = question.type === "checkbox" ? [] : null;
         question.showOtherInput = false;
         question.otherValue = "";
       });
-      // 清空其他需要重置的状态或数据
+      // Reset other data logic if we wants
     },
 
 
-    // 页面加载和表单恢复数据时调用此方法重置状态
+    // When the page is loaded and the form data is restored, this method is called to reset the status
     created() {
       this.restoreFormData();
-      this.resetFormState(); // 页面加载时重置表单状态
+      this.resetFormState(); // Reset the form state when the page is loaded
     },
 
 
