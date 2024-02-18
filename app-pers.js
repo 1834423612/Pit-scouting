@@ -9,7 +9,6 @@ const app = express();
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files(images)
 const cors = require('cors');
 
-let pool;
 // Allow cross-origin requests, use the default settings
 app.use(cors());
 
@@ -550,23 +549,22 @@ deleteFile(fileToDelete);
 
 
 
-
-
-
-
-
+// --------------------------------------------
+// 
+//                   Database
+// 
+// --------------------------------------------
 const mysql = require('mysql');
 const dbConfig = require('./config/DBConfig'); //   Import the database configuration
 const bodyParser = require('body-parser');
+let pool;
 
-console.log(dbConfig);
+// console.log(dbConfig);
 
 app.use(bodyParser.json());
 
-const connection = mysql.createConnection(dbConfig);
-
+// const connection = mysql.createConnection(dbConfig);
 pool = mysql.createPool(dbConfig);
-
 pool.getConnection((err, connection) => {
     if (err) {
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
@@ -598,6 +596,12 @@ app.post('/submit-form', async (req, res) => {
     console.log("RECIEVED REQUEST")
     const formData = req.body;
 
+    // 处理 additionalComments 字段，保留换行符
+    if (formData.additionalComments) {
+        // 确保换行符被保留，这里不需要转换，直接保存即可
+        formData.additionalComments = formData.additionalComments.replace(/\r\n/g, '\n');
+    }
+
     // Output the form data for debugging
     // console.log('Received form data:', formData);
 
@@ -611,9 +615,11 @@ app.post('/submit-form', async (req, res) => {
     });
 
     // Build the SQL query
-    const columns = Object.keys(formData).map(key => key).join(', ');
-    const placeholders = Object.keys(formData).map(() => '?').join(', ');
+    // const columns = Object.keys(formData).map(key => key).join(', ');
+    // const placeholders = Object.keys(formData).map(() => '?').join(', ');
     const query = SQL`INSERT INTO survey_responses (
+        Event,
+        Team_Number,
         Drive_Train_Type, 
         Wheel_Type, 
         Intake_Type, 
@@ -622,11 +628,14 @@ app.post('/submit-form', async (req, res) => {
         Robot_Length, 
         Robot_Width, 
         Robot_Height, 
-        Drive_Team_Members, 
+        Drive_Team_Members,
+        Maneuverability, 
         Practice_Hours, 
         Additional_Comments, 
         Full_Robot_ImgId, 
         Drive_Train_ImgId) VALUES (
+        ${formData.Event},
+        ${formData.Team_Number},
         ${formData.Drive_Train_Type}, 
         ${formData.Wheel_Type}, 
         ${formData.Intake_Type}, 
@@ -636,6 +645,7 @@ app.post('/submit-form', async (req, res) => {
         ${formData.Robot_Width}, 
         ${formData.Robot_Height}, 
         ${formData.Drive_Team_Members}, 
+        ${formData.Maneuverability},
         ${formData.Practice_Hours}, 
         ${formData.Additional_Comments}, 
         ${formData.Full_Robot_ImgId}, 
@@ -644,22 +654,12 @@ app.post('/submit-form', async (req, res) => {
 
     // Execute the SQL query
     try {
-        await executeQuery(query); ////
+        await executeQuery(query); 
         res.send('Data saved successfully');
       } catch (error) {
         console.error('Database error:', error);
         res.status(500).send('Server error');
       }
-
-
-
-    // connection.query(query, values, (err, result) => {
-    //     if (err) {
-    //         console.error('Database error:', err);
-    //         return res.status(500).send('Server error');
-    //     }
-    //     res.send('Data saved successfully');
-    // });
 });
 
 // app.post('/submit-form', upload.none(), (req, res) => {
@@ -684,10 +684,6 @@ app.post('/submit-form', async (req, res) => {
 //         res.send('Data saved successfully');
 //     });
 // });
-
-
-
-
 
 
 
