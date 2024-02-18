@@ -251,7 +251,7 @@ export default {
         },
 
         {
-          question: "Intake Use:",
+          question: "Manueverability",
           type: "checkbox",
           options: ["Can it drive under the core"],
           value: [], // should be an array if it's a checkbox
@@ -305,6 +305,7 @@ export default {
         robotDimensionLength: null,
         robotDimensionWidth: null,
         robotDimensionHeight: null,
+        manueverability: null,
         heightWhenFullyExtended: null,
         driveTeamMembers: null,
         practiceHoursPerWeek: null,
