@@ -1,133 +1,3 @@
-<!-- //to-do: serverside event input, team# as select, pre-fill from same bot number from last comp during this season,required attribute
-based on robot from last competition if form same season -->
-<template>
-  <div class="app">
-    <div class="form-container">
-      <el-form :model="formData" ref="form" label-width="120px" label-position="top">
-        <h3>Form</h3>
-
-        <el-divider border-style="dashed" />
-        <div class="form-header">
-          <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
-
-          <!-- Auto-save status -->
-          <div class="saving-status">
-            <span v-if="savingStatus === 'idle'" style="color: #529b2e; display: contents;">
-              <el-icon color="#337ecc" :size="20">
-                <checked />
-              </el-icon>
-              This form supports auto-save
-            </span>
-
-            <span v-else-if="savingStatus === 'saving'" style="color: #909399; display: contents;">
-              <el-icon color="#909399" class="is-loading">
-                <loading />
-              </el-icon>
-              Saving...
-            </span>
-
-            <span v-else-if="savingStatus === 'success'" style="color: #67C23A; display: contents;">
-              <el-icon color="#67C23A" :size="20">
-                <check />
-              </el-icon>
-              Saved successfully
-            </span>
-
-            <span v-else-if="savingStatus === 'error'" style="color: #F56C6C; display: contents;">
-              <el-icon color="#F56C6C" :size="20">
-                <CloseBold />
-              </el-icon>
-              Error saving changes
-            </span>
-          </div>
-        </div>
-        <br />
-
-        <!-- Form questions -->
-        <div class="question-continer">
-          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :required="x.required" :rules="[
-            {
-              required: x.required,
-              message: 'This field is required',
-              trigger: 'blur',
-            },
-          ]">
-            <el-collapse class="collapse" v-if="typeof x.i === 'string'" v-model="activeName" accordion>
-              <el-collapse-item title="Image Drop-down" name="1">
-                <div>
-                  <img :src="x.i" alt="Error" :width="x.w" />
-                </div>
-              </el-collapse-item>
-            </el-collapse>
-
-            <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
-            <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
-            <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-              title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
-            <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
-            </el-input>
-
-            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
-              :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
-              @select="handleSelect" />
-            <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
-              @change="handleRadioChange(x, $event)">
-              <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
-
-              <el-radio label="other" :value="x.otherValue"></el-radio>
-
-              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
-                placeholder="Please input"></el-input>
-            </el-radio-group>
-
-            <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value"
-              @change="handleCheckboxChange(x, $event)" class="vertical-layout">
-              <el-checkbox v-for="option in x.options" :key="option" :label="option">{{ option }}</el-checkbox>
-              <el-checkbox label="other"></el-checkbox>
-              <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
-            </el-checkbox-group>
-
-            <!--doesn't work:<el-select v-else-if="x.type==='select'" v-model="x.value" required>
-            <el-option
-              v-for="option in x.options"
-              :key="option"
-              :label="option"
-            >{{ option }}
-            </el-option>
-          </el-select>-->
-
-            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
-          </el-form-item>
-          <el-form-item label="Picture - Full Robot">
-            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
-              :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
-                <upload />
-              </el-icon>
-              <div class="el-upload__text">
-                Drag files here or <em>click to upload</em>
-              </div>
-            </el-upload>
-          </el-form-item>
-
-          <el-form-item label="Picture - Drive Train">
-            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
-              :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
-                <upload />
-              </el-icon>
-              <div class="el-upload__text">
-                Drag files here or <em>click to upload</em>
-              </div>
-            </el-upload>
-          </el-form-item>
-        </div>
-        <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
-      </el-form>
-    </div>
-  </div>
-</template>
-
 <script>
 import axios from "axios";
 import Swal from 'sweetalert2'
@@ -155,143 +25,145 @@ const teams = [];
 
 
 
-
 export default {
-  data() {
-    return {
-      teams: teams.map(team => ({ value: team.toString() })),
+ data() {
+   return {
+     teams: teams.map(team => ({ value: team.toString() })),
 
-      savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
-      formModified: false,
 
-      form: [
-        {
-          question: "",
-          type: "hidden",
-          required: true,
-          value: _event,
-        },
-        {
-          question: "Team number",
-          type: "autocomplete",
-          //options: [ "option0" , "option1" ],
-          required: true,
-          value: null,
-        },
-        {
-          i: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
-          w: "50%",
-          question: "Type of drive train",
-          type: "radio",
-          options: [
-            'Tank Drive ("skid steer", plates on both sides of wheels)',
-            "West Coast Drive (wheels mounted off one side of tube)",
-            "Swerve Drive",
-          ],
-          value: null,
-          required: true,
-          showOtherInput: false, // show the textarea when first load the page?
-          otherValue: "", // Store the value of the text input
-        },
-        {
-          i: "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
-          w: "100%",
-          question: "Type of wheels used",
-          type: "radio",
-          options: [
-            "Traction",
-            "Mecanum (rollers at 45° angle)",
-            "Omni (rollers at 90° angle)",
-          ],
-          value: null,
-          required: true,
-          showOtherInput: false, // show the textarea when first load the page?
-          otherValue: "", // Store the value of the text input
-        },
-        {
-          question: "Intake Use:",
-          type: "checkbox",
-          options: ["Ground", "Station"],
-          value: [], // should be an array if it's a checkbox
-          required: true,
-          showOtherInput: false, // show the textarea when first load the page?
-          otherValue: "", // Store the value of the text input
-        },
-        {
-          question: "Scoring Locations:",
-          type: "checkbox",
-          options: ["Amp", "Speaker", "Trap", "Hang", "Harmony"],
-          value: [], // should be an array if it's a checkbox
-          required: true,
-          showOtherInput: false, // show the textarea when first load the page?
-          otherValue: "", // Store the value of the text input
-        },
-        {
-          question: "Robot Weight (in pounds)",
-          type: "number",
-          required: true,
-          value: null,
-        },
-        {
-          question:
-            "Robot Dimension (Length in Inches) without bumpers - front to back",
-          type: "number",
-          required: true,
-          value: null,
-        },
-        {
-          question:
-            "Robot Dimension (Width in Inches) without bumpers - left to right",
-          type: "number",
-          required: true,
-          value: null,
-        },
-        {
-          question:
-            "Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match",
-          type: "number",
-          required: true,
-          value: null,
-        },
-        {
-          question: "Drive Team Members",
-          type: "radio",
-          options: [
-            "One person driving and operating the robot during a match",
-          ],
-          value: null,
-          required: true,
-          showOtherInput: false, // show the textarea when first load the page?
-        },
+     savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
+     formModified: false,
 
-        {
-          question: "Maneuverability",
-          type: "checkbox",
-          options: ["Can it drive under the core"],
-          value: [], // should be an array if it's a checkbox
-          required: false,
-          showOtherInput: false, // show the textarea when first load the page?
-          otherValue: "", // Store the value of the text input
-        },
-        {
-          question: "Height when fully extended (in inches)",
-          type: "number",
-          required: true,
-          value: null,
-        },
-        {
-          question: "Hours/Weeks of Practice",
-          type: "text",
-          required: true,
-          value: null,
-        },
-        {
-          question: "Additional Comments",
-          type: "textarea",
-          required: false,
-          value: null,
-        },
-      ],
+
+     form: [
+       {
+         question: "",
+         type: "hidden",
+         required: true,
+         value: _event,
+       },
+       {
+         question: "Team number",
+         type: "autocomplete",
+         //options: [ "option0" , "option1" ],
+         required: true,
+         value: null,
+       },
+       {
+         i: "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
+         w: "50%",
+         question: "Type of drive train",
+         type: "radio",
+         options: [
+           'Tank Drive-plates on both sides of wheels',
+           "West Coast Drive-wheels mounted on one side",
+           "Swerve Drive",
+         ],
+         value: null,
+         required: true,
+         showOtherInput: false, // show the textarea when first load the page?
+         otherValue: "", // Store the value of the text input
+       },
+       {
+         i: "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
+         w: "100%",
+         question: "Type of wheels used",
+         type: "radio",
+         options: [
+           "Traction",
+           "Mecanum-rollers at 45° angle",
+           "Omni-rollers at 90° angle",
+         ],
+         value: null,
+         required: true,
+         showOtherInput: false, // show the textarea when first load the page?
+         otherValue: "", // Store the value of the text input
+       },
+       {
+         question: "Intake Use:",
+         type: "checkbox",
+         options: ["Ground", "Station"],
+         value: [], // should be an array if it's a checkbox
+         required: true,
+         showOtherInput: false, // show the textarea when first load the page?
+         otherValue: "", // Store the value of the text input
+       },
+       {
+         question: "Scoring Locations:",
+         type: "checkbox",
+         options: ["Amp", "Speaker", "Trap", "Hang", "Harmony"],
+         value: [], // should be an array if it's a checkbox
+         required: true,
+         showOtherInput: false, // show the textarea when first load the page?
+         otherValue: "", // Store the value of the text input
+       },
+       {
+         question: "Robot Weight (in pounds)",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question:
+           "Robot Dimension (Length in Inches) without bumpers - front to back",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question:
+           "Robot Dimension (Width in Inches) without bumpers - left to right",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question:
+           "Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question: "Drive Team Members",
+         type: "radio",
+         options: [
+           "One person driving and operating the robot during a match",
+         ],
+         value: null,
+         required: true,
+         showOtherInput: false, // show the textarea when first load the page?
+       },
+
+
+       {
+         question: "Maneuverability",
+         type: "checkbox",
+         options: ["Can it drive under the core"],
+         value: [], // should be an array if it's a checkbox
+         required: false,
+         showOtherInput: false, // show the textarea when first load the page?
+         otherValue: "", // Store the value of the text input
+       },
+       {
+         question: "Height when fully extended (in inches)",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question: "Hours of Practice",
+         type: "number",
+         required: true,
+         value: null,
+       },
+       {
+         question: "Additional Comments",
+         type: "textarea",
+         required: false,
+         value: null,
+       },
+     ],
       // fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
       fileList: {
         fullRobot: [],
@@ -690,116 +562,201 @@ export default {
   },
 };
 </script>
+<!-- //to-do: serverside event input, team# as select, pre-fill from same bot number from last comp during this season,required attribute
+based on robot from last competition if form same season
+style:  radio options going into other img element if the option is long enough
+-->
+<template>
+ <div class="app">
+     <el-form :model="formData" ref="form" label-width="120px" label-position="top">
+       <h3>Pit-Scouting Form</h3>
+       <el-divider border-style="dashed" />
+       <div class="form-header">
+         <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
+
+
+         <!-- Auto-save status -->
+         <div class="saving-status">
+           <span v-if="savingStatus === 'idle'" style="color: #529b2e; display: contents; font-size:10px;">
+             <el-icon color="#337ecc" :size="20">
+               <checked />
+             </el-icon>
+             Autosave supported
+           </span>
+
+
+           <span v-else-if="savingStatus === 'saving'" style="color: #909399; display: contents;">
+             <el-icon color="#909399" class="is-loading">
+               <loading />
+             </el-icon>
+             Saving...
+           </span>
+
+
+           <span v-else-if="savingStatus === 'success'" style="color: #67C23A; display: contents;">
+             <el-icon color="#67C23A" :size="20">
+               <check />
+             </el-icon>
+             Saved successfully
+           </span>
+
+
+           <span v-else-if="savingStatus === 'error'" style="color: #F56C6C; display: contents;">
+             <el-icon color="#F56C6C" :size="20">
+               <CloseBold />
+             </el-icon>
+             Error saving changes
+           </span>
+         </div>
+       </div>
+       <br />
+
+
+       <!-- Form questions -->
+       <div>
+         <el-form-item v-for="x of form" :key="x.question" :label="x.question" :required="x.required" :rules="[
+           {
+             required: x.required,
+             message: 'This field is required',
+             trigger: 'blur',
+           },
+         ]">
+           <el-collapse class="collapse" v-if="typeof x.i === 'string'" v-model="activeName" accordion>
+             <el-collapse-item title="Image Drop-down" name="1">
+               <div>
+                 <img :src="x.i" alt="Error" :width="x.w" />
+               </div>
+             </el-collapse-item>
+           </el-collapse>
+
+
+           <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
+           <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
+           <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
+             title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
+           <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
+           </el-input>
+
+
+           <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
+             :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
+             @select="handleSelect" />
+           <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
+             @change="handleRadioChange(x, $event)">
+             <el-radio v-for="option in x.options" :key="option" :label="option" style="white-space: initial;line-height: 100%;">{{ option }}</el-radio>
+
+             <el-radio label="other" :value="x.otherValue"></el-radio>
+
+
+             <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
+               placeholder="Please input"></el-input>
+           </el-radio-group>
+
+
+           <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value"
+             @change="handleCheckboxChange(x, $event)" class="vertical-layout">
+             <el-checkbox v-for="option in x.options" :key="option" :label="option" style="white-space: initial;">{{ option }}</el-checkbox>
+             <el-checkbox label="other"></el-checkbox>
+             <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
+           </el-checkbox-group>
+
+
+           <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
+         </el-form-item>
+         <el-form-item label="Picture - Full Robot">
+           <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
+             :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
+             <el-icon :size="50" color="#b3b3b3">
+               <upload />
+             </el-icon>
+             <div class="el-upload__text">
+               Drag files here or <em>click to upload</em>
+             </div>
+           </el-upload>
+         </el-form-item>
+
+
+         <el-form-item label="Picture - Drive Train">
+           <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
+             :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
+             <el-icon :size="50" color="#b3b3b3">
+               <upload />
+             </el-icon>
+             <div class="el-upload__text">
+               Drag files here or <em>click to upload</em>
+             </div>
+           </el-upload>
+         </el-form-item>
+       </div>
+       <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+       <br />
+       <br />
+     </el-form>
+ </div>
+</template>
 
 <style scoped>
-.form-container {
-  margin-bottom: 10px;
-  padding: 15px 20px;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-    -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
-    4px 0px 3px 0 rgba(0, 0, 0, 0.12);
-  background-color: #c6e2ff;
-  width: 100%;
+.app {background-color: #c6e2ff;}
+.form-header {
+ display: flex;
+ align-items: flex-end;
+ align-content: center;
+ justify-content: space-between;
+ flex-wrap: wrap;
 }
 
-.form-header {
-  display: flex;
-  align-items: flex-end;
-  align-content: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
 
 .saving-status {
-  display: flex;
-  align-items: center;
+ display: flex;
+ align-items: center;
 }
+
 
 .vertical-layout {
-  display: inline-flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  font-size: 0;
-  flex-direction: column;
-
-  margin-left: 2%;
+ display: flex;
+ align-items: flex-start;
+ flex-wrap: wrap;
+ flex-direction: column;
+ margin-left: 2%;
 }
 
-.question-continer {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  flex: 1;
-  line-height: 32px;
-  position: relative;
-  font-size: var(--font-size);
-  min-width: 0;
-  flex-direction: column;
-  align-content: flex-start;
-  /* align-items: flex-start; */
-  /* Auto detect the width of the container */
-  width: -webkit-fill-available;
-}
 
 .collapse {
-  margin-left: 2%;
-  width: -webkit-fill-available;
-  background-color: #c6e2ff;
+ margin-left: 2%;
+ width: -webkit-fill-available;
 }
+
 
 /* Style for <details> when it is not open */
-el-collapse-item {
-  width: 100%;
-}
+el-collapse-item {width: 100%;}
 
-el-collapse-item {
-  background-color: #8192a4;
-}
 
 .shadow {
-  background-color: dodgerblue !important;
-  box-shadow: 0 6px #3077b9;
-  transition: all 0.1s ease-in-out;
-}
+ background-color: dodgerblue !important;
+ box-shadow: 0 6px #3077b9;
+ border:none;
 
+
+}
 .shadow:hover {
-  background-color: #66b3ff !important;
-  box-shadow: 0 6px #76a5e3;
-  transition: all 0.1s ease-in-out;
+ background-color: #66b3ff !important;
+ box-shadow: 0 6px #76a5e3;
+ border:none;
+ transition: all 0.1s ease-in-out;
+}
+.shadow:active {
+ background-color: #0066cc !important;
+ box-shadow: 0 6px #1f4e7a;
+ border:none;
+ transition: all 0.1s ease-in-out;
 }
 
-.shadow:active {
-  background-color: #0066cc !important;
-  box-shadow: 0 6px #1f4e7a;
-  transition: all 0.1s ease-in-out;
-}
 
 /* Auto detect User's screen size */
-
 /* Lower than 960px */
 /* Phone size */
-@media screen and (max-width: 960px) {
-  #app {
-    max-width: 350px;
-    padding: 0rem;
-  }
-
-  .form-container {
-    background: #000;
-    padding: 10px 20px;
-    border-radius: 15px;
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
-    background-color: #c6e2ff;
-    /* width: 100%; */
-  }
-}
-
+@media screen and (max-width: 960px) {}
 /* Higher than 960px */
 /* Laptop/PC size */
-@media screen and (min-width: 960px) {
-
-  .question-continer {
-    max-width: 650px;
-  }
-}
+@media screen and (min-width: 960px) {}
 </style>
