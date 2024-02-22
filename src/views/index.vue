@@ -45,7 +45,7 @@ based on robot from last competition if form same season -->
 
         <!-- Form questions -->
         <div class="question-continer">
-          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :required="x.required" :rules="[
+          <el-form-item v-for="x of form" :key="x.question" :label="x.question" :rules="[
             {
               required: x.required,
               message: 'This field is required',
@@ -96,7 +96,7 @@ based on robot from last competition if form same season -->
             </el-option>
           </el-select>-->
 
-            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
+            <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value"></el-input>
           </el-form-item>
           <el-form-item label="Picture - Full Robot">
             <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
@@ -134,24 +134,24 @@ import Swal from 'sweetalert2'
 
 //import the right stuff below
 const _event = "test";
+
+// Team list, should change to an API call soon
 const teams = [];
 
 
-// 转换换行符为 <br> 的示例
-// // 假设 additionalComments 是从数据库中取出的字符串
-// let additionalComments = "这是一段文本。\n这是新的一行。";
+/*
+// Example of replace
+// Replace \n with <br>
 
-// // 在 HTML 中显示时，将 \n 转换为 <br>
-// additionalComments = additionalComments.replace(/\n/g, '<br>');
+// Simulate 'additionalComments' is from the database
+let additionalComments = "Some Text \nThis is an New line.";
 
-// // 然后将处理后的字符串设置到相应的元素中
-// document.getElementById('comments').innerHTML = additionalComments;
+// When displaying in HTML, convert \n to <br>
+additionalComments = additionalComments.replace(/\n/g, '<br>');
 
-
-
-
-// const teams = apiU;
-
+// Then set the processed string to the corresponding element
+document.getElementById('comments').innerHTML = additionalComments;
+*/
 
 
 
@@ -330,9 +330,9 @@ export default {
 
   created() {
     this.restoreFormData();
-    // 设置初始状态
-    this.savingStatus = 'idle'; // 表示支持自动保存
-    this.formModified = false; // 表单未被修改
+    // Set the initial status
+    this.savingStatus = 'idle'; // Show the auto-save status support Auto-save
+    this.formModified = false; // Form has not been modified
   },
 
   computed: {
@@ -359,7 +359,7 @@ export default {
   watch: {
     form: {
       handler(newForm) {
-        this.formModified = true; // 表单被修改
+        this.formModified = true; // Form has been modified
         if (this.saveTimeout) {
           clearTimeout(this.saveTimeout);
         }
@@ -380,9 +380,9 @@ export default {
           });
           setTimeout(() => {
             this.savingStatus = 'success';
-            this.formModified = false; // 重置表单修改状态，以便再次触发
-          }, 1400); // 假设保存操作需要1.4秒
-        }, 300); // 用户停止输入300毫秒后开始保存
+            this.formModified = false; // Reset the form status
+          }, 1400); // Set the saving status TEXT to success after 1.4 seconds
+        }, 300); // Save the form data after 0.3 seconds
       },
       deep: true,
     },
@@ -395,13 +395,13 @@ export default {
         return;
       }
 
-      // 这里替换为你的API URL
+      // Get the team list from the server
       // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
-      const apiUrl = `http://localhost:39390/teams?query=${queryString}`;
+      const apiUrl = `http://localhost:39390/teams`;
 
       axios.get(apiUrl)
         .then(response => {
-          // 假设响应数据的格式是 [{tm_number: '1', tm_name: 'The Juggernauts'}, {...}]
+          // Response data format: [{tm_number: '1', tm_name: 'The Juggernauts'}, {...}]
           const results = response.data.map(item => ({
             value: `${item.tm_number} - ${item.tm_name}`
           }));
@@ -472,13 +472,12 @@ export default {
       });
     },
 
-    // 模拟保存方法，实际应替换为真实的保存逻辑
+    // Simulate the save operation, test
     async simulateSave() {
-      // 模拟异步保存操作
       return new Promise((resolve, reject) => {
-        // 模拟保存成功
+        // Success
         resolve();
-        // 若需要模拟保存失败，可使用 reject();
+        // Fail, reject();
       });
     },
 
@@ -528,165 +527,153 @@ export default {
     },
 
     submitForm() {
-      // Use SweetAlert2 to create a confirmation dialog
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "It will submit the form once you click the button, and you won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        reverseButtons: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Submit',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
+  // First, validate the form using the built-in validate method from Element UI
+  this.$refs.form.validate((valid) => {
+    if (!valid) {
+      // If not valid, show an error message and stop the function
+      Swal.fire('Error!', 'Please fill in all required fields.', 'error');
+      return; // Stop the function if the form is not valid
+    }
 
-          // Check if the form is valid
-          this.$refs.form.validate(async (valid) => {
-            if (valid) {
+    // Construct formData with the required structure
+    this.formData = {
+      Event: this.form.find(item => item.question === "").value,
+      Team_Number: this.form.find(item => item.question === "Team number").value,
+      Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
+      Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
+      Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
+      Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
+      Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
+      Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
+      Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
+      Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
+      Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
+      Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
+      Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
+      Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
+      Full_Robot_ImgId: this.fileIds.fullRobot.join(","),
+      Drive_Train_ImgId: this.fileIds.driveTrain.join(",")
+    };
 
-              // Update the formData object to include all form fields
-              this.formData = {
-                Event: this.form.find(item => item.question === "").value,
-                Team_Number: this.form.find(item => item.question === "Team number").value,
-                Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
-                Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
-                Intake_Type: this.formatArrayValues(this.form.find(item => item.question === "Intake Use:").value, this.form.find(item => item.question === "Intake Use:").otherValue),
-                Scoring_Locations: this.formatArrayValues(this.form.find(item => item.question === "Scoring Locations:").value, this.form.find(item => item.question === "Scoring Locations:").otherValue),
-                Robot_Weight: this.form.find(item => item.question === "Robot Weight (in pounds)").value,
-                Robot_Length: this.form.find(item => item.question.includes("Length in Inches")).value,
-                Robot_Width: this.form.find(item => item.question.includes("Width in Inches")).value,
-                Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
-                Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
-                Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
-
-                Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
-                Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
-                Full_Robot_ImgId: this.fileIds.fullRobot.join(","), // Full Robot Image ID
-                Drive_Train_ImgId: this.fileIds.driveTrain.join(",") // Drive Train Image ID
-              };
-
-              try {
-                await axios.post("https://scoutify.makesome.cool/submit-form", this.formData);
-
-                // Show the success message
-                Swal.fire(
-                  'Success!',
-                  'Form submitted successfully',
-                  'success'
-                )
-                this.$message.success("Form submitted successfully");
-
-                // Clear the form and reset the state
-                this.resetFormData();
-                this.savingStatus = 'idle'; // Reset the status to default
-                this.formModified = false;
-              } catch (error) {
-                console.error("Error submitting form:", error);
-                this.$message.error("Error submitting form");
-                this.savingStatus = 'error'; // Update the status to error
-
-                // Show the error message
-                Swal.fire(
-                  'Error!',
-                  'An error occurred while submitting the form',
-                  'error'
-                )
-              }
-            }
+    // Confirmation dialog with SweetAlert2
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this once you submit!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, submit it!',
+      cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // POST request with Axios
+        axios.post("https://scoutify.makesome.cool/submit-form", this.formData)
+          .then(() => {
+            Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
+            this.$message.success("Form submitted successfully.");
+            this.resetFormData(); // Reset form data after successful submission
+          })
+          .catch(error => {
+            Swal.fire('Failed!', 'There was an error submitting your form.', 'error');
+            console.error("Error submitting form:", error);
+            this.$message.error("Error submitting form.");
           });
-        }
-      });
-    },
-
-    resetFormData() {
-      // Reset form data logic
-      this.form.forEach((question) => {
-        question.value = question.type === "checkbox" ? [] : null;
-        question.showOtherInput = false;
-        question.otherValue = "";
-      });
-      // Reset other data logic if we wants
-    },
-
-
-    // When the page is loaded and the form data is restored, this method is called to reset the status
-    created() {
-      this.restoreFormData();
-      this.resetFormState(); // Reset the form state when the page is loaded
-    },
-
-
-    // New method: Format array values
-    formatArrayValues(arrayValues, otherValue) {
-      // If the array contains 'other', then use otherValue to replace, otherwise convert the array to a comma-separated string
-      if (arrayValues.includes('other')) {
-        return otherValue;
-      } else {
-        return arrayValues.join(",");
       }
-    },
+    });
+  });
+},
 
-    handleSuccess0(response, file) {
-      console.log("Upload successful:", response);
-      if (response && response.fileId) {
-        const fileId = response.fileId;
-        file.fileId = fileId; // Add fileId to the file object
-        this.fileList.fullRobot.push(file); // Add file object to array
-        this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
-        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
-      } else {
-        console.error("No fileId returned from the server");
-      }
-    },
 
-    handleSuccess1(response, file) {
-      console.log("Upload successful:", response);
-      if (response && response.fileId) {
-        const fileId = response.fileId;
-        file.fileId = fileId; // Add fileId to the file object
-        this.fileList.driveTrain.push(file); // Add file object to array
-        this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
 
-        console.log("Updated fileIds:", JSON.stringify(this.fileIds));
-      } else {
-        console.error("No fileId returned from the server");
-      }
-    },
+resetFormData() {
+  // Reset form data logic
+  this.form.forEach((question) => {
+    question.value = question.type === "checkbox" ? [] : null;
+    question.showOtherInput = false;
+    question.otherValue = "";
+  });
+  // Reset other data logic if we wants
+},
 
-    handleRemove(file, fileList) {
-      console.log("File removed:", file);
 
-      const fileId = file.fileId;
-      if (!fileId) {
-        console.error("File ID is missing, cannot delete the file.");
-        return;
-      }
+// When the page is loaded and the form data is restored, this method is called to reset the status
+created() {
+  this.restoreFormData();
+  this.resetFormState(); // Reset the form state when the page is loaded
+},
 
-      // Get the file list name
-      const fileListName =
-        fileList === this.fileList.fullRobot ? "fullRobot" : "driveTrain";
 
-      // Update the file list and fileID
-      this.fileIds[fileListName] = this.fileIds[fileListName].filter(
-        (id) => id !== fileId
-      );
-      this.fileList[fileListName] = this.fileList[fileListName].filter(
-        (f) => f.fileId !== fileId
-      );
+// New method: Format array values
+formatArrayValues(arrayValues, otherValue) {
+  // If the array contains 'other', then use otherValue to replace, otherwise convert the array to a comma-separated string
+  if (arrayValues.includes('other')) {
+    return otherValue;
+  } else {
+    return arrayValues.join(",");
+  }
+},
 
-      // Send delete request to the server
-      axios
-        .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
-        .then((response) => {
-          console.log("File deletion response:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error deleting the file:", error);
-        });
-    },
+handleSuccess0(response, file) {
+  console.log("Upload successful:", response);
+  if (response && response.fileId) {
+    const fileId = response.fileId;
+    file.fileId = fileId; // Add fileId to the file object
+    this.fileList.fullRobot.push(file); // Add file object to array
+    this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
+
+    console.log("Updated fileIds:", JSON.stringify(this.fileIds));
+  } else {
+    console.error("No fileId returned from the server");
+  }
+},
+
+handleSuccess1(response, file) {
+  console.log("Upload successful:", response);
+  if (response && response.fileId) {
+    const fileId = response.fileId;
+    file.fileId = fileId; // Add fileId to the file object
+    this.fileList.driveTrain.push(file); // Add file object to array
+    this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
+
+    console.log("Updated fileIds:", JSON.stringify(this.fileIds));
+  } else {
+    console.error("No fileId returned from the server");
+  }
+},
+
+handleRemove(file, fileList) {
+  console.log("File removed:", file);
+
+  const fileId = file.fileId;
+  if (!fileId) {
+    console.error("File ID is missing, cannot delete the file.");
+    return;
+  }
+
+  // Get the file list name
+  const fileListName =
+    fileList === this.fileList.fullRobot ? "fullRobot" : "driveTrain";
+
+  // Update the file list and fileID
+  this.fileIds[fileListName] = this.fileIds[fileListName].filter(
+    (id) => id !== fileId
+  );
+  this.fileList[fileListName] = this.fileList[fileListName].filter(
+    (f) => f.fileId !== fileId
+  );
+
+  // Send delete request to the server
+  axios
+    .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
+    .then((response) => {
+      console.log("File deletion response:", response.data);
+    })
+    .catch((error) => {
+      console.error("Error deleting the file:", error);
+    });
+},
   },
 };
 </script>
