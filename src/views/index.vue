@@ -557,7 +557,7 @@ export default {
           Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
           Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
           Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
-          Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
+          Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice")?.value,
           Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
           Full_Robot_ImgId: this.fileIds.fullRobot.join(","),
           Drive_Train_ImgId: this.fileIds.driveTrain.join(",")
