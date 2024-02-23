@@ -557,7 +557,7 @@ export default {
           Robot_Height: this.form.find(item => item.question.includes("Height in Inches")).value,
           Drive_Team_Members: this.form.find(item => item.question === "Drive Team Members").value === "other" ? this.form.find(item => item.question === "Drive Team Members").otherValue : this.form.find(item => item.question === "Drive Team Members").value,
           Maneuverability: this.formatArrayValues(this.form.find(item => item.question === "Maneuverability").value, this.form.find(item => item.question === "Maneuverability").otherValue),
-          Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice")?.value,
+          Practice_Hours: this.form.find(item => item.question === "Hours/Weeks of Practice").value,
           Additional_Comments: this.form.find(item => item.question === "Additional Comments").value,
           Full_Robot_ImgId: this.fileIds.fullRobot.join(","),
           Drive_Train_ImgId: this.fileIds.driveTrain.join(",")
@@ -570,8 +570,8 @@ export default {
           icon: 'warning',
           showCancelButton: true,
           reverseButtons: true, // Reverse the order of the buttons
-          confirmButtonColor: '#409EFF',
-          cancelButtonColor: '#f55a5a',
+          confirmButtonColor: '#3497ff',
+          cancelButtonColor: '#f15353',
           confirmButtonText: 'Yes, submit',
           cancelButtonText: 'No, cancel'
         }).then((result) => {
@@ -589,7 +589,7 @@ export default {
                 this.$message.error("Error submitting form");
               });
           }
-          this.$message.error("Form submission canceled");
+          // this.$message.error("Form submission canceled");
         });
       });
     },
