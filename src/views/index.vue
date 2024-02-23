@@ -569,6 +569,7 @@ export default {
           text: "You won't be able to revert this once you submit!",
           icon: 'warning',
           showCancelButton: true,
+          reverseButtons: true, // Reverse the order of the buttons
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Yes, submit it!',
@@ -579,15 +580,16 @@ export default {
             axios.post("https://scoutify.makesome.cool/submit-form", this.formData)
               .then(() => {
                 Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
-                this.$message.success("Form submitted successfully.");
+                this.$message.success("Form submitted successfully");
                 this.resetFormData(); // Reset form data after successful submission
               })
               .catch(error => {
                 Swal.fire('Failed!', 'There was an error submitting your form.', 'error');
                 console.error("Error submitting form:", error);
-                this.$message.error("Error submitting form.");
+                this.$message.error("Error submitting form");
               });
           }
+          this.$message.error("Form submission canceled");
         });
       });
     },
