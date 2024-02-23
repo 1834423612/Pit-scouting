@@ -684,6 +684,13 @@ handleRemove(file, fileList) {
 };
 </script>
 
+<style>
+#app {
+  width: 100vw !important;
+}
+:root {background-color: #c6e2ff;}
+</style>
+
 
 <style scoped>
 .app {background-color: #c6e2ff;}
