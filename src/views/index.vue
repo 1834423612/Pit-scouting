@@ -566,14 +566,14 @@ export default {
         // Confirmation dialog with SweetAlert2
         Swal.fire({
           title: 'Are you sure?',
-          text: "You won't be able to revert this once you submit!",
+          text: "You won't be able to revert this once you submit",
           icon: 'warning',
           showCancelButton: true,
           reverseButtons: true, // Reverse the order of the buttons
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, submit it!',
-          cancelButtonText: 'No, cancel!'
+          confirmButtonColor: '#409EFF',
+          cancelButtonColor: '#f55a5a',
+          confirmButtonText: 'Yes, submit',
+          cancelButtonText: 'No, cancel'
         }).then((result) => {
           if (result.isConfirmed) {
             // POST request with Axios
