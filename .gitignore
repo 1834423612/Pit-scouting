@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Useless things
+package-lock.*
+pnpm-lock.*
+npm-lock.*
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
