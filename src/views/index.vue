@@ -1,20 +1,87 @@
-<!-- //to-do: serverside event input, team# as select, pre-fill from same bot number from last comp during this season,required attribute
-based on robot from last competition if form same season
-style:  radio options going into other img element if the option is long enough
--->
+<style scoped>
+.app{
+  background-color: #c6e2ff;
+}
+.form-header {
+  display: flex;
+  align-items: flex-end;
+  align-content: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.saving-status {
+  display: flex;
+  align-items: center;
+}
+
+
+.vertical-layout {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-left: 2%;
+}
+
+
+.collapse {
+  margin-left: 2%;
+  width: -webkit-fill-available;
+}
+
+
+/* Style for <details> when it is not open */
+el-collapse-item {
+  width: 100%;
+}
+
+
+.shadow {
+  background-color: dodgerblue !important;
+  box-shadow: 0 6px #3077b9;
+  border: none;
+
+
+}
+
+.shadow:hover {
+  background-color: #66b3ff !important;
+  box-shadow: 0 6px #76a5e3;
+  border: none;
+  transition: all 0.1s ease-in-out;
+}
+
+.shadow:active {
+  background-color: #0066cc !important;
+  box-shadow: 0 6px #1f4e7a;
+  border: none;
+  transition: all 0.1s ease-in-out;
+}
+
+
+/* Auto detect User's screen size */
+/* Lower than 960px */
+/* Phone size */
+@media screen and (max-width: 960px) {}
+
+/* Higher than 960px */
+/* Laptop/PC size */
+@media screen and (min-width: 960px) {}</style>
+
 <template>
   <div class="app">
-    <el-form :model="formData" ref="form" label-width="120px" label-position="top">
-      <h3>Pit-Scouting Form</h3>
+    <el-form :model="formData" ref="form" label-width="180px" label-position="top">
+      <h3 style="font-size: 24px;">Pit-Scouting Form</h3>
       <el-divider border-style="dashed" />
       <div class="form-header">
-        <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
+        <el-button type="primary" @click="clearForm" class="shadow" size="large" style="font-size: 20px;">Clear Form</el-button>
 
 
         <!-- Auto-save status -->
         <div class="saving-status">
-          <span v-if="savingStatus === 'idle'" style="color: #529b2e; display: contents; font-size:10px;">
-            <el-icon color="#337ecc" :size="20">
+          <span v-if="savingStatus === 'idle'" style="color: #529b2e; display: contents; font-size:16px;">
+            <el-icon color="#337ecc" :size="24">
               <checked />
             </el-icon>
             Autosave supported
@@ -22,7 +89,7 @@ style:  radio options going into other img element if the option is long enough
 
 
           <span v-else-if="savingStatus === 'saving'" style="color: #909399; display: contents;">
-            <el-icon color="#909399" class="is-loading">
+            <el-icon color="#909399" class="is-loading" :size="24">
               <loading />
             </el-icon>
             Saving...
@@ -30,7 +97,7 @@ style:  radio options going into other img element if the option is long enough
 
 
           <span v-else-if="savingStatus === 'success'" style="color: #67C23A; display: contents;">
-            <el-icon color="#67C23A" :size="20">
+            <el-icon color="#67C23A" :size="24">
               <check />
             </el-icon>
             Saved successfully
@@ -38,7 +105,7 @@ style:  radio options going into other img element if the option is long enough
 
 
           <span v-else-if="savingStatus === 'error'" style="color: #F56C6C; display: contents;">
-            <el-icon color="#F56C6C" :size="20">
+            <el-icon color="#F56C6C" :size="24">
               <CloseBold />
             </el-icon>
             Error saving changes
@@ -60,46 +127,46 @@ style:  radio options going into other img element if the option is long enough
           <el-collapse class="collapse" v-if="typeof x.i === 'string'" v-model="activeName" accordion>
             <el-collapse-item title="Image Drop-down" name="1">
               <div>
-                <img :src="x.i" alt="Error" :width="x.w" />
+                <img :src="x.i" alt="Error" :width="x.w" style="width: 200px;" />
               </div>
             </el-collapse-item>
           </el-collapse>
 
 
           <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
-          <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
+          <el-input v-else-if="x.type === 'text'" v-model="x.value" size="large"></el-input>
           <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
-            title="Valid forms: _ , _._ , n/d , _ n/d" style="width: 150px"></el-input>
-          <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
-          </el-input>
+            title="Valid forms: _ , _._ , n/d , _ n/d" size="large" style="width: 180px"></el-input>
+          <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 180px"
+            size="large" ></el-input>
 
 
-          <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
-            :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
+          <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 150px"
+            :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #" size="large"
             @select="handleSelect" />
           <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
             @change="handleRadioChange(x, $event)">
             <el-radio v-for="option in x.options" :key="option" :label="option"
               style="white-space: initial;line-height: 100%;">{{ option }}</el-radio>
 
-            <el-radio label="other" :value="x.otherValue"></el-radio>
+            <el-radio label="other" :value="x.otherValue" size="large" style="font-size: 20px;"></el-radio>
 
 
-            <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea"
-              placeholder="Please input"></el-input>
+            <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" type="textarea" placeholder="Please input"
+              size="large"></el-input>
           </el-radio-group>
 
 
           <el-checkbox-group v-else-if="x.type === 'checkbox'" v-model="x.value" @change="handleCheckboxChange(x, $event)"
             class="vertical-layout">
-            <el-checkbox v-for="option in x.options" :key="option" :label="option" style="white-space: initial;">{{ option
+            <el-checkbox v-for="option in x.options" :key="option" :label="option" style="white-space: initial; font-size: 16px;">{{ option
             }}</el-checkbox>
-            <el-checkbox label="other"></el-checkbox>
-            <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input"></el-input>
+            <el-checkbox label="other" style="font-size: 16px;"></el-checkbox>
+            <el-input v-if="x.showOtherInput" v-model="x.otherValue" :rows="3" placeholder="Please input" size="large"></el-input>
           </el-checkbox-group>
 
 
-          <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required></el-input>
+          <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value" required size="large"></el-input>
         </el-form-item>
         <el-form-item label="Picture - Full Robot">
           <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
@@ -107,7 +174,7 @@ style:  radio options going into other img element if the option is long enough
             <el-icon :size="50" color="#b3b3b3">
               <upload />
             </el-icon>
-            <div class="el-upload__text">
+            <div class="el-upload__text" style="font-size: 16px;">
               Drag files here or <em>click to upload</em>
             </div>
           </el-upload>
@@ -120,19 +187,18 @@ style:  radio options going into other img element if the option is long enough
             <el-icon :size="50" color="#b3b3b3">
               <upload />
             </el-icon>
-            <div class="el-upload__text">
+            <div class="el-upload__text" style="font-size: 16px;">
               Drag files here or <em>click to upload</em>
             </div>
           </el-upload>
         </el-form-item>
       </div>
-      <el-button type="primary" @click="submitForm" class="shadow">Submit</el-button>
+      <el-button type="primary" @click="submitForm" class="shadow" size="large" style="font-size: 20px;">Submit</el-button>
       <br />
       <br />
     </el-form>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import Swal from 'sweetalert2'
@@ -692,82 +758,7 @@ export default {
 #app {
   width: 100vw !important;
 }
-
 :root {
   background-color: #c6e2ff;
 }
 </style>
-
-
-<style scoped>
-.app {
-  background-color: #c6e2ff;
-}
-
-.form-header {
-  display: flex;
-  align-items: flex-end;
-  align-content: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-
-.saving-status {
-  display: flex;
-  align-items: center;
-}
-
-
-.vertical-layout {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  flex-direction: column;
-  margin-left: 2%;
-}
-
-
-.collapse {
-  margin-left: 2%;
-  width: -webkit-fill-available;
-}
-
-
-/* Style for <details> when it is not open */
-el-collapse-item {
-  width: 100%;
-}
-
-
-.shadow {
-  background-color: dodgerblue !important;
-  box-shadow: 0 6px #3077b9;
-  border: none;
-
-
-}
-
-.shadow:hover {
-  background-color: #66b3ff !important;
-  box-shadow: 0 6px #76a5e3;
-  border: none;
-  transition: all 0.1s ease-in-out;
-}
-
-.shadow:active {
-  background-color: #0066cc !important;
-  box-shadow: 0 6px #1f4e7a;
-  border: none;
-  transition: all 0.1s ease-in-out;
-}
-
-
-/* Auto detect User's screen size */
-/* Lower than 960px */
-/* Phone size */
-@media screen and (max-width: 960px) {}
-
-/* Higher than 960px */
-/* Laptop/PC size */
-@media screen and (min-width: 960px) {}</style>
