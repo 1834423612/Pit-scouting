@@ -213,12 +213,12 @@ export default {
           newForm.forEach((question) => {
             if (question.type === "checkbox") {
               localStorage.setItem(
-                question.question,
+                `${this.index}-${question.question}`,
                 JSON.stringify(question.value)
               );
             } else { localStorage.setItem(question.question, question.value); }
             localStorage.setItem(
-              question.question + "-otherValue",
+              `${this.index}-${question.question}-otherValue`,
               question.otherValue
             );
           });
@@ -234,9 +234,10 @@ export default {
 
   methods: {
     async getTeamNumber() {
-      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams' })
+      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams1' })
       this.teamNumber = data
     },
+
     querySearch(queryString, cb) {
       if (queryString.trim().length === 0) {
         cb([]);
@@ -288,26 +289,21 @@ export default {
     restoreFormData() {
       this.form.forEach((question) => {
         try {
-          // From normal input type, make sure the value is not null
-          const savedValue = localStorage.getItem(question.question);
+          // 根据当前标签页索引从localStorage获取保存的值
+          const savedValue = localStorage.getItem(`${this.index}-${question.question}`);
           if (savedValue && savedValue !== "null") {
             question.value = savedValue;
           }
 
-          // From radio type, make sure the value is 'other'
-          const otherValue = localStorage.getItem(
-            question.question + "-otherValue"
-          );
+          const otherValue = localStorage.getItem(`${this.index}-${question.question}-otherValue`);
           if (otherValue && otherValue !== "null") {
             question.otherValue = otherValue;
           }
 
-          // From checkbox type, make sure the value is an array
           if (question.type === "checkbox" && savedValue) {
             question.value = JSON.parse(savedValue);
           }
 
-          // Update the showOtherInput status
           if (
             (question.type === "radio" && question.value === "other") ||
             (question.type === "checkbox" && question.value.includes("other"))
@@ -319,6 +315,7 @@ export default {
         }
       });
     },
+
 
     // Simulate the save operation, test
     async simulateSave() {
@@ -341,25 +338,28 @@ export default {
         confirmButtonText: "Yes",
         cancelButtonText: "No",
         type: "warning",
-      })
-        .then(() => {
-          this.resetFormData();
-          this.$message({
-            type: "success",
-            message: "Form has been cleared!",
-          });
-
-          // Reset the saving status
-          this.savingStatus = 'idle';
-          this.formModified = false;
-        })
-        .catch(() => {
-          this.$message({
-            type: "error",
-            message: "Clear Canceled",
-          });
+      }).then(() => {
+        this.form.forEach((question) => {
+          localStorage.removeItem(`${this.index}-${question.question}`);
+          localStorage.removeItem(`${this.index}-${question.question}-otherValue`);
         });
+        this.resetFormData();
+        this.$message({
+          type: "success",
+          message: "Form has been cleared!",
+        });
+
+        // Reset the saving status
+        this.savingStatus = 'idle';
+        this.formModified = false;
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "Clear cancelled",
+        });
+      });
     },
+
 
     // Reset the form data
     resetFormData() {
