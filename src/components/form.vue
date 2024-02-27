@@ -234,7 +234,7 @@ export default {
 
   methods: {
     async getTeamNumber() {
-      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams' })
+      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams1' })
       this.teamNumber = data
     },
     querySearch(queryString, cb) {
@@ -245,7 +245,7 @@ export default {
 
       // Get the team list from the server
       // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
-      const apiUrl = `http://localhost:39390/teams`;
+      const apiUrl = `http://localhost:39390/teams1`;
 
       axios.get(apiUrl)
         .then(response => {
