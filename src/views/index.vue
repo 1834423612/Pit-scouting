@@ -5,6 +5,7 @@
     editable
     class="demo-tabs"
     @edit="handleTabsEdit"
+    @tab-click="handleClick"
   >
     <el-tab-pane
       v-for="item in editableTabs"
@@ -12,7 +13,7 @@
       :label="item.title"
       :name="item.name"
     >
-    <form-view :index = "item.name" />
+    <form-view v-if="editableTabsValue == item.name" :tabIndex = "item.name" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -20,31 +21,63 @@
 <script setup>
 import { ref } from 'vue'
 import formView from '../components/form.vue';
-let tabIndex = 2
-const editableTabsValue = ref('2')
+let tabIndex = 1
+const editableTabsValue = ref('1')
 const editableTabs = ref([
   {
     title: 'Tab 1',
     name: '1',
     content: 'Tab 1 content',
+    formValue: null
   },
   {
     title: 'Tab 2',
     name: '2',
     content: 'Tab 2 content',
+    formValue: null
   },
 ])
+
+// 判断本地存储标签是否有值，无值则赋值操作
+const handlerLocalstorage = () => {
+  let arr = window.localStorage.getItem('TabsArray')
+  if (!arr) {
+    window.localStorage.setItem('TabsArray', JSON.stringify(editableTabs.value))
+    window.localStorage.setItem('tabsItemClick', '1')
+  }
+}
+handlerLocalstorage()
+
+// 获取本地存储中标签数组的值
+const getTabsArray = () => {
+  let arr = window.localStorage.getItem('TabsArray')
+  let arr2 = window.localStorage.getItem('tabsItemClick')
+  if (arr) {
+    let TabsArray = JSON.parse(arr)
+    editableTabs.value = TabsArray
+    editableTabsValue.value = arr2
+  }
+}
+getTabsArray()
+
+// 选择器监听单击事件
+const handleClick = (TabsPaneContext,Event) => {
+  window.localStorage.setItem('tabsItemClick', TabsPaneContext.props.name)
+}
 
 const handleTabsEdit = (
   targetName,
   action
 ) => {
+  let arr = window.localStorage.getItem('TabsArray')
+  editableTabs.value = JSON.parse(arr)
   if (action === 'add') {
-    const newTabName = `${++tabIndex}`
+    const newTabName = (editableTabs.value.length + 1).toString()
     editableTabs.value.push({
       title: 'New Tab',
       name: newTabName,
       content: 'New Tab content',
+      formValue: null
     })
     editableTabsValue.value = newTabName
   } else if (action === 'remove') {
@@ -64,6 +97,8 @@ const handleTabsEdit = (
     editableTabsValue.value = activeName
     editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
   }
+  window.localStorage.setItem('TabsArray',JSON.stringify(editableTabs.value))
+  window.localStorage.setItem('tabsItemClick', editableTabsValue.value)
 }
 </script>
 

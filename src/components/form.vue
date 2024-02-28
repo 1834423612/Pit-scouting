@@ -119,12 +119,12 @@
 <script>
 import axios from "axios";
 import Swal from 'sweetalert2'
-import form from './form.json'
+import formJson from './form.json'
 const _event = "test";
 
 const teams = [];
 export default {
-  props: ['index'],
+  props: ['tabIndex'],
   data() {
     return {
       teams: teams.map(team => ({ value: team.toString() })),
@@ -132,7 +132,7 @@ export default {
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
       formModified: false,
 
-      form: form,
+      form: JSON.parse(JSON.stringify(formJson)),
       // fileList : this.form.filter(item => item.type === 'file').map(item => item.value)
       fileList: {
         fullRobot: [],
@@ -171,7 +171,7 @@ export default {
   },
 
   created() {
-    console.log(this.index);
+    console.log(this.tabIndex);
     this.restoreFormData();
     this.getTeamNumber()
     // Set the initial status
@@ -210,18 +210,26 @@ export default {
         this.saveTimeout = setTimeout(() => {
           this.savingStatus = 'saving';
 
-          newForm.forEach((question) => {
-            if (question.type === "checkbox") {
-              localStorage.setItem(
-                question.question,
-                JSON.stringify(question.value)
-              );
-            } else { localStorage.setItem(question.question, question.value); }
-            localStorage.setItem(
-              question.question + "-otherValue",
-              question.otherValue
-            );
-          });
+          let arr = window.localStorage.getItem('TabsArray')
+          let TabsArray = JSON.parse(arr)
+          TabsArray.map(item => {
+            if (item.name == this.tabIndex) {
+              item.formValue = newForm
+            }
+          })
+          window.localStorage.setItem('TabsArray', JSON.stringify(TabsArray))
+          // newForm.forEach((question) => {
+          //   if (question.type === "checkbox") {
+          //     localStorage.setItem(
+          //       question.question,
+          //       JSON.stringify(question.value)
+          //     );
+          //   } else { localStorage.setItem(question.question, question.value); }
+          //   localStorage.setItem(
+          //     question.question + "-otherValue",
+          //     question.otherValue
+          //   );
+          // });
           setTimeout(() => {
             this.savingStatus = 'success';
             this.formModified = false; // Reset the form status
@@ -234,7 +242,7 @@ export default {
 
   methods: {
     async getTeamNumber() {
-      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams1' })
+      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams' })
       this.teamNumber = data
     },
     querySearch(queryString, cb) {
@@ -245,7 +253,7 @@ export default {
 
       // Get the team list from the server
       // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
-      const apiUrl = `http://localhost:39390/teams1`;
+      const apiUrl = `http://localhost:39390/teams`;
 
       axios.get(apiUrl)
         .then(response => {
@@ -286,38 +294,52 @@ export default {
     },
 
     restoreFormData() {
-      this.form.forEach((question) => {
-        try {
-          // From normal input type, make sure the value is not null
-          const savedValue = localStorage.getItem(question.question);
-          if (savedValue && savedValue !== "null") {
-            question.value = savedValue;
+      let arr = window.localStorage.getItem('TabsArray')
+      if (!arr) {
+        return
+      }
+      let TabsArray = JSON.parse(arr)
+      TabsArray.map(item => {
+        if (item.name == this.tabIndex) {
+          if (item.formValue){
+            this.form = item.formValue
+          } else {
+            this.form = JSON.parse(JSON.stringify(formJson)) 
           }
-
-          // From radio type, make sure the value is 'other'
-          const otherValue = localStorage.getItem(
-            question.question + "-otherValue"
-          );
-          if (otherValue && otherValue !== "null") {
-            question.otherValue = otherValue;
-          }
-
-          // From checkbox type, make sure the value is an array
-          if (question.type === "checkbox" && savedValue) {
-            question.value = JSON.parse(savedValue);
-          }
-
-          // Update the showOtherInput status
-          if (
-            (question.type === "radio" && question.value === "other") ||
-            (question.type === "checkbox" && question.value.includes("other"))
-          ) {
-            question.showOtherInput = true;
-          }
-        } catch (error) {
-          console.error("Error restoring form data:", error);
         }
-      });
+      })
+      // this.form.forEach((question) => {
+      //   try {
+      //     // From normal input type, make sure the value is not null
+      //     const savedValue = localStorage.getItem(question.question);
+      //     if (savedValue && savedValue !== "null") {
+      //       question.value = savedValue;
+      //     }
+
+      //     // From radio type, make sure the value is 'other'
+      //     const otherValue = localStorage.getItem(
+      //       question.question + "-otherValue"
+      //     );
+      //     if (otherValue && otherValue !== "null") {
+      //       question.otherValue = otherValue;
+      //     }
+
+      //     // From checkbox type, make sure the value is an array
+      //     if (question.type === "checkbox" && savedValue) {
+      //       question.value = JSON.parse(savedValue);
+      //     }
+
+      //     // Update the showOtherInput status
+      //     if (
+      //       (question.type === "radio" && question.value === "other") ||
+      //       (question.type === "checkbox" && question.value.includes("other"))
+      //     ) {
+      //       question.showOtherInput = true;
+      //     }
+      //   } catch (error) {
+      //     console.error("Error restoring form data:", error);
+      //   }
+      // });
     },
 
     // Simulate the save operation, test
@@ -409,10 +431,11 @@ export default {
           text: "You won't be able to revert this once you submit!",
           icon: 'warning',
           showCancelButton: true,
+          reverseButtons: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, submit it!',
-          cancelButtonText: 'No, cancel!'
+          confirmButtonText: 'Yes, submit',
+          cancelButtonText: 'No, cancel'
         }).then((result) => {
           if (result.isConfirmed) {
             // POST request with Axios
@@ -447,10 +470,6 @@ export default {
 
 
     // When the page is loaded and the form data is restored, this method is called to reset the status
-    created() {
-      this.restoreFormData();
-      this.resetFormState(); // Reset the form state when the page is loaded
-    },
 
 
     // New method: Format array values
