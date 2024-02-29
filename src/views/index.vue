@@ -13,7 +13,7 @@
       :label="item.title"
       :name="item.name"
     >
-    <form-view v-if="editableTabsValue == item.name" :tabIndex = "item.name" />
+    <form-view v-if="editableTabsValue == item.name" :tabIndex = "item.name" @update-tab-title="updateTabTitle" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -36,7 +36,8 @@ const editableTabs = ref([
     content: 'Tab 2 content',
     formValue: null
   },
-])
+]);
+
 
 // 判断本地存储标签是否有值，无值则赋值操作
 const handlerLocalstorage = () => {
@@ -100,6 +101,17 @@ const handleTabsEdit = (
   window.localStorage.setItem('TabsArray',JSON.stringify(editableTabs.value))
   window.localStorage.setItem('tabsItemClick', editableTabsValue.value)
 }
+
+// 更新标签标题并保存到本地存储
+function updateTabTitle({ tabIndex, teamNumber }) {
+  const tab = editableTabs.value.find(tab => tab.name === tabIndex);
+  if (tab) {
+    tab.title = teamNumber ? `Team - ${teamNumber}` : `Tab ${tabIndex}`;
+    // 保存更新后的标签数组到本地存储
+    window.localStorage.setItem('TabsArray', JSON.stringify(editableTabs.value));
+  }
+}
+
 </script>
 
 <style lang="scss" scoped></style>

@@ -55,9 +55,11 @@
                 </div>
               </el-collapse-item>
             </el-collapse>
-            <el-select v-if="x.question === 'Team number'" v-model="x.value" placeholder="place input">
+
+            <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" />
+            <!-- <el-select v-if="x.question === 'Team number'" v-model="x.value" placeholder="place input">
               <el-option :label="item" :value="item" v-for="item in teamNumber" />
-            </el-select>
+            </el-select> -->
             <el-input v-if="x.type === 'hidden'" type="hidden" v-model="x.value"></el-input>
             <el-input v-else-if="x.type === 'text'" v-model="x.value"></el-input>
             <el-input v-else-if="x.type === 'number'" v-model="x.value" pattern="^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$"
@@ -116,13 +118,43 @@
   </div>
 </template>
 
-<script>
+<script set>
+import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import formJson from './form.json'
 const _event = "test";
 
 const teams = [];
+
+
+// Define props and emit
+const props = defineProps({
+  tabIndex: String
+})
+
+const emit = defineEmits(['update-tab-title'])
+
+const teamNumber = ref('')
+
+// 当 teamNumber 变化时触发
+watch(teamNumber, (newValue) => {
+  emit('update-tab-title', { tabIndex: props.tabIndex, teamNumber: newValue })
+})
+
+onMounted(() => {
+  getTabsArray();
+});
+
+// 获取本地存储中标签数组的值并恢复
+const getTabsArray = () => {
+  let arr = window.localStorage.getItem('TabsArray');
+  if (arr) {
+    let TabsArray = JSON.parse(arr);
+    editableTabs.value = TabsArray;
+  }
+};
+
 export default {
   props: ['tabIndex'],
   data() {
@@ -166,7 +198,7 @@ export default {
         practiceHoursPerWeek: null,
         additionalComments: null,
       },
-      teamNumber: []
+      teamNumber: "",
     };
   },
 
@@ -238,6 +270,10 @@ export default {
       },
       deep: true,
     },
+
+    teamNumber(newValue, oldValue) {
+      this.updateTabTitle(newValue);
+    },
   },
 
   methods: {
@@ -281,6 +317,18 @@ export default {
       const results = queryString ? this.teams.filter(filter) : this.teams;
       cb(results);
     },
+
+    updateTeamNumber(event) {
+      // 获取输入的团队编号
+      // const teamNumber = event.target.value;
+      const teamNumber = event;
+      // 触发自定义事件以更新父组件的标签名
+      this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber });
+    },
+    updateTabTitle(teamNumber) {
+      this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber });
+    },
+
     mounted() {
       // Check if the form has been saved before
       this.form.forEach((question) => {
