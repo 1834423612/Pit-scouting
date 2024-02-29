@@ -56,7 +56,27 @@
               </el-collapse-item>
             </el-collapse>
 
-            <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" />
+            <el-select
+              v-if="x.question === 'Team number'"
+              v-model="x.value"
+              multiple
+              filterable
+              remote
+              reserve-keyword
+              placeholder="Just Number"
+              :remote-method="remoteMethod"
+              :loading="loading"
+              style="width: 240px"
+            >
+              <el-option
+                v-for="item in TeamOptions"
+                :key="item.tm_number"
+                :label="item.tm_name"
+                :value="item.tm_name"
+              />
+            </el-select>
+
+            <!-- <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" /> -->
             <!-- <el-select v-if="x.question === 'Team number'" v-model="x.value" placeholder="place input">
               <el-option :label="item" :value="item" v-for="item in teamNumber" />
             </el-select> -->
@@ -159,6 +179,7 @@ export default {
   props: ['tabIndex'],
   data() {
     return {
+      TeamOptions: [],
       teams: teams.map(team => ({ value: team.toString() })),
 
       savingStatus: "idle", // Possible values: 'idle', 'saving', 'success', 'error' (used for auto-save)
@@ -205,7 +226,6 @@ export default {
   created() {
     console.log(this.tabIndex);
     this.restoreFormData();
-    this.getTeamNumber()
     // Set the initial status
     this.savingStatus = 'idle'; // Show the auto-save status support Auto-save
     this.formModified = false; // Form has not been modified
@@ -277,9 +297,16 @@ export default {
   },
 
   methods: {
-    async getTeamNumber() {
-      const { data } = await axios({ url: 'http://127.0.0.1:39390/teams' })
-      this.teamNumber = data
+    // 远程搜索
+    remoteMethod(query) {
+      let self = this
+      self.TeamOptions = []
+      const apiUrl = `http://localhost:39390/teams/select?name=${query}`;
+      axios.get(apiUrl).then(res => {
+        if (res.data.length > 0) {
+          self.TeamOptions = res.data
+        }
+      })
     },
     querySearch(queryString, cb) {
       if (queryString.trim().length === 0) {
@@ -595,6 +622,25 @@ export default {
 </script>
 
 <style scoped>
+:deep(.el-radio){
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  height: auto !important;
+}
+:deep(.el-radio__input){
+  margin-top: 10px;
+}
+:deep(.el-radio__label){
+	white-space: normal;  /* 换行 */
+  text-align: left;
+}
+:deep(.el-form-item){
+  width: 100% !important;
+}
+.el-input{
+  width: 100%;
+}
 .form-container {
   margin-bottom: 10px;
   padding: 15px 20px;
@@ -624,8 +670,6 @@ export default {
   flex-wrap: wrap;
   font-size: 0;
   flex-direction: column;
-
-  margin-left: 2%;
 }
 
 .question-continer {
@@ -645,14 +689,14 @@ export default {
 }
 
 .collapse {
-  margin-left: 2%;
   width: -webkit-fill-available;
   background-color: #c6e2ff;
 }
 
 /* Style for <details> when it is not open */
-el-collapse-item {
+  :deep(.el-collapse-item__header){
   width: 100%;
+  padding-left: 10px !important;
 }
 
 el-collapse-item {
@@ -704,5 +748,11 @@ el-collapse-item {
   .question-continer {
     max-width: 650px;
   }
+}
+:deep(.el-input){
+  width: 100% !important;
+}
+:deep(.el-select){
+  width: 100% !important;
 }
 </style>
