@@ -8,7 +8,7 @@ const SQL = require('sql-template-strings');
 const app = express();
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files(images)
 const cors = require('cors');
-
+const teams = require('./teams.json')
 // Allow cross-origin requests, use the default settings
 app.use(cors());
 
@@ -61,7 +61,7 @@ async function start() {
 start(); // Start the app
 
 
-function executeQuery(sql, callback=false) {
+function executeQuery(sql, callback = false) {
     console.log(sql)
     return new Promise((res, rej) => {
         pool.query(sql, function (error, results, fields) {
@@ -309,7 +309,6 @@ async function setFolderPermissions(folderId) {
                 },
             });
         } catch (error) {
-            // console.error(`为邮箱 ${email} 设置权限时出错:`, error);
             console.error(`Error setting permission for email ${email}:`, error);
         }
     }
@@ -416,11 +415,13 @@ async function uploadFileAndSetPermissions(filePath, originalName, folderType) {
 // Upload file route
 app.post('/upload', upload.single('file'), async (req, res) => {
     const file = req.file;
+
+    const originalName = file.originalname; // Multer提供的原始文件名
+    
     if (!file) {
         return res.status(400).send('No file uploaded');
     }
 
-    // 根据上传的文件类型选择文件夹
     // Determine the folder based on the file type
 
     // let folderName;
@@ -522,7 +523,6 @@ app.get('/delete', async (req, res) => {
 });
 
 
-// 删除文件的函数 (危险操作, 慎用!!!)
 // Delete file function (Dangerous operation, use with caution!!!)
 
 /*
@@ -531,17 +531,16 @@ async function deleteFile(fileId) {
         await drive.files.delete({
             fileId: fileId
         });
-        console.log(`文件 ${fileId} 已被删除`);
+        console.log(`File ${fileId} has already been deleted!`);
     } catch (error) {
-        console.error('删除文件时出错:', error);
-        throw new Error('文件删除失败');
+        console.error('An error occurred while deleting the file:', error);
+        throw new Error('Error deleting file');
     }
 }
  
-// 示例用法
 // Example usage
 
-const fileToDelete = '要删除的文件ID'; // 替换为要删除的文件ID
+const fileToDelete = 'TEST FileID'; // Replace with the actual file ID
 deleteFile(fileToDelete);
 */
 
@@ -554,32 +553,32 @@ deleteFile(fileToDelete);
 //                   Database
 // 
 // --------------------------------------------
-const mysql = require('mysql');
-const dbConfig = require('./config/DBConfig'); //   Import the database configuration
-const bodyParser = require('body-parser');
-let pool;
+// const mysql = require('mysql');
+// const dbConfig = require('./config/DBConfig'); //   Import the database configuration
+// const bodyParser = require('body-parser');
+// let pool;
 
-// console.log(dbConfig);
+// // console.log(dbConfig);
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
-// const connection = mysql.createConnection(dbConfig);
-pool = mysql.createPool(dbConfig);
-pool.getConnection((err, connection) => {
-    if (err) {
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            console.error('Database connection was closed.');
-        }
-        if (err.code === 'ER_CON_COUNT_ERROR') {
-            console.error('Database has too many connections.');
-        }
-        if (err.code === 'ECONNREFUSED') {
-            console.error('Database connection was refused.');
-        }
-    }
-    if (connection) connection.release();
-    return;
-})
+// // const connection = mysql.createConnection(dbConfig);
+// pool = mysql.createPool(dbConfig);
+// pool.getConnection((err, connection) => {
+//     if (err) {
+//         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+//             console.error('Database connection was closed.');
+//         }
+//         if (err.code === 'ER_CON_COUNT_ERROR') {
+//             console.error('Database has too many connections.');
+//         }
+//         if (err.code === 'ECONNREFUSED') {
+//             console.error('Database connection was refused.');
+//         }
+//     }
+//     if (connection) connection.release();
+//     return;
+// })
 
 // Connect to the database
 /*
@@ -596,9 +595,9 @@ app.post('/submit-form', async (req, res) => {
     console.log("RECIEVED REQUEST")
     const formData = req.body;
 
-    // 处理 additionalComments 字段，保留换行符
+    // Handle the 'additionalComments' field, keep the line breaks
     if (formData.additionalComments) {
-        // 确保换行符被保留，这里不需要转换，直接保存即可
+        // Ensure that line breaks are preserved, no need to convert here, just save it
         formData.additionalComments = formData.additionalComments.replace(/\r\n/g, '\n');
     }
 
@@ -630,6 +629,7 @@ app.post('/submit-form', async (req, res) => {
         Robot_Height, 
         Drive_Team_Members,
         Maneuverability, 
+        Fully_Extended_Height,
         Practice_Hours, 
         Additional_Comments, 
         Full_Robot_ImgId, 
@@ -646,6 +646,7 @@ app.post('/submit-form', async (req, res) => {
         ${formData.Robot_Height}, 
         ${formData.Drive_Team_Members}, 
         ${formData.Maneuverability},
+        ${formData.Fully_Extended_Height},
         ${formData.Practice_Hours}, 
         ${formData.Additional_Comments}, 
         ${formData.Full_Robot_ImgId}, 
@@ -654,12 +655,12 @@ app.post('/submit-form', async (req, res) => {
 
     // Execute the SQL query
     try {
-        await executeQuery(query); 
+        await executeQuery(query);
         res.send('Data saved successfully');
-      } catch (error) {
+    } catch (error) {
         console.error('Database error:', error);
         res.status(500).send('Server error');
-      }
+    }
 });
 
 // app.post('/submit-form', upload.none(), (req, res) => {
@@ -720,24 +721,51 @@ app.get("/", (req, res) => {
 })
 
 app.get('/teams', (req, res) => {
-    const query = req.query.query; // 获取查询参数
-    fs.readFile('teams.json', (err, data) => {
-      if (err) {
-        res.status(500).send('Error reading the JSON file');
-        return;
-      }
-      const teams = JSON.parse(data);
-      // 如果有查询参数，过滤 JSON 数据；否则返回全部数据
-      const filteredTeams = query
+    const query = req.query.query; // Get the query parameter
+    // fs.readFile('teams.json', (err, data) => {
+    //     if (err) {
+    //         res.status(500).send('Error reading the JSON file');
+    //         return;
+    //     }
+    //     const teams = JSON.parse(data);
+    //     // If there's a query, filter the JSON data; otherwise, return all the data
+    //     const filteredTeams = query
+    //         ? teams.filter(team =>
+    //             team.tm_name.toLowerCase().includes(query.toLowerCase())
+    //         )
+    //         : teams;
+
+    //     res.json(filteredTeams); // Send the filtered JSON data as the response
+    // });
+    let filteredTeams = query
         ? teams.filter(team =>
             team.tm_name.toLowerCase().includes(query.toLowerCase())
-          )
+        )
         : teams;
-  
-      res.json(filteredTeams); // 发送过滤后的数据
-    });
-  });
-  
+        filteredTeams = filteredTeams.map(item => `${item.tm_name}-${item.tm_number}`)
+    res.json(filteredTeams);
+});
+
+
+
+app.get('/teams/select', (req, res) => {
+    const query = req.query.query; // Get the query parameter
+    let filteredTeams = query
+    ? teams.filter(team =>
+        team.tm_name.toLowerCase().includes(query.toLowerCase())
+        )
+        : teams;
+    // console.log(filteredTeams,'测试')
+    let result1 = filteredTeams.filter(item => {
+        return item.tm_name.includes(req.query.name)
+    })
+    let result2 = []
+    if (result1.length > 99) {
+        result2 = result1.slice(0, 20)
+    }
+    res.json(result2);
+});
+
 
 
 
