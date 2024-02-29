@@ -143,7 +143,7 @@ import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import formJson from './form.json'
-const _event = "test";
+const _event = "paca"; // Just for the backup choice, main value was at JSON file
 
 const teams = [];
 
@@ -482,7 +482,7 @@ export default {
 
         // Construct formData with the required structure
         this.formData = {
-          Event: this.form.find(item => item.question === "").value,
+          Event: this.form.find(item => item.question === "").value ?? _event,
           Team_Number: this.form.find(item => item.question === "Team number").value,
           Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
           Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,

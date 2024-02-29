@@ -2,8 +2,8 @@
     {
       "question": "",
       "type": "hidden",
-      "required": true,
-      "value": "_event"
+      "required": false,
+      "value": "paca"
     },
     {
       "question": "Team number",
