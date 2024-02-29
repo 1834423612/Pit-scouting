@@ -357,6 +357,9 @@ export default {
     },
 
     mounted() {
+      // Restore the Image file list
+      this.restoreFileList();
+
       // Check if the form has been saved before
       this.form.forEach((question) => {
         if (question.type === "radio" && question.value === "other") {
@@ -366,6 +369,15 @@ export default {
           question.showOtherInput = true;
         }
       });
+    },
+
+    // 新增：从本地存储恢复文件列表
+    restoreFileList() {
+      const fullRobotFiles = JSON.parse(localStorage.getItem('fullRobotFiles') || '[]');
+      const driveTrainFiles = JSON.parse(localStorage.getItem('driveTrainFiles') || '[]');
+
+      this.fileList.fullRobot = fullRobotFiles;
+      this.fileList.driveTrain = driveTrainFiles;
     },
 
     restoreFormData() {
@@ -519,7 +531,19 @@ export default {
             headers: {
               "Content-Type": "application/json"
             }})
+
               .then(() => {
+                // 清空图片列表
+                this.fileList.fullRobot = [];
+                this.fileList.driveTrain = [];
+                // 更新本地存储
+                localStorage.setItem('fullRobotFiles', JSON.stringify([]));
+                localStorage.setItem('driveTrainFiles', JSON.stringify([]));
+
+                // 通知父组件恢复标签页名字
+                this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber: '' });
+
+                // Show success message alert
                 Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
                 this.$message.success("Form submitted successfully.");
                 this.resetFormData(); // Reset form data after successful submission
@@ -569,6 +593,9 @@ export default {
         this.fileList.fullRobot.push(file); // Add file object to array
         this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('fullRobotFiles', JSON.stringify(this.fileList.fullRobot));
+
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
         console.error("No fileId returned from the server");
@@ -582,6 +609,9 @@ export default {
         file.fileId = fileId; // Add fileId to the file object
         this.fileList.driveTrain.push(file); // Add file object to array
         this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
+
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('driveTrainFiles', JSON.stringify(this.fileList.fullRobot));
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
@@ -637,6 +667,8 @@ export default {
 :deep(.el-radio__label){
 	white-space: normal;  /* 换行 */
   text-align: left;
+  /* font-size: large; */
+  /* color: #3c3b3b; */
 }
 :deep(.el-form-item){
   width: 100% !important;
@@ -646,7 +678,7 @@ export default {
 }
 .form-container {
   margin-bottom: 10px;
-  padding: 15px 20px;
+  padding: 15px 35px;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
@@ -736,7 +768,7 @@ el-collapse-item {
 
   .form-container {
     background: #000;
-    padding: 10px 20px;
+    padding: 15px 35px;
     border-radius: 15px;
     box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
     background-color: #c6e2ff;
