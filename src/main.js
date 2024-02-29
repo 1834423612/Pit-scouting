@@ -10,6 +10,8 @@ import 'element-plus/dist/index.css'  // Import Element Plus style
 import 'vform3-builds/dist/designer.style.css'  // Import VForm3 designer style
 import { plugin, defaultConfig } from '@formkit/vue'  // Import FormKit library
 
+import Swal from 'sweetalert2' // Import SweetAlert2 library
+
 
 const app = createApp(App)
 app.use(router)
@@ -17,6 +19,7 @@ app.mount('#app')
 app.use(ElementPlus)
 app.use(VForm3)  // Register VForm3 globally (also register v-form-designe, v-form-render and other components at the same time)
 app.use(plugin, defaultConfig) // Register FormKit globally
+app.config.globalProperties.$swal = Swal  // Register SweetAlert2 globally
 
 
 // Register Element Plus icons globally

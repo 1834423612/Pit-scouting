@@ -74,9 +74,9 @@ const handleTabsEdit = (
   if (action === 'add') {
     const newTabName = (editableTabs.value.length + 1).toString()
     editableTabs.value.push({
-      title: 'New Tab',
+      title: 'Tab' + ' ' + JSON.stringify(editableTabs.value.length + 1),
       name: newTabName,
-      content: 'New Tab content',
+      content: 'Tab' + ' ' + JSON.stringify(editableTabs.value.length +1 ) + ' ' + 'content',
       formValue: null
     })
     editableTabsValue.value = newTabName
