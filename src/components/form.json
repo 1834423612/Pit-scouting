@@ -44,7 +44,7 @@
     {
       "question": "Intake Use:",
       "type": "checkbox",
-      "options": ["Ground", "Station"],
+      "options": ["Ground", "Station","None"],
       "value": [], 
       "required": true,
       "showOtherInput": false, 
@@ -53,7 +53,7 @@
     {
       "question": "Scoring Locations:",
       "type": "checkbox",
-      "options": ["Amp", "Speaker", "Trap", "Hang", "Harmony"],
+      "options": ["Amp", "Speaker", "Trap", "Hang", "Harmony","None"],
       "value": [], 
       "required": true,
       "showOtherInput": false, 

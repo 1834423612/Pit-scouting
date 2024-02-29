@@ -219,6 +219,22 @@ export default {
         practiceHoursPerWeek: null,
         additionalComments: null,
       },
+      valid: {
+        teamNumber: {},
+        driveTrainType: {entered: false},
+        wheelType: {entered: false},
+        intakeType: {entered: false},
+        robotWeight: {entered: false, pattern: ""},
+        robotDimensionLength: {entered: false, pattern: ""},
+        robotDimensionWidth:  {entered: false, pattern: ""},
+        robotDimensionHeight:  {entered: false, pattern: ""},
+        maneuverability:  {entered: true},
+        heightWhenFullyExtended: null,
+        driveTeamMembers: null,
+        practiceHoursPerWeek: null,
+        additionalComments: null,
+
+      }
       teamNumber: "",
     };
   },
