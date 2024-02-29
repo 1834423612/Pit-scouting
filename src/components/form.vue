@@ -2,7 +2,7 @@
   <div class="app">
     <div class="form-container">
       <el-form :model="formData" ref="form" label-width="120px" label-position="top">
-        <h3>Form</h3>
+        <h3>Pit-Scouting Form</h3>
         <el-divider border-style="dashed" />
         <div class="form-header">
           <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
@@ -56,7 +56,7 @@
               </el-collapse-item>
             </el-collapse>
 
-            <el-select
+            <!-- <el-select
               v-if="x.question === 'Team number'"
               v-model="x.value"
               multiple
@@ -74,9 +74,9 @@
                 :label="item.tm_name"
                 :value="item.tm_name"
               />
-            </el-select>
+            </el-select> -->
 
-            <!-- <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" /> -->
+            <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" />
             <!-- <el-select v-if="x.question === 'Team number'" v-model="x.value" placeholder="place input">
               <el-option :label="item" :value="item" v-for="item in teamNumber" />
             </el-select> -->
@@ -87,9 +87,9 @@
             <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
             </el-input>
 
-            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
+            <!-- <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
               :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
-              @select="handleSelect" />
+              @select="handleSelect" /> -->
             <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
               @change="handleRadioChange(x, $event)">
               <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
@@ -109,7 +109,7 @@
             <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value"></el-input>
           </el-form-item>
           <el-form-item label="Picture - Full Robot">
-            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
+            <el-upload class="upload-demo" drag action="http://localhost:39390/upload?type=full_robot"
               :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
               <el-icon :size="50" color="#b3b3b3">
                 <upload />
@@ -121,7 +121,7 @@
           </el-form-item>
 
           <el-form-item label="Picture - Drive Train">
-            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
+            <el-upload class="upload-demo" drag action="http://localhost:39390/upload?type=drive_train"
               :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
               <el-icon :size="50" color="#b3b3b3">
                 <upload />
@@ -219,18 +219,7 @@ export default {
         practiceHoursPerWeek: null,
         additionalComments: null,
       },
-      valid: {
-        teamNumber: {entered: false},
-        driveTrainType: {entered: false},
-        wheelType: {entered: false},
-        robotWeight: {entered: false, pattern: ""},
-        robotDimensionLength: {entered: false, pattern: ""},
-        robotDimensionWidth: {entered: false, pattern: ""},
-        robotDimensionHeight: {entered: false, pattern: ""},
-        heightWhenFullyExtended: {entered: false, pattern: ""},
-        driveTeamMembers: {entered: false, pattern: ""},
-        practiceHoursPerWeek: {entered: false, pattern: ""},
-      }
+      teamNumber: "",
     };
   },
 
@@ -526,7 +515,10 @@ export default {
         }).then((result) => {
           if (result.isConfirmed) {
             // POST request with Axios
-            axios.post("https://scoutify.makesome.cool/submit-form", this.formData)
+            axios.post("http://localhost:39390/submit-form", {...this.formData,
+            headers: {
+              "Content-Type": "application/json"
+            }})
               .then(() => {
                 Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
                 this.$message.success("Form submitted successfully.");
@@ -620,7 +612,7 @@ export default {
 
       // Send delete request to the server
       axios
-        .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
+        .get(`http://localhost:39390/delete?file_ID=${fileId}`)
         .then((response) => {
           console.log("File deletion response:", response.data);
         })
