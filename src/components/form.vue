@@ -109,7 +109,7 @@
             <el-input v-else-if="x.type === 'textarea'" type="textarea" v-model="x.value"></el-input>
           </el-form-item>
           <el-form-item label="Picture - Full Robot">
-            <el-upload class="upload-demo" drag action="http://localhost:39390/upload?type=full_robot"
+            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
               :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
               <el-icon :size="50" color="#b3b3b3">
                 <upload />
@@ -121,7 +121,7 @@
           </el-form-item>
 
           <el-form-item label="Picture - Drive Train">
-            <el-upload class="upload-demo" drag action="http://localhost:39390/upload?type=drive_train"
+            <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
               :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
               <el-icon :size="50" color="#b3b3b3">
                 <upload />
@@ -301,7 +301,7 @@ export default {
     remoteMethod(query) {
       let self = this
       self.TeamOptions = []
-      const apiUrl = `http://localhost:39390/teams/select?name=${query}`;
+      const apiUrl = `https://scoutify.makesome.cool/teams/select?name=${query}`;
       axios.get(apiUrl).then(res => {
         if (res.data.length > 0) {
           self.TeamOptions = res.data
@@ -316,7 +316,7 @@ export default {
 
       // Get the team list from the server
       // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
-      const apiUrl = `http://localhost:39390/teams`;
+      const apiUrl = `https://scoutify.makesome.cool/teams`;
 
       axios.get(apiUrl)
         .then(response => {
@@ -515,7 +515,7 @@ export default {
         }).then((result) => {
           if (result.isConfirmed) {
             // POST request with Axios
-            axios.post("http://localhost:39390/submit-form", {...this.formData,
+            axios.post("https://scoutify.makesome.cool/submit-form", {...this.formData,
             headers: {
               "Content-Type": "application/json"
             }})
@@ -612,7 +612,7 @@ export default {
 
       // Send delete request to the server
       axios
-        .get(`http://localhost:39390/delete?file_ID=${fileId}`)
+        .get(`https://scoutify.makesome.cool/delete?file_ID=${fileId}`)
         .then((response) => {
           console.log("File deletion response:", response.data);
         })
