@@ -111,7 +111,7 @@
           <el-form-item label="Picture - Full Robot">
             <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
               :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
+              <el-icon :size="100" color="#b3b3b3">
                 <upload />
               </el-icon>
               <div class="el-upload__text">
@@ -123,7 +123,7 @@
           <el-form-item label="Picture - Drive Train">
             <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
               :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
+              <el-icon :size="150" color="#b3b3b3">
                 <upload />
               </el-icon>
               <div class="el-upload__text">
@@ -281,7 +281,12 @@ export default {
             }
           })
           window.localStorage.setItem('TabsArray', JSON.stringify(TabsArray))
-          // newForm.forEach((question) => {
+          //Object.keys(this.valid).forEach((item,index)=>{
+          //  this.valid.item.entered=
+          //})
+
+          //
+          //newForm.forEach((question) => {
           //   if (question.type === "checkbox") {
           //     localStorage.setItem(
           //       question.question,
@@ -642,9 +647,16 @@ export default {
 :deep(.el-radio__input){
   margin-top: 10px;
 }
-:deep(.el-radio__label){
+/*svg{height: 10em !important; width: 10em; }*/
+:deep(.el-icon svg){
+  height: 15vh;
+  width: 15vh;
+  text-align: center;
+}
+:deep(.question-continer *) { /*.el-form-item__label){*/
 	white-space: normal;  /* 换行 */
   text-align: left;
+  font-size: large;
 }
 :deep(.el-form-item){
   width: 100% !important;
