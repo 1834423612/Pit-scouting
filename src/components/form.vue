@@ -2,7 +2,7 @@
   <div class="app">
     <div class="form-container">
       <el-form :model="formData" ref="form" label-width="120px" label-position="top">
-        <h3>Form</h3>
+        <h3>Pit-Scouting Form</h3>
         <el-divider border-style="dashed" />
         <div class="form-header">
           <el-button type="primary" @click="clearForm" class="shadow">Clear Form</el-button>
@@ -56,7 +56,7 @@
               </el-collapse-item>
             </el-collapse>
 
-            <el-select
+            <!-- <el-select
               v-if="x.question === 'Team number'"
               v-model="x.value"
               multiple
@@ -74,9 +74,9 @@
                 :label="item.tm_name"
                 :value="item.tm_name"
               />
-            </el-select>
+            </el-select> -->
 
-            <!-- <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" /> -->
+            <el-input v-if="x.question === 'Team number'" v-model="x.value" placeholder="Just Number" @input="updateTeamNumber" />
             <!-- <el-select v-if="x.question === 'Team number'" v-model="x.value" placeholder="place input">
               <el-option :label="item" :value="item" v-for="item in teamNumber" />
             </el-select> -->
@@ -87,9 +87,9 @@
             <el-input v-else-if="x.type === 'integer'" v-model="x.value" pattern="^\d+$" style="width: 100px">
             </el-input>
 
-            <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
+            <!-- <el-autocomplete v-else-if="x.type === 'autocomplete'" v-model="x.value" style="width: 100px"
               :fetch-suggestions="querySearch" :trigger-on-focus="false" clearable placeholder="Team #"
-              @select="handleSelect" />
+              @select="handleSelect" /> -->
             <el-radio-group v-else-if="x.type === 'radio'" v-model="x.value" class="vertical-layout"
               @change="handleRadioChange(x, $event)">
               <el-radio v-for="option in x.options" :key="option" :label="option">{{ option }}</el-radio>
@@ -143,7 +143,7 @@ import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import formJson from './form.json'
-const _event = "test";
+const _event = "paca"; // Just for the backup choice, main value was at JSON file
 
 const teams = [];
 
@@ -219,18 +219,7 @@ export default {
         practiceHoursPerWeek: null,
         additionalComments: null,
       },
-      valid: {
-        teamNumber: {entered: false},
-        driveTrainType: {entered: false},
-        wheelType: {entered: false},
-        robotWeight: {entered: false, pattern: ""},
-        robotDimensionLength: {entered: false, pattern: ""},
-        robotDimensionWidth: {entered: false, pattern: ""},
-        robotDimensionHeight: {entered: false, pattern: ""},
-        heightWhenFullyExtended: {entered: false, pattern: ""},
-        driveTeamMembers: {entered: false, pattern: ""},
-        practiceHoursPerWeek: {entered: false, pattern: ""},
-      }
+      teamNumber: "",
     };
   },
 
@@ -317,7 +306,7 @@ export default {
     remoteMethod(query) {
       let self = this
       self.TeamOptions = []
-      const apiUrl = `http://localhost:39390/teams/select?name=${query}`;
+      const apiUrl = `https://scoutify.makesome.cool/teams/select?name=${query}`;
       axios.get(apiUrl).then(res => {
         if (res.data.length > 0) {
           self.TeamOptions = res.data
@@ -332,7 +321,7 @@ export default {
 
       // Get the team list from the server
       // const apiUrl = `https://scoutify.makesome.cool/teams?query=${queryString}`;
-      const apiUrl = `http://localhost:39390/teams`;
+      const apiUrl = `https://scoutify.makesome.cool/teams`;
 
       axios.get(apiUrl)
         .then(response => {
@@ -373,6 +362,9 @@ export default {
     },
 
     mounted() {
+      // Restore the Image file list
+      this.restoreFileList();
+
       // Check if the form has been saved before
       this.form.forEach((question) => {
         if (question.type === "radio" && question.value === "other") {
@@ -382,6 +374,15 @@ export default {
           question.showOtherInput = true;
         }
       });
+    },
+
+    // 新增：从本地存储恢复文件列表
+    restoreFileList() {
+      const fullRobotFiles = JSON.parse(localStorage.getItem('fullRobotFiles') || '[]');
+      const driveTrainFiles = JSON.parse(localStorage.getItem('driveTrainFiles') || '[]');
+
+      this.fileList.fullRobot = fullRobotFiles;
+      this.fileList.driveTrain = driveTrainFiles;
     },
 
     restoreFormData() {
@@ -498,7 +499,7 @@ export default {
 
         // Construct formData with the required structure
         this.formData = {
-          Event: this.form.find(item => item.question === "").value,
+          Event: this.form.find(item => item.question === "").value ?? _event,
           Team_Number: this.form.find(item => item.question === "Team number").value,
           Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
           Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
@@ -531,8 +532,23 @@ export default {
         }).then((result) => {
           if (result.isConfirmed) {
             // POST request with Axios
-            axios.post("https://scoutify.makesome.cool/submit-form", this.formData)
+            axios.post("https://scoutify.makesome.cool/submit-form", {...this.formData,
+            headers: {
+              "Content-Type": "application/json"
+            }})
+
               .then(() => {
+                // 清空图片列表
+                this.fileList.fullRobot = [];
+                this.fileList.driveTrain = [];
+                // 更新本地存储
+                localStorage.setItem('fullRobotFiles', JSON.stringify([]));
+                localStorage.setItem('driveTrainFiles', JSON.stringify([]));
+
+                // 通知父组件恢复标签页名字
+                this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber: '' });
+
+                // Show success message alert
                 Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
                 this.$message.success("Form submitted successfully.");
                 this.resetFormData(); // Reset form data after successful submission
@@ -582,6 +598,9 @@ export default {
         this.fileList.fullRobot.push(file); // Add file object to array
         this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('fullRobotFiles', JSON.stringify(this.fileList.fullRobot));
+
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
         console.error("No fileId returned from the server");
@@ -595,6 +614,9 @@ export default {
         file.fileId = fileId; // Add fileId to the file object
         this.fileList.driveTrain.push(file); // Add file object to array
         this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
+
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('driveTrainFiles', JSON.stringify(this.fileList.fullRobot));
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
@@ -666,7 +688,7 @@ export default {
 }
 .form-container {
   margin-bottom: 10px;
-  padding: 15px 20px;
+  padding: 15px 35px;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
@@ -756,7 +778,7 @@ el-collapse-item {
 
   .form-container {
     background: #000;
-    padding: 10px 20px;
+    padding: 15px 35px;
     border-radius: 15px;
     box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
     background-color: #c6e2ff;
