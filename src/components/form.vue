@@ -253,6 +253,12 @@ export default {
   },
 
   watch: {
+   robotWeight(newValue,oldValue){},
+   robotDimensionLength(newValue,oldValue){},
+   robotDimensionWidth(newValue,oldValue){},
+   robotDimensionHeight(newValue,oldValue){},
+   heightWhenFullyExtended(newValue,oldValue){}, 
+   practiceHoursPerWeek(newValue,oldValue){},
     form: {
       handler(newForm) {
         this.formModified = true; // Form has been modified
