@@ -366,7 +366,9 @@ export default {
 
   watch: {
     form: {
-      handler(newForm) {
+      handler(newForm,oldForm) {
+        let pattern="";
+        //if(newForm.test(pattern)){}else
         this.formModified = true; // Form has been modified
         if (this.saveTimeout) {
           clearTimeout(this.saveTimeout);
