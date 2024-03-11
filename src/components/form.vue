@@ -255,7 +255,7 @@ export default {
   watch: {
    robotWeight(newValue,oldValue){
     if (!newValue.test('^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$')){
-    //change back to old value
+    this.formData.robotWeight=oldValue;
     //make seperate validation
     //prevent storage from storing the newValue
     }
