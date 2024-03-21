@@ -111,7 +111,7 @@
           <el-form-item label="Picture - Full Robot">
             <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=full_robot"
               :on-success="handleSuccess0" :on-remove="handleRemove" :file-list="fileList.fullRobot" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
+              <el-icon :size="100" color="#b3b3b3">
                 <upload />
               </el-icon>
               <div class="el-upload__text">
@@ -123,7 +123,7 @@
           <el-form-item label="Picture - Drive Train">
             <el-upload class="upload-demo" drag action="https://scoutify.makesome.cool/upload?type=drive_train"
               :on-success="handleSuccess1" :on-remove="handleRemove" :file-list="fileList.driveTrain" list-type="picture">
-              <el-icon :size="50" color="#b3b3b3">
+              <el-icon :size="150" color="#b3b3b3">
                 <upload />
               </el-icon>
               <div class="el-upload__text">
@@ -143,7 +143,7 @@ import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import formJson from './form.json'
-const _event = "test";
+const _event = "ohcl"; // Just for the backup choice, main value was at JSON file
 
 const teams = [];
 
@@ -253,6 +253,18 @@ export default {
   },
 
   watch: {
+   robotWeight(newValue,oldValue){
+    if (!newValue.test('^\d+(\s\d+\/\d+)?(\.\d+)?$|^\d+\/\d+$')){
+    this.formData.robotWeight=oldValue;
+    //make seperate validation
+    //prevent storage from storing the newValue
+    }
+   },
+   robotDimensionLength(newValue,oldValue){},
+   robotDimensionWidth(newValue,oldValue){},
+   robotDimensionHeight(newValue,oldValue){},
+   heightWhenFullyExtended(newValue,oldValue){}, 
+   practiceHoursPerWeek(newValue,oldValue){},
     form: {
       handler(newForm) {
         this.formModified = true; // Form has been modified
@@ -270,7 +282,12 @@ export default {
             }
           })
           window.localStorage.setItem('TabsArray', JSON.stringify(TabsArray))
-          // newForm.forEach((question) => {
+          //Object.keys(this.valid).forEach((item,index)=>{
+          //  this.valid.item.entered=
+          //})
+
+          //
+          //newForm.forEach((question) => {
           //   if (question.type === "checkbox") {
           //     localStorage.setItem(
           //       question.question,
@@ -357,6 +374,9 @@ export default {
     },
 
     mounted() {
+      // Restore the Image file list
+      this.restoreFileList();
+
       // Check if the form has been saved before
       this.form.forEach((question) => {
         if (question.type === "radio" && question.value === "other") {
@@ -366,6 +386,15 @@ export default {
           question.showOtherInput = true;
         }
       });
+    },
+
+    // 新增：从本地存储恢复文件列表
+    restoreFileList() {
+      const fullRobotFiles = JSON.parse(localStorage.getItem('fullRobotFiles') || '[]');
+      const driveTrainFiles = JSON.parse(localStorage.getItem('driveTrainFiles') || '[]');
+
+      this.fileList.fullRobot = fullRobotFiles;
+      this.fileList.driveTrain = driveTrainFiles;
     },
 
     restoreFormData() {
@@ -482,7 +511,7 @@ export default {
 
         // Construct formData with the required structure
         this.formData = {
-          Event: this.form.find(item => item.question === "").value,
+          Event: this.form.find(item => item.question === "").value ?? _event,
           Team_Number: this.form.find(item => item.question === "Team number").value,
           Drive_Train_Type: this.form.find(item => item.question === "Type of drive train").value === "other" ? this.form.find(item => item.question === "Type of drive train").otherValue : this.form.find(item => item.question === "Type of drive train").value,
           Wheel_Type: this.form.find(item => item.question === "Type of wheels used").value === "other" ? this.form.find(item => item.question === "Type of wheels used").otherValue : this.form.find(item => item.question === "Type of wheels used").value,
@@ -519,7 +548,19 @@ export default {
             headers: {
               "Content-Type": "application/json"
             }})
+
               .then(() => {
+                // 清空图片列表
+                this.fileList.fullRobot = [];
+                this.fileList.driveTrain = [];
+                // 更新本地存储
+                localStorage.setItem('fullRobotFiles', JSON.stringify([]));
+                localStorage.setItem('driveTrainFiles', JSON.stringify([]));
+
+                // 通知父组件恢复标签页名字
+                this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber: '' });
+
+                // Show success message alert
                 Swal.fire('Submitted!', 'Your form has been submitted.', 'success');
                 this.$message.success("Form submitted successfully.");
                 this.resetFormData(); // Reset form data after successful submission
@@ -569,6 +610,9 @@ export default {
         this.fileList.fullRobot.push(file); // Add file object to array
         this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('fullRobotFiles', JSON.stringify(this.fileList.fullRobot));
+
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
         console.error("No fileId returned from the server");
@@ -582,6 +626,9 @@ export default {
         file.fileId = fileId; // Add fileId to the file object
         this.fileList.driveTrain.push(file); // Add file object to array
         this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
+
+        // 新增：保存 fileList 到本地存储
+        localStorage.setItem('driveTrainFiles', JSON.stringify(this.fileList.fullRobot));
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
       } else {
@@ -634,9 +681,16 @@ export default {
 :deep(.el-radio__input){
   margin-top: 10px;
 }
-:deep(.el-radio__label){
+/*svg{height: 10em !important; width: 10em; }*/
+:deep(.el-icon svg){
+  height: 15vh;
+  width: 15vh;
+  text-align: center;
+}
+:deep(.question-continer *) { /*.el-form-item__label){*/
 	white-space: normal;  /* 换行 */
   text-align: left;
+  font-size: large;
 }
 :deep(.el-form-item){
   width: 100% !important;
@@ -646,7 +700,7 @@ export default {
 }
 .form-container {
   margin-bottom: 10px;
-  padding: 15px 20px;
+  padding: 15px 35px;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
     -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12),
     4px 0px 3px 0 rgba(0, 0, 0, 0.12);
@@ -736,7 +790,7 @@ el-collapse-item {
 
   .form-container {
     background: #000;
-    padding: 10px 20px;
+    padding: 15px 35px;
     border-radius: 15px;
     box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), -3px -1px 3px 0 rgba(0, 0, 0, 0.14), 0px 3px 3px 0 rgba(0, 0, 0, 0.12), 4px 0px 3px 0 rgba(0, 0, 0, 0.12);
     background-color: #c6e2ff;
