@@ -143,7 +143,7 @@ import { ref, watch, defineProps, defineEmits, onMounted } from "vue";
 import axios from "axios";
 import Swal from 'sweetalert2'
 import formJson from './form.json'
-const _event = "paca"; // Just for the backup choice, main value was at JSON file
+const _event = "ohcl"; // Just for the backup choice, main value was at JSON file
 
 const teams = [];
 
