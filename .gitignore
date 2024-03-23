@@ -28,3 +28,20 @@ npm-lock.*
 *.njsproj
 *.sln
 *.sw?
+
+# OS, packages or Editor files
+._*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+
+# Something else
+*.bak
+*.orig
+*.backup
+*.tmp
+*.tmp.*
+full_img.xlsx
+full_img_table.html
+img.py
