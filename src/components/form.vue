@@ -388,7 +388,7 @@ export default {
       });
     },
 
-    // 新增：从本地存储恢复文件列表
+    // New feat: Restore the file list from the local storage
     restoreFileList() {
       const fullRobotFiles = JSON.parse(localStorage.getItem('fullRobotFiles') || '[]');
       const driveTrainFiles = JSON.parse(localStorage.getItem('driveTrainFiles') || '[]');
@@ -501,6 +501,8 @@ export default {
     },
 
     submitForm() {
+
+      // Still have some problems
       // First, validate the form using the built-in validate method from Element UI
       this.$refs.form.validate((valid) => {
         if (!valid) {
@@ -550,14 +552,16 @@ export default {
             }})
 
               .then(() => {
-                // 清空图片列表
+
+                // Clear the image list
                 this.fileList.fullRobot = [];
                 this.fileList.driveTrain = [];
-                // 更新本地存储
+
+                // Update the local storage
                 localStorage.setItem('fullRobotFiles', JSON.stringify([]));
                 localStorage.setItem('driveTrainFiles', JSON.stringify([]));
 
-                // 通知父组件恢复标签页名字
+                // Update the tab title
                 this.$emit('update-tab-title', { tabIndex: this.tabIndex, teamNumber: '' });
 
                 // Show success message alert
@@ -610,7 +614,7 @@ export default {
         this.fileList.fullRobot.push(file); // Add file object to array
         this.fileIds.fullRobot.push(fileId); // Add  "fullRobot"  fileId to array
 
-        // 新增：保存 fileList 到本地存储
+        // New feat: Save fileList(fullRobot) to the LocalStorage
         localStorage.setItem('fullRobotFiles', JSON.stringify(this.fileList.fullRobot));
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
@@ -627,7 +631,7 @@ export default {
         this.fileList.driveTrain.push(file); // Add file object to array
         this.fileIds.driveTrain.push(fileId); // Add  "DriveTrain"  fileId to array
 
-        // 新增：保存 fileList 到本地存储
+        // New feat: Save fileList(driveTrain) to the LocalStorage
         localStorage.setItem('driveTrainFiles', JSON.stringify(this.fileList.fullRobot));
 
         console.log("Updated fileIds:", JSON.stringify(this.fileIds));
@@ -695,9 +699,34 @@ export default {
 :deep(.el-form-item){
   width: 100% !important;
 }
+
+/* DIY the element-plus upload-box style */
+.el-upload-dragger {
+    padding: var(--el-upload-dragger-padding-horizontal) var(--el-upload-dragger-padding-vertical);
+    background-color: var(--el-fill-color-blank);
+    border: 1px dashed var(--el-border-color);
+    border-radius: 6px;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.el-form-item__content {
+    line-height: 32px;
+    position: relative;
+    font-size: var(--font-size);
+    min-width: 0;
+}
+
 .el-input{
   width: 100%;
 }
+
 .form-container {
   margin-bottom: 10px;
   padding: 15px 35px;
