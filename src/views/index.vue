@@ -55,7 +55,10 @@ const initTabs = () => {
     }));
 
     // Activate the last opened tab
-    activeTab.value = tabs.value[tabs.value.length - 1].id;
+    // activeTab.value = tabs.value[tabs.value.length - 1].id;
+    if (tabs.value.length > 0) {
+        activeTab.value = tabs.value[tabs.value.length - 1].id;
+    }
 };
 
 const setActiveTab = (id) => {
