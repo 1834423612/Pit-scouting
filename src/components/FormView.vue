@@ -1,6 +1,6 @@
 <template>
     <div class="form-container bg-white rounded-lg shadow-lg p-6">
-      <FormKit
+        <FormKit
         type="form"
         name="contactForm"
         use-local-storage
@@ -19,30 +19,32 @@
         <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button>
       </FormKit>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import { FormKit } from '@formkit/vue';
-  import { createLocalStoragePlugin } from '@formkit/addons';
-  
-  const props = defineProps({
-    tabData: Object // 确保 tabData 是一个对象
-  });
-  
-  const submitHandler = async (payload, node) => {
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { FormKit } from '@formkit/vue';
+import { createLocalStoragePlugin } from '@formkit/addons';
+
+const props = defineProps({
+    tabData: Object // Make sure the tabData prop is passed to the component
+});
+
+const submitHandler = async (payload, node) => {
     console.log('Submitted data:', payload);
     await new Promise((r) => setTimeout(r, 2000));
+    // Reset the form after submission & some submission function
     alert('Submitted! 🎉');
     node.reset();
-  };
-  </script>
-  
-  <style scoped>
-  .form-container {
+};
+</script>
+
+<style scoped>
+.form-container {
     padding: 16px;
-  }
-  .submit-button {
+}
+
+.submit-button {
     margin-top: 10px;
-  }
-  </style>
+}
+</style>
