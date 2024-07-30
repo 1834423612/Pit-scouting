@@ -66,6 +66,9 @@ const initTabs = () => {
      ? lastActiveTabId 
      : tabs.value[0]?.id || '';
 
+    //  Make sure the active tab is saved in localStorage correctly
+     localStorage.setItem('activeTab', activeTab.value);
+
     // activeTab.value = localStorage.getItem('activeTab') || tabs.value[tabs.value.length - 1]?.id || '';
 };
 
@@ -87,6 +90,7 @@ const addTab = () => {
     };
     tabs.value.push(newTab);
     activeTab.value = newTab.id;
+    localStorage.setItem('activeTab', activeTab.value); // Immediately save the active tab
     saveTabs(); // Save the state
 };
 
