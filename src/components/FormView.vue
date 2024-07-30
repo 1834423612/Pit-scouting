@@ -15,7 +15,7 @@
                 :required="question.required"
                 v-model="props.tabData.formData[question.name]"
             />
-            <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button>
+            <!-- <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button> -->
         </FormKit>
     </div>
 </template>

@@ -37,6 +37,7 @@ const activeTab = ref('');
 const initTabs = () => {
     const storedTabs = JSON.parse(localStorage.getItem('editableTabs')) || [];
 
+    // If there are no tabs, create a default tab
     if (storedTabs.length === 0) {
         const defaultTab = {
             id: generateId(),
@@ -55,14 +56,22 @@ const initTabs = () => {
     }));
 
     // Activate the last opened tab
-    // activeTab.value = tabs.value[tabs.value.length - 1].id;
-    if (tabs.value.length > 0) {
-        activeTab.value = tabs.value[tabs.value.length - 1].id;
-    }
+
+    // if (tabs.value.length > 0) {
+    //     activeTab.value = tabs.value[tabs.value.length - 1].id;
+    // }
+    const lastActiveTabId = localStorage.getItem('activeTab');
+    // activeTab.value = lastActiveTab || tabs.value[tabs.value.length - 1]?.id || '';
+    activeTab.value = lastActiveTabId && tabs.value.some(tab => tab.id === lastActiveTabId)
+     ? lastActiveTabId 
+     : tabs.value[0]?.id || '';
+
+    // activeTab.value = localStorage.getItem('activeTab') || tabs.value[tabs.value.length - 1]?.id || '';
 };
 
 const setActiveTab = (id) => {
     activeTab.value = id;
+    localStorage.setItem('activeTab', id);
 };
 
 const getTabData = (tabId) => {
@@ -84,13 +93,18 @@ const addTab = () => {
 const removeTab = (tabId) => {
     tabs.value = tabs.value.filter(tab => tab.id !== tabId);
     if (tabs.value.length > 0) {
-        activeTab.value = tabs.value[0].id; // Set the first tab as active
+
+        // If the active tab is removed, set the active tab to the first tab
+        if (activeTab.value === tabId) {
+            activeTab.value = tabs.value[0].id;
+        }
     } else {
         activeTab.value = ''; // If there are no tabs, set activeTab to empty
     }
     saveTabs(); // Save the state
 };
 
+// Be sure to clear the form data from localStorage when the tab is removed
 const clearCurrentTab = () => {
     const currentTab = tabs.value.find(tab => tab.id === activeTab.value);
     if (currentTab) {
