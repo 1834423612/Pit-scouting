@@ -1,9 +1,13 @@
 <template>
     <div class="form-container bg-white rounded-lg shadow-lg p-6">
-        <div class="mb-4" v-if="props.tabData.event_id">
+        <div class="mb-4" v-if="showEvent">
             <label>
-                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    Event ID: {{ props.tabData.event_id }}
+                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                    {{ eventName }}
+                </span>&nbsp;
+                
+                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    {{ eventIdValue }}
                 </span>
             </label>
         </div>
@@ -28,7 +32,7 @@
                     />
 
                     <!-- Revised file upload component -->
-                    <FileUpload v-if="question.type === 'file'" @upload="handleFileUpload" />
+                    <FileUpload v-if="question.type === 'file'" @upload="handleFileUpload" :tabId="props.tabData.id" :questionName="question.name"/>
                 </template>
             </template>
 
@@ -38,16 +42,34 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, computed } from 'vue';
 import { FormKit, reset } from '@formkit/vue';
 import { createLocalStoragePlugin } from '@formkit/addons';
 import Swal from 'sweetalert2';
 import { error } from '@formkit/core';
-import FileUpload from './FileUpload.vue'; // 引用新的 FileUpload 组件
+import FileUpload from './FileUpload.vue';
 
 const props = defineProps({
     tabData: Object, // Make sure the tabData prop is passed to the component
     removeTab: Function, // Make sure the removeTab method is passed to the component
+});
+
+// computed showEvent
+const showEvent = computed(() => {
+    const eventIdQuestion = props.tabData.questions.find(question => question.show_event);
+    return props.tabData.questions.some(question => question.show_event);
+});
+
+// computed eventName
+const eventName = computed(() => {
+    const eventNameQuestion = props.tabData.questions.find(question => question.label);
+    return eventNameQuestion ? eventNameQuestion.label : null; // Get event name
+});
+
+// computed eventIdValue
+const eventIdValue = computed(() => {
+    const eventIdQuestion = props.tabData.questions.find(question => question.event_id_value);
+    return eventIdQuestion ? eventIdQuestion.event_id_value : null; // Get event_id_value
 });
 
 // Monitor changes in the form data and save them to localStorage
@@ -62,8 +84,9 @@ watch(() => props.tabData.formData, (newValue) => {
 // Handle file uploads
 const handleFileUpload = (uploadedFiles) => {
     console.log('Uploaded files:', uploadedFiles);
-    // 处理上传的文件，比如保存到表单数据
-    props.tabData.formData.files = uploadedFiles; // 假设要将文件保存到表单数据中
+
+    // Handle uploaded files, e.g., save to form data
+    props.tabData.formData.files = uploadedFiles; // Save the uploaded files to the form data
 };
 
 const submitHandler = async (payload, node) => {
@@ -88,6 +111,11 @@ const submitHandler = async (payload, node) => {
         confirmButtonText: 'Yes, submit',
         cancelButtonText: 'No, cancel'
     });
+
+    const fullData = {
+        event_id: eventIdValue.value,
+        ...props.tabData.formData,
+    };
 
     if (result.isConfirmed) {
         try {

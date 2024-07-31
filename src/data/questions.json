@@ -3,9 +3,8 @@
         {
             "name": "event_id",
             "label": "Event ID",
-            "type": "hidden",
-            "value": "_event",
-            "required": true
+            "show_event": true,
+            "event_id_value": "event_id_value"
         },
         {
             "name": "team_number",
