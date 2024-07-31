@@ -3,8 +3,11 @@
         {
             "name": "event_id",
             "label": "Event ID",
+            "value": "Event 123 - 2024",
+            "disabled": true,
             "show_event": true,
-            "event_id_value": "event_id_value"
+            "event_id": "event_id_value",
+            "event_id_value": "Event 123 - 2024"
         },
         {
             "name": "team_number",

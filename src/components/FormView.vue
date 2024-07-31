@@ -27,6 +27,7 @@
                         :label="question.label"
                         :required="question.required"
                         :disabled="question.disabled"
+                        :value="question.value"
                         v-model="props.tabData.formData[question.name]"
                         :options="question.options"
                     />
@@ -68,7 +69,7 @@ const eventName = computed(() => {
 
 // computed eventIdValue
 const eventIdValue = computed(() => {
-    const eventIdQuestion = props.tabData.questions.find(question => question.event_id_value);
+    const eventIdQuestion = props.tabData.questions.find(question => question.event_id);
     return eventIdQuestion ? eventIdQuestion.event_id_value : null; // Get event_id_value
 });
 
