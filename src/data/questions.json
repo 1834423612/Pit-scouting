@@ -1,0 +1,22 @@
+{
+    "questions": [
+      {
+        "name": "name",
+        "label": "Your Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "email",
+        "label": "Your Email",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "message",
+        "label": "Your Message",
+        "type": "textarea",
+        "required": false
+      }
+    ]
+  }
