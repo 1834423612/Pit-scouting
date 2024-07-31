@@ -28,12 +28,7 @@
                     />
 
                     <!-- Revised file upload component -->
-                    <file-upload
-                        v-if="question.type === 'file'"
-                        :multiple="question.multiple"
-                        :label="question.label"
-                        @upload="handleFileUpload(question.name, $event)"
-                    />
+                    <FileUpload v-if="question.type === 'file'" @upload="handleFileUpload" />
                 </template>
             </template>
 
@@ -65,10 +60,10 @@ watch(() => props.tabData.formData, (newValue) => {
 // };
 
 // Handle file uploads
-const handleFileUpload = (name, event) => {
-    const files = event.target.files;
-    console.log(`Files uploaded for ${name}:`, files);
-    // You can add logic to save these files or process them as needed
+const handleFileUpload = (uploadedFiles) => {
+    console.log('Uploaded files:', uploadedFiles);
+    // 处理上传的文件，比如保存到表单数据
+    props.tabData.formData.files = uploadedFiles; // 假设要将文件保存到表单数据中
 };
 
 const submitHandler = async (payload, node) => {
