@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Index from '../views/index.vue';
+import TestList from '../views/testlist.vue';
 
 // Define the type of route
 interface Route {
@@ -12,6 +13,10 @@ const routes: Route[] = [
     {
         path: '/',
         component: Index,
+    },
+    {
+        path: '/testlist',
+        component: TestList,
     },
 
     // {

@@ -10,7 +10,7 @@ const config: DefaultConfigOptions = {
   plugins: [
     pro,
     createLocalStoragePlugin({
-      prefix: 'formkit',
+      prefix: 'form',
       key: undefined,
       control: undefined,
       maxAge: 3600000, // 1 hour
