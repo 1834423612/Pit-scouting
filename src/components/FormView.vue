@@ -36,8 +36,6 @@
                     <FileUpload v-if="question.type === 'file'" @upload="handleFileUpload" :tabId="props.tabData.id" :questionName="question.name"/>
                 </template>
             </template>
-
-            <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button>
         </FormKit>
     </div>
 </template>
