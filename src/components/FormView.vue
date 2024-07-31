@@ -14,6 +14,7 @@
                 :label="question.label"
                 :required="question.required"
                 v-model="props.tabData.formData[question.name]"
+                @input="updateLocalStorage"
             />
             <!-- <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button> -->
         </FormKit>
@@ -21,13 +22,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, defineProps } from 'vue';
 import { FormKit } from '@formkit/vue';
 import { createLocalStoragePlugin } from '@formkit/addons';
 
 const props = defineProps({
     tabData: Object // Make sure the tabData prop is passed to the component
 });
+
+// Monitor changes in the form data and save them to localStorage
+watch(() => props.tabData.formData, (newValue) => {
+    localStorage.setItem(`formkit-${props.tabData.id}`, JSON.stringify(newValue));
+}, { deep: true });
+
+// const handleInputChange = () => {
+//     localStorage.setItem(`formkit-${props.tabData.id}`, JSON.stringify(props.tabData.formData));
+// };
 
 const submitHandler = async (payload, node) => {
     console.log('Submitted data:', payload);

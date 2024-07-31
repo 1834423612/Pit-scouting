@@ -95,9 +95,13 @@ const addTab = () => {
 };
 
 const removeTab = (tabId) => {
+    const tabToRemove = tabs.value.find(tab => tab.id === tabId);
+    if (tabToRemove) {
+        localStorage.removeItem(`formkit-${tabToRemove.id}`); // Remove the form data from localStorage
+    }
+
     tabs.value = tabs.value.filter(tab => tab.id !== tabId);
     if (tabs.value.length > 0) {
-
         // If the active tab is removed, set the active tab to the first tab
         if (activeTab.value === tabId) {
             activeTab.value = tabs.value[0].id;
