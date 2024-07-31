@@ -1,21 +1,43 @@
 <template>
     <div class="form-container bg-white rounded-lg shadow-lg p-6">
+        <div class="mb-4" v-if="props.tabData.event_id">
+            <label>
+                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    Event ID: {{ props.tabData.event_id }}
+                </span>
+            </label>
+        </div>
+
         <FormKit
             type="form"
             name="contactForm"
             :use-local-storage="`formkit-${props.tabData.id}`"
             @submit="submitHandler"
         >
-            <FormKit
-                v-for="question in props.tabData.questions"
-                :key="question.name"
-                :type="question.type"
-                :name="question.name"
-                :label="question.label"
-                :required="question.required"
-                v-model="props.tabData.formData[question.name]"
-            />
-            <!-- <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button> -->
+            <template v-if="props.tabData.questions && props.tabData.questions.length > 0">
+                <template v-for="(question, index) in props.tabData.questions" :key="question.name">
+                    <FormKit
+                        v-if="question"
+                        :type="question.type"
+                        :name="question.name"
+                        :label="question.label"
+                        :required="question.required"
+                        :disabled="question.disabled"
+                        v-model="props.tabData.formData[question.name]"
+                        :options="question.options"
+                    />
+
+                    <!-- Revised file upload component -->
+                    <file-upload
+                        v-if="question.type === 'file'"
+                        :multiple="question.multiple"
+                        :label="question.label"
+                        @upload="handleFileUpload(question.name, $event)"
+                    />
+                </template>
+            </template>
+
+            <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button>
         </FormKit>
     </div>
 </template>
@@ -25,6 +47,8 @@ import { ref, watch, defineProps } from 'vue';
 import { FormKit, reset } from '@formkit/vue';
 import { createLocalStoragePlugin } from '@formkit/addons';
 import Swal from 'sweetalert2';
+import { error } from '@formkit/core';
+import FileUpload from './FileUpload.vue'; // 引用新的 FileUpload 组件
 
 const props = defineProps({
     tabData: Object, // Make sure the tabData prop is passed to the component
@@ -39,6 +63,13 @@ watch(() => props.tabData.formData, (newValue) => {
 // const handleInputChange = () => {
 //     localStorage.setItem(`formkit-${props.tabData.id}`, JSON.stringify(props.tabData.formData));
 // };
+
+// Handle file uploads
+const handleFileUpload = (name, event) => {
+    const files = event.target.files;
+    console.log(`Files uploaded for ${name}:`, files);
+    // You can add logic to save these files or process them as needed
+};
 
 const submitHandler = async (payload, node) => {
     const result = await Swal.fire({
@@ -66,7 +97,8 @@ const submitHandler = async (payload, node) => {
     if (result.isConfirmed) {
         try {
             await new Promise((resolve, reject) => {
-                const isSuccess = true; // Simulate a successful submission
+                const isSuccess = false; // Simulate a successful submission
+                
                 setTimeout(() => {
                     if (isSuccess) {
                         resolve();
@@ -93,8 +125,18 @@ const submitHandler = async (payload, node) => {
 
         } catch (error) {
             console.error('Submission error:', error);
-            Swal.fire('Submission failed! 😢', 'There was an error submitting your form.', 'error');
-            // alert('Submission failed! 😢');
+            // Swal.fire('Submission failed!😢', 'There was an error submitting your form.', `error`);
+            Swal.fire({
+                title: 'Submission failed!😢',
+                icon: 'error',
+                html: `
+                There was an error submitting your form.
+                <div class="mt-2">
+                    <span style="font-size: 12px; color: #777;">${error.message}</span>
+                </div>
+                `,
+                confirmButtonText: 'OK',
+            });
         }
     }
 };
