@@ -18,7 +18,8 @@
             "options": [
                 { "label": "Team 1", "value": 1 },
                 { "label": "Team 2", "value": 2 },
-                { "label": "Team 3", "value": 3 }
+                { "label": "Team 3", "value": 3 },
+                { "label": "Team 695 - Bison Robotics", "value": 4}
             ]
         },
         {

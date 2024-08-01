@@ -1,6 +1,6 @@
 <template>
     <div class="form-container bg-white rounded-lg shadow-lg p-6">
-        <div class="mb-4" v-if="showEvent">
+        <div class="relative mb-4" v-if="showEvent">
             <label>
                 <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
                     {{ eventName }}
@@ -10,6 +10,15 @@
                     {{ eventIdValue }}
                 </span>
             </label>
+            <div class="absolute top-0 right-0">
+                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                   Form ID 
+                </span>&nbsp;
+                
+                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    {{ `${props.tabData.id}` }}
+                </span>
+            </div>
         </div>
 
         <FormKit
@@ -30,6 +39,7 @@
                         :value="question.value"
                         v-model="props.tabData.formData[question.name]"
                         :options="question.options"
+                        :validation="required"
                     />
 
                     <!-- Revised file upload component -->
