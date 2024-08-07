@@ -1,5 +1,6 @@
 <template>
     <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center mb-4">Survey</h1>
         <div class="tabs mb-4">
             <button
                 v-for="tab in tabs"

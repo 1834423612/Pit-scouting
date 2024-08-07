@@ -1,22 +1,155 @@
 {
     "questions": [
-      {
-        "name": "name",
-        "label": "Your Name",
-        "type": "text",
-        "required": true
-      },
-      {
-        "name": "email",
-        "label": "Your Email",
-        "type": "text",
-        "required": true
-      },
-      {
-        "name": "message",
-        "label": "Your Message",
-        "type": "textarea",
-        "required": false
-      }
+        {
+            "name": "event_id",
+            "label": "Event ID",
+            "value": "Event 123 - 2024",
+            "disabled": true,
+            "show_event": true,
+            "event_id": "event_id_value",
+            "event_id_value": "Event 123 - 2024"
+        },
+        {
+            "name": "team_number",
+            "label": "Team number",
+            "type": "autocomplete",
+            "required": true,
+            "value": null,
+            "options": [
+                { "label": "Team 1", "value": 1 },
+                { "label": "Team 2", "value": 2 },
+                { "label": "Team 3", "value": 3 },
+                { "label": "Team 695 - Bison Robotics", "value": 4}
+            ]
+        },
+        {
+            "name": "drive_train_type",
+            "label": "Type of drive train",
+            "type": "radio",
+            "options": [
+                { "label": "Tank Drive-plates on both sides of wheels", "value": "tank" },
+                { "label": "West Coast Drive-wheels mounted on one side", "value": "west_coast" },
+                { "label": "Swerve Drive", "value": "swerve" },
+                { "label": "Other", "value": "other" }
+            ],
+            "required": true,
+            "showOtherInput": false,
+            "otherValue": "",
+            "description": "Select the type of drive train used.",
+            "imageUrl": "https://lh7-us.googleusercontent.com/pUWvHrPDa5IfrQcFalk4lO0e4PhD3sLMP0jyLJU8PTWWGfw5r-Wa4qDQNHhbu0byYLzXScP5lfTSUCsvbNI-FlwDY2L7Ra0-TgYqf5Eabw0INSFE3ah4QCqCqHFrsaPKyCOt8m2Yo-H2ie9E7apzh6c8AO147A",
+            "imageWidth": "50%"
+        },
+        {
+            "name": "wheels_type",
+            "label": "Type of wheels used",
+            "type": "radio",
+            "options": [
+                { "label": "One person driving and operating the robot during a match", "value": "one" },
+                { "label": "Two people", "value": "two" }
+            ],
+            "required": true,
+            "showOtherInput": false,
+            "otherValue": "",
+            "description": "Select the type of wheels used.",
+            "imageUrl": "https://lh7-us.googleusercontent.com/PCI7CaG88MiY50L7AM0CVTs9dRd3NQgqW4B2rd64vmjHaNDMEHR0EkWYqv-rzHBnGBC08NzWtr7W97lIk226Q9WVCPuTKuOSZcpb6eyNC5Q3HGmFQwp8005gRcxiS09RjeWUJQJTK-vQGDWd0QAbpSipLSkExw",
+            "imageWidth": "100%"
+        },
+        {
+            "name": "intake_use",
+            "label": "Intake Use:",
+            "type": "checkbox",
+            "options": ["Ground", "Station"],
+            "value": [],
+            "required": true
+        },
+        {
+            "name": "scoring_locations",
+            "label": "Scoring Locations:",
+            "type": "checkbox",
+            "options": ["Amp", "Speaker", "Trap", "Hang", "Harmony"],
+            "value": [],
+            "required": true
+        },
+        {
+            "name": "robot_weight",
+            "label": "Robot Weight (in pounds)",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "robot_length",
+            "label": "Robot Dimension (Length in Inches) without bumpers - front to back",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "robot_width",
+            "label": "Robot Dimension (Width in Inches) without bumpers - left to right",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "robot_height",
+            "label": "Robot Dimension (Height in Inches) from floor to highest point on robot at the start of the match",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "drive_team_members",
+            "label": "Drive Team Members",
+            "type": "radio",
+            "options": [
+                "One person driving and operating the robot during a match"
+            ],
+            "value": null,
+            "required": true
+        },
+        {
+            "name": "maneuverability",
+            "label": "Maneuverability",
+            "type": "checkbox",
+            "options": ["Can it drive under the core"],
+            "value": [],
+            "required": false
+        },
+        {
+            "name": "height_fully_extended",
+            "label": "Height when fully extended (in inches)",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "hours_of_practice",
+            "label": "Hours of Practice",
+            "type": "number",
+            "required": true,
+            "value": null
+        },
+        {
+            "name": "additional_comments",
+            "label": "Additional Comments",
+            "type": "textarea",
+            "required": false,
+            "value": null
+        },
+        {
+            "name": "fullRobot",
+            "label": "Upload Full Robot Images",
+            "type": "file",
+            "required": false,
+            "multiple": true
+        },
+        {
+            "name": "driveTrain",
+            "label": "Upload Drive Train Images",
+            "type": "file",
+            "required": false,
+            "multiple": true
+        }
     ]
-  }
+}

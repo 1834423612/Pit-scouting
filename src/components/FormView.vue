@@ -1,34 +1,84 @@
 <template>
     <div class="form-container bg-white rounded-lg shadow-lg p-6">
+        <div class="relative mb-4" v-if="showEvent">
+            <label>
+                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                    {{ eventName }}
+                </span>&nbsp;
+                
+                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    {{ eventIdValue }}
+                </span>
+            </label>
+            <div class="absolute top-0 right-0">
+                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                   Form ID 
+                </span>&nbsp;
+                
+                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    {{ `${props.tabData.id}` }}
+                </span>
+            </div>
+        </div>
+
         <FormKit
             type="form"
             name="contactForm"
             :use-local-storage="`formkit-${props.tabData.id}`"
             @submit="submitHandler"
         >
-            <FormKit
-                v-for="question in props.tabData.questions"
-                :key="question.name"
-                :type="question.type"
-                :name="question.name"
-                :label="question.label"
-                :required="question.required"
-                v-model="props.tabData.formData[question.name]"
-            />
-            <!-- <button type="submit" class="submit-button bg-blue-500 text-white px-4 py-2 rounded mt-4">Submit</button> -->
+            <template v-if="props.tabData.questions && props.tabData.questions.length > 0">
+                <template v-for="(question, index) in props.tabData.questions" :key="question.name">
+                    <FormKit
+                        v-if="question"
+                        :type="question.type"
+                        :name="question.name"
+                        :label="question.label"
+                        :required="question.required"
+                        :disabled="question.disabled"
+                        :value="question.value"
+                        v-model="props.tabData.formData[question.name]"
+                        :options="question.options"
+                        :validation="required"
+                    />
+
+                    <!-- Revised file upload component -->
+                    <FileUpload v-if="question.type === 'file'" @upload="handleFileUpload" :tabId="props.tabData.id" :questionName="question.name"/>
+                </template>
+            </template>
         </FormKit>
     </div>
 </template>
 
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, computed } from 'vue';
 import { FormKit, reset } from '@formkit/vue';
 import { createLocalStoragePlugin } from '@formkit/addons';
 import Swal from 'sweetalert2';
+import { error } from '@formkit/core';
+import FileUpload from './FileUpload.vue';
 
 const props = defineProps({
     tabData: Object, // Make sure the tabData prop is passed to the component
     removeTab: Function, // Make sure the removeTab method is passed to the component
+});
+
+// computed showEvent
+const showEvent = computed(() => {
+    const eventIdQuestion = props.tabData.questions.find(question => question.show_event);
+    return props.tabData.questions.some(question => question.show_event);
+});
+
+// computed eventName
+const eventName = computed(() => {
+    const eventNameQuestion = props.tabData.questions.find(question => question.label);
+    return eventNameQuestion ? eventNameQuestion.label : null; // Get event name
+});
+
+// computed eventIdValue
+const eventIdValue = computed(() => {
+    const eventIdQuestion = props.tabData.questions.find(question => question.event_id);
+    return eventIdQuestion ? eventIdQuestion.event_id_value : null; // Get event_id_value
 });
 
 // Monitor changes in the form data and save them to localStorage
@@ -39,6 +89,14 @@ watch(() => props.tabData.formData, (newValue) => {
 // const handleInputChange = () => {
 //     localStorage.setItem(`formkit-${props.tabData.id}`, JSON.stringify(props.tabData.formData));
 // };
+
+// Handle file uploads
+const handleFileUpload = (uploadedFiles) => {
+    console.log('Uploaded files:', uploadedFiles);
+
+    // Handle uploaded files, e.g., save to form data
+    props.tabData.formData.files = uploadedFiles; // Save the uploaded files to the form data
+};
 
 const submitHandler = async (payload, node) => {
     const result = await Swal.fire({
@@ -63,10 +121,16 @@ const submitHandler = async (payload, node) => {
         cancelButtonText: 'No, cancel'
     });
 
+    const fullData = {
+        event_id: eventIdValue.value,
+        ...props.tabData.formData,
+    };
+
     if (result.isConfirmed) {
         try {
             await new Promise((resolve, reject) => {
-                const isSuccess = true; // Simulate a successful submission
+                const isSuccess = false; // Simulate a successful submission
+                
                 setTimeout(() => {
                     if (isSuccess) {
                         resolve();
@@ -93,8 +157,18 @@ const submitHandler = async (payload, node) => {
 
         } catch (error) {
             console.error('Submission error:', error);
-            Swal.fire('Submission failed! 😢', 'There was an error submitting your form.', 'error');
-            // alert('Submission failed! 😢');
+            // Swal.fire('Submission failed!😢', 'There was an error submitting your form.', `error`);
+            Swal.fire({
+                title: 'Submission failed!😢',
+                icon: 'error',
+                html: `
+                There was an error submitting your form.
+                <div class="mt-2">
+                    <span style="font-size: 12px; color: #777;">${error.message}</span>
+                </div>
+                `,
+                confirmButtonText: 'OK',
+            });
         }
     }
 };

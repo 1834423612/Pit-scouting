@@ -13,7 +13,7 @@ const config: DefaultConfigOptions = {
       prefix: 'form',
       key: undefined,
       control: undefined,
-      maxAge: 3600000, // 1 hour
+      maxAge: 86400000, // 1 day
       debounce: 200,
       beforeSave: undefined,
       beforeLoad: undefined
