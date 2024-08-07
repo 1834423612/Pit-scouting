@@ -8,5 +8,15 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
-  }
+  },
+  server: {
+    // CORS Bypass proxy
+    proxy: {
+      '/api': {
+        target: 'https://imgbase.kjchmc.cn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
 })
